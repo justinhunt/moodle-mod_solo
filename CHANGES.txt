@@ -1,0 +1,38 @@
+Version 1.0.15 (2020082500)
+-added custom completion rule
+-added lots of grading changes
+
+Version 1.0.15 (Build 2020061600)
+-unreleased. fix for tether in M3.9
+
+Version 1.0.14 (Build 2020032800)
+-added poodllloader.html which safari needs
+-removed function solo_cron
+-added instant transcription from AWS
+-added detection for leaving transcript editor while last line still in edit mode
+
+Version 1.0.13 (Build 2020022800)
+-removed unnecessary references to ReadAloud module
+
+Version 1.0.12 (Build 2020012500)
+- Added user tagging
+- Added several languages
+
+Version 1.0.11 (Build 2019120900)
+-added better reporting of invalid API creds to user
+-Optimisations of cron task
+-Added an audio player and a view button to attempt reports
+-Changed activity button labels
+-fixed issue if student did not choose a speaking partner
+-fixed issue with timelimit not applying in some cases
+
+
+Version 1.0.10 (Build 2019102800)
+-set position of player in transcript editor to absolute
+-improved handling of mistranscriptions at start and end of turn
+
+Version 1.0.9 (Build 2019100500)
+-Fixed bug when viewing activity with only student permission
+
+Version 1.0.4 (Build 2019090100)
+-First release

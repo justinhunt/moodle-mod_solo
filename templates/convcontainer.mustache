@@ -1,0 +1,31 @@
+<div class="transcriptionwrapper">
+    <div class="poodllconvedit_control-panel">
+        <div class="preview-progress-bar">
+            <span class="time time-current">0:00</span>
+            <div class="progress-line">
+                <span class="green-progress"></span>
+                <span class="progress-marker"></span>
+            </div>
+            <span class="time time-total">0:00</span>
+        </div>
+        <div class="buttons-group">
+            <a id="poodllconvedit_addnew" class="poodllconvedit_addnew btn add" title="{{#str}}addnew, mod_solo{{/str}}"></a>
+            <a class="btn prev" id="btn_prev" title="{{#str}}stepback, mod_solo{{/str}}"></a>
+            <a class="btn play" id="btn_play" title="{{#str}}playpause, mod_solo{{/str}}"></a>
+            <a class="btn next" id="btn_next" title="{{#str}}stepahead, mod_solo{{/str}}"></a>
+        </div>
+    </div>
+    <div class="transcriptionpreviewplayer player-audio" id="root">
+            <div id="poodllconvedit_previewbox" class="poodllconvedit_previewbox top-box">
+                    <audio id="poodllconvedit_audio" class="poodllconvedit_audio" width="100%" style="display: none"></audio>
+                    <div id="poodllconvedit_previewline"  class="poodllconvedit_previewline text-box"></div>
+            </div>
+
+            <div class="bottom-box">
+                    <div class="transcriptionset_container">
+                            <div id='poodllconvedit_tiles' class='poodllconvedit_tiles transcriptionset_list'></div>
+                    </div>
+            </div>
+            {{> mod_solo/conveditbox}}
+   </div>
+</div>
