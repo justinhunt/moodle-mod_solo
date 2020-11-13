@@ -1,7 +1,7 @@
 define(['jquery', 'core/log', 'mod_solo/definitions'], function ($, log, def) {
     "use strict"; // jshint ;_;
 
-    log.debug('P-CHAT hidden player helper: initialising');
+    log.debug('solo hidden player helper: initialising');
 
     return {
 

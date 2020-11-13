@@ -15,36 +15,36 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'P-CHAT';
-$string['modulenameplural'] = 'P-CHATs';
-$string['modulename_help'] = 'P-CHAT is an activity designed to give students conversation practice and feedback. Students record their conversation, transcribe their own speech and compare their transcript with an auto generated one.';
+$string['modulename'] = 'solo';
+$string['modulenameplural'] = 'solos';
+$string['modulename_help'] = 'solo is an activity designed to give students conversation practice and feedback. Students record their conversation, transcribe their own speech and compare their transcript with an auto generated one.';
 $string['solofieldset'] = 'Custom example fieldset';
-$string['soloname'] = 'P-CHAT';
+$string['soloname'] = 'solo';
 $string['soloname_help'] = 'This is the content of the help tooltip associated with the soloname field. Markdown syntax is supported.';
 $string['solo'] = 'solo';
 $string['activitylink'] = 'Link to next activity';
 $string['activitylink_help'] = 'To provide a link after the attempt to another activity in the course, select the activity from the dropdown list.';
 $string['activitylinkname'] = 'Continue to next activity: {$a}';
-$string['pluginadministration'] = 'P-CHAT Administration';
-$string['pluginname'] = 'P-CHAT Activity';
+$string['pluginadministration'] = 'solo Administration';
+$string['pluginname'] = 'solo Activity';
 $string['someadminsetting'] = 'Some Admin Setting';
 $string['someadminsetting_details'] = 'More info about Some Admin Setting';
 $string['someinstancesetting'] = 'Some Instance Setting';
 $string['someinstancesetting_details'] = 'More infor about Some Instance Setting';
 $string['solosettings'] = 'solo settings';
-$string['solo:addinstance'] = 'Add a new P-CHAT';
-$string['solo:view'] = 'View P-CHAT';
-$string['solo:viewreports'] = 'View P-CHAT reports';
+$string['solo:addinstance'] = 'Add a new solo';
+$string['solo:view'] = 'View solo';
+$string['solo:viewreports'] = 'View solo reports';
 $string['solo:selecttopics'] = 'Select topics for use in activity.';
 $string['solo:managetopics'] = 'Manage topics (add/edit/delete)';
 $string['solo:attemptview'] = 'View attempts';
 $string['solo:attemptedit'] = 'Edit attempts';
-$string['solo:manageattempts'] = 'Can manage P-CHAT attempts';
-$string['solo:manage'] = 'Can manage P-CHAT instances';
-$string['solo:submit'] = 'Can submit P-CHAT attempts';
-$string['privacy:metadata'] = 'The Poodll P-CHAT plugin does store personal data.';
-$string['privacy:metadata:solo'] = 'The Poodll P-CHAT plugin does store personal data.';
-$string['privacy:metadata:attemptstable'] = 'The Poodll P-CHAT attempts table.';
+$string['solo:manageattempts'] = 'Can manage solo attempts';
+$string['solo:manage'] = 'Can manage solo instances';
+$string['solo:submit'] = 'Can submit solo attempts';
+$string['privacy:metadata'] = 'The Poodll solo plugin does store personal data.';
+$string['privacy:metadata:solo'] = 'The Poodll solo plugin does store personal data.';
+$string['privacy:metadata:attemptstable'] = 'The Poodll solo attempts table.';
 
 
 $string['id']='ID';
@@ -70,7 +70,7 @@ $string['maxattempts'] ='Max. Attempts';
 $string['unlimited'] ='unlimited';
 $string['defaultsettings'] ='Default Settings';
 $string['exceededattempts'] ='You have completed the maximum {$a} attempts.';
-$string['solotask'] ='P-CHAT Task';
+$string['solotask'] ='solo Task';
 $string['gotnosound'] = 'We could not hear you. Please check the permissions and settings for microphone and try again.';
 $string['done'] = 'Done';
 $string['processing'] = 'Processing';
@@ -104,7 +104,7 @@ $string['apiuser_details']='The Poodll account username that authorises Poodll o
 $string['apisecret']='Poodll API Secret ';
 $string['apisecret_details']='The Poodll API secret. See <a href= "https://support.poodll.com/support/solutions/articles/19000083076-cloud-poodll-api-secret">here</a> for more details';
 $string['enableai']='Enable AI';
-$string['enableai_details']='P-CHAT can evaluate results from a student attempt using AI. Check to enable.';
+$string['enableai_details']='solo can evaluate results from a student attempt using AI. Check to enable.';
 
 
 $string['useast1'] = 'US East';
@@ -181,11 +181,11 @@ $string['grader_human']='Human';
 $string['grader_ungraded']='Ungraded';
 
 $string['displaysubs'] = '{$a->subscriptionname} : expires {$a->expiredate}';
-$string['noapiuser'] = "No API user entered. P-CHAT will not work correctly.";
-$string['noapisecret'] = "No API secret entered. P-CHAT will not work correctly.";
+$string['noapiuser'] = "No API user entered. solo will not work correctly.";
+$string['noapisecret'] = "No API secret entered. solo will not work correctly.";
 $string['credentialsinvalid'] = "The API user and secret entered could not be used to get access. Please check them.";
-$string['appauthorised']= "Poodll P-CHAT is authorised for this site.";
-$string['appnotauthorised']= "Poodll P-CHAT is NOT authorised for this site.";
+$string['appauthorised']= "Poodll solo is authorised for this site.";
+$string['appnotauthorised']= "Poodll solo is NOT authorised for this site.";
 $string['refreshtoken']= "Refresh license information";
 $string['notokenincache']= "Refresh to see license information. Contact Poodll support if there is a problem.";
 //these errors are displayed on activity page
@@ -193,16 +193,16 @@ $string['nocredentials'] = 'API user and secret not entered. Please enter them o
 $string['novalidcredentials'] = 'API user and secret were rejected and could not gain access. Please check them on <a href="{$a}">the settings page.</a> You can get them from <a href="https://poodll.com/member">Poodll.com.</a>';
 $string['nosubscriptions'] = "There is no current subscription for this site/plugin.";
 
-$string['privacy:metadata:attemptid']='The unique identifier of a users P-CHAT attempt.';
-$string['privacy:metadata:soloid']='The unique identifier of a P-CHAT activity instance.';
-$string['privacy:metadata:userid']='The user id for the P-CHAT attempt';
+$string['privacy:metadata:attemptid']='The unique identifier of a users solo attempt.';
+$string['privacy:metadata:soloid']='The unique identifier of a solo activity instance.';
+$string['privacy:metadata:userid']='The user id for the solo attempt';
 $string['privacy:metadata:filename']='File urls of submitted recordings.';
 $string['privacy:metadata:timemodified']='The last time attempt was modified for the attempt';
-$string['privacy:metadata:attempttable']='Stores the scores and other user data associated with a P-CHAT attempt.';
+$string['privacy:metadata:attempttable']='Stores the scores and other user data associated with a solo attempt.';
 $string['privacy:metadata:transcriptpurpose']='The recording short transcripts.';
 $string['privacy:metadata:jsontranscriptpurpose']='The full transcripts of recordings.';
-$string['privacy:metadata:cloudpoodllcom:userid']='The P-CHAT plugin includes the moodle userid in the urls of recordings and transcripts';
-$string['privacy:metadata:cloudpoodllcom']='The P-CHAT plugin stores recordings in AWS S3 buckets via cloud.poodll.com.';
+$string['privacy:metadata:cloudpoodllcom:userid']='The solo plugin includes the moodle userid in the urls of recordings and transcripts';
+$string['privacy:metadata:cloudpoodllcom']='The solo plugin stores recordings in AWS S3 buckets via cloud.poodll.com.';
 
 //attempts
 $string['durationgradesettings'] = 'Grade Settings ';
@@ -255,7 +255,7 @@ $string['readtext'] = 'Text to read';
 $string['language_voice'] = 'Language and voice';
 $string['listen'] = 'Listen';
 $string['download'] = 'Download';
-$string['tagarea_solo_attempts'] = 'P-CHAT Attempts';
+$string['tagarea_solo_attempts'] = 'solo Attempts';
 $string['timemodified'] = 'Last Changed';
 
 $string['picturechoice'] = 'Picture Choice';
@@ -416,7 +416,7 @@ $string['gradesfeedback'] = 'Feedback:';
 $string['gradessubmit'] = 'Submit';
 $string['gradesubmissions'] = 'Grade submissions';
 
-$string['gradeitem:solo'] = 'P-CHAT';
+$string['gradeitem:solo'] = 'solo';
 $string['developer'] = 'Developer';
 $string['dorubricgrade'] = 'Do Rubric Grade';
 
