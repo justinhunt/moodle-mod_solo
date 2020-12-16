@@ -49,10 +49,6 @@ $attempt = optional_param('attempt', 0, PARAM_INT);
 $tabs = $row = $inactive = $activated = array();
 
 $row[] = new tabobject('attempts', "$CFG->wwwroot/mod/solo/view.php?id=$cm->id", get_string('attempts', constants::M_COMPONENT), get_string('manageattempts', constants::M_COMPONENT));
-if(has_capability('mod/solo:managetopics',$context) || has_capability('mod/solo:selecttopics',$context)) {
-    $row[] = new tabobject('topics', "$CFG->wwwroot/mod/solo/topic/topics.php?id=$cm->id",
-            get_string('topics', constants::M_COMPONENT), get_string('managetopics', constants::M_COMPONENT));
-}
 
 if(has_capability('mod/solo:grades',$context)) {
     $row[] = new tabobject('grades', "$CFG->wwwroot/mod/solo/grades.php?id=$cm->id",

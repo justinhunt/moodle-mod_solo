@@ -29,6 +29,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot.'/mod/solo/classes/attempt/userselectionsform.php');
 
 use \mod_solo\constants;
 use \mod_solo\utils;
@@ -83,9 +84,15 @@ class mod_solo_mod_form extends moodleform_mod {
         $mform->addElement('select','convlength',get_string('convlength', constants::M_COMPONENT), $options,array("size"=>"5"));
         $mform->setDefault('convlength',constants::DEF_CONVLENGTH);
 
-        //Allow student override time limit
-        $mform->addElement('advcheckbox', 'userconvlength', get_string('userconvlength', constants::M_COMPONENT), get_string('userconvlength_details', constants::M_COMPONENT));
-        $mform->setDefault('userconvlength',true);
+        // Speaking topics
+        $mform->addElement('textarea', 'speakingtopic', get_string('speakingtopic', constants::M_COMPONENT, '1'),  array('rows'=>'3', 'cols'=>'80'));
+        $mform->setType('speakingtopic', PARAM_TEXT);
+
+        //targetwords
+        $mform->addElement('static','targetwordsexplanation','',get_string('targetwordsexplanation',constants::M_COMPONENT));
+        $mform->addElement('textarea', 'targetwords', get_string('topictargetwords', constants::M_COMPONENT), 'wrap="virtual" rows="12" cols="50"');
+        $mform->setType('targetwords', PARAM_TEXT);
+        $mform->addRule('targetwords', get_string('required'), 'required', null, 'client');
 
         // Adding the revq 1 field
         $mform->addElement('textarea', 'revq1', get_string('revq', constants::M_COMPONENT, '1'),  array('rows'=>'3', 'cols'=>'80'));
@@ -144,7 +151,6 @@ class mod_solo_mod_form extends moodleform_mod {
         // add standard buttons, common to all modules
         $this->add_action_buttons();
     }
-
 
 	public function data_preprocessing(&$form_data) {
 		//$edfileoptions = solo_editor_with_files_options($this->context);
