@@ -58,20 +58,6 @@ $PAGE->set_context($modulecontext);
 $PAGE->set_pagelayout('course');
 $PAGE->requires->jquery();
 
-if($method !='rubric'){
-    $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
-    $data=array('data'=>[]);
-    $gradesrenderer =
-        $OUTPUT->render_from_template(constants::M_COMPONENT . '/grades', array('cmid' => $id, 'data' => $data));
-
-    echo $renderer->header($moduleinstance, $cm, "grades");
-
-    \core\notification::error("Rubric grading must be selected in the activity settings to grade submissions.");
-    echo $renderer->footer();
-
-    exit();
-}
-
 // Get grades list data by course module and course.
 $studentgrades = $grades->getGrades($course->id, $id, $moduleinstance->id);
 foreach($studentgrades as $studentgrade){
@@ -83,8 +69,21 @@ $data = new ArrayIterator($studentgrades);
 
 // Render template and display page.
 $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
+$templatedata = [];
+$templatedata['cmid'] = $id;
+$templatedata['data'] = $data;
+$templatedata['totalgradeables']=count($studentgrades);
+switch($method){
+    case 'rubric';
+        $templatedata['methodrubric'] = true;
+        break;
+    case 'simple';
+    default:
+        $templatedata['methodsimple'] = true;
+        break;
+}
 $gradesrenderer =
-    $OUTPUT->render_from_template(constants::M_COMPONENT . '/grades', array('cmid' => $id, 'data' => $data, 'totalgradeables'=>count($studentgrades)));
+    $OUTPUT->render_from_template(constants::M_COMPONENT . '/grades', $templatedata);
 
 echo $renderer->header($moduleinstance, $cm, "grades");
 echo $gradesrenderer;

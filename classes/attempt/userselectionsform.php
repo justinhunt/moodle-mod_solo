@@ -15,14 +15,18 @@ class userselectionsform extends baseform
     public $type = constants::STEP_USERSELECTIONS;
     public $typestring = constants::T_USERSELECTIONS;
     public function custom_definition() {
-        $this->topics = $this->_customdata['topics'];
         $this->moduleinstance = $this->_customdata['moduleinstance'];
-        $this->users = $this->_customdata['users'];
-//        $this->targetwords = $this->_customdata['targetwords'];
+        $this->cm = $this->_customdata['cm'];
+
 
         //we set the title and instructions
-        $this->add_title(get_string('attempt_partone', constants::M_COMPONENT));
-        $this->add_instructions(get_string('attempt_partone_instructions', constants::M_COMPONENT));
+        $this->add_title(get_string('attempt_partone_title', constants::M_COMPONENT));
+        //replace istructions with speaking topic as spec. by activity authoe
+        //$this->add_instructions(get_string('attempt_partone_instructions', constants::M_COMPONENT));
+        $this->add_activitycontent();
+
+        //add tips
+        $this->add_tips_field();
 
         //add words
         $this->add_targetwords_fields();

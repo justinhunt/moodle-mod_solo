@@ -248,7 +248,6 @@ $string['viewreport'] = 'view report';
 $string['addrecordconversation'] = 'Record Conversation';
 $string['adduserselections'] = 'User Selections';
 $string['addselftranscribe'] = 'Self Transcribe';
-$string['addselfreview'] = 'Self Review';
 
 
 $string['readtext'] = 'Text to read';
@@ -318,7 +317,7 @@ $string['transcriptscompare'] = 'Compare Transcriptions';
 $string['comparetranscripts'] = 'Compare Transcriptions';
 $string['saveitem'] = 'Save';
 $string['xminutes'] = '{$a}:00 minutes';
-$string['convlength'] = 'Conversation Length';
+$string['convlength'] = 'Target Conversation Length';
 $string['mywords'] = 'My Target Words';
 $string['words'] = 'Words';
 $string['speakingtopic'] = 'Speaking Topic';
@@ -330,6 +329,7 @@ $string['users'] = 'Partners';
 $string['topic'] = 'Topic';
 
 $string['attempt_partone'] = '1: Prepare';
+$string['attempt_partone_title'] = '1: Prepare to Speak';
 $string['attempt_parttwo'] = '2: Record';
 $string['attempt_partthree'] = '3: Transcribe';
 $string['attempt_partfour'] = '4: Review';
@@ -350,21 +350,21 @@ $string['selftranscript'] = 'Self Transcript';
 $string['autotranscript'] = 'Auto Transcript';
 $string['stats'] = 'Stats';
 $string['stats_words'] = 'Words';
-$string['stats_turns'] = 'Turns';
-$string['stats_avturn'] = 'Av. Turn Length';
-$string['stats_longestturn'] = 'Longest Turn Length';
-$string['stats_questions'] = 'Questions Asked';
+$string['stats_turns'] = 'Sentences';
+$string['stats_avturn'] = 'Av. Sentence Length';
+$string['stats_longestturn'] = 'Longest Sentence Length';
 $string['stats_targetwords'] = 'Target Words';
-$string['stats_aiaccuracy'] = 'AI Accuracy';
+$string['stats_aiaccuracy'] = 'Speaking clarity';
+$string['stats_uniquewords'] = 'Unique Words';
+$string['stats_longwords'] = 'Long Words';
 $string['transcripteditor']= 'Transcript Editor';
-$string['selfreview']= 'Self Review';
 $string['multiattempts'] = 'Allow Multiple Attempts';
 $string['multiattempts_details'] = 'If checked a student can choose to overwrite an existing attempt with a new one.';
 $string['attemptsheading']= 'Attempts';
 $string['partners']= 'Partners';
-$string['turns']= 'Turns';
-$string['ATL']= 'ATL';
-$string['LTL']= 'LTL';
+$string['turns']= 'Sentences';
+$string['ATL']= 'ASL';
+$string['LTL']= 'LSL';
 $string['TW']= 'TW';
 $string['idnumber']= 'ID-number';
 
@@ -382,11 +382,10 @@ $string['targetwordsexplanation']= 'Add target words each on a new line.';
 
 $string['confirmtopicdeletetitle']= 'Confirm Delete Topic:';
 
-$string['userconvlength']= 'Conv. length override';
-$string['userconvlength_details']= 'Allow users to override suggested conversation length';
-$string['revq']= 'Reflection question {$a}';
+$string['maxconvlength_details']= 'Audio recorder time limit';
+$string['maxconvlength']= 'Max. conv. length';
 $string['heard']= 'Heard';
-$string['QS']= 'Qs';
+$string['SPL']= 'Spell';
 $string['ACC']= 'Acc';
 
 $string['notopicsavailable'] = "No topics have been added by your teacher.";
@@ -396,13 +395,13 @@ $string['postattemptedit_details'] = 'Allow student to edit their submission aft
 $string['dopostattemptedit'] = 'Edit the last attempt';
 $string['audiofilename'] = 'Audio';
 
-#ID, Name, ai score, turns, av turn length
+#ID, Name, ai score, sentences, av sentence length
 $string['gradesid'] = 'ID';
 $string['gradesfirst'] = 'First';
 $string['gradeslast'] = 'Last';
 $string['gradesaiscore'] = 'AI Score';
-$string['gradesturns'] = 'Turns';
-$string['gradesavturnlength'] = 'AV Turn Length';
+$string['gradesturns'] = 'Sentences';
+$string['gradesavturnlength'] = 'AV Sentence Length';
 $string['gradesactions'] = 'Actions';
 $string['gradesgraded'] = 'Graded';
 $string['gradesgradedno'] = 'Ungraded';
@@ -452,12 +451,13 @@ $string['completionallsteps_help']='Complete when all steps completed';
 $string['yes']='Yes';
 $string['no']='No';
 
-$string['avturns']='Avg Turns';
-$string['avatl']='Avg ATL';
-$string['avltl']='Avg LTL';
+$string['avturns']='Avg Sentences';
+$string['avatl']='Avg ASL';
+$string['avltl']='Avg LSL';
 $string['avw']='Avg Words';
+$string['GRM']='GRM';
 $string['avtw']='Avg Target Words';
-$string['avq']='Avg Questions';
+$string['avspell']='Avg Spelling';
 $string['avacc']='Avg Acc';
 $string['tabular']='Table View';
 
@@ -467,4 +467,41 @@ $string['reportmenuinstructions']="View reports by selecting the report from the
 $string['totalgradeables']='Grading {$a} students';
 
 $string['myreports']='My Reports';
+$string['topicmedia'] ='Image, audio or video for topic';
+$string['topiciframe'] ='Embed iframe code for topic';
+$string['stats_autogrammarscore']='Grammar';
+$string['stats_autospellscore']='Spelling';
+$string['stats_clarity']='Clarity';
 
+$string['bigword'] = 'big word';
+$string['spellingmistake'] = 'spelling mistake';
+$string['grammarmistake'] = 'grammar mistake';
+$string['targetwordspoken'] = 'target word spoken';
+$string['sentence'] = 'sentence';
+$string['targetwordcount'] = 'Target word count';
+$string['targetwordcount_help'] = 'Sets the number of words the student should speak to get 100% when using auto grading.';
+$string['aggroup'] = 'Auto grading';
+$string['aggroup_help'] = 'Set the formula which is used to auto grade the students speaking';
+
+$string['recorderaudio'] = 'Audio Recorder';
+$string['recordervideo'] = 'Video Recorder';
+$string['recorderskin'] = 'Recorder Style';
+$string['recordertype'] = 'Recording type';
+
+$string['skinplain'] = 'Plain';
+$string['skinbmr'] = 'Burnt Rose';
+$string['skinfresh'] = 'Fresh (audio only)';
+$string['skin123'] = 'One Two Three';
+$string['skinonce'] = 'Once';
+$string['skinupload'] = 'Upload';
+
+$string['totalunique'] = 'Unique word total';
+$string['totalwords'] = 'All word total';
+$string['targetwordcount'] = 'Target word-count';
+
+$string['ag_overtargetwords'] = ' / Target word-count ) x ';
+$string['ag_pointsper'] =' points per ';
+$string['enabletranscription']='Manual transcription';
+$string['enabletranscription_details']='Require students to manually transcribe their own speaking';
+$string['enableautograde']='Enable autograding';
+$string['enableautograde_details']='Autograding will calculate a preliminary and intermerdiate grade for your students that you can later override. Settings for autograding are available below.';

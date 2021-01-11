@@ -80,7 +80,7 @@ if(count($attempts)==0){
     $attemptid = 0;
 }else{
     $latestattempt = utils::fetch_latest_attempt($moduleinstance);
-    if ($latestattempt && $latestattempt->completedsteps < constants::STEP_SELFREVIEW){
+    if ($latestattempt && $latestattempt->completedsteps < constants::STEP_SELFTRANSCRIBE){
         $start_or_continue=true;
         $nextstep=$latestattempt->completedsteps+1;
         $attemptid=$latestattempt->id;
@@ -107,7 +107,7 @@ if($start_or_continue) {
 
     $attempt = utils::fetch_latest_finishedattempt($moduleinstance);
     if($attempt) {
-        $stats=utils::fetch_stats($attempt);
+        $stats=utils::fetch_stats($attempt,$moduleinstance);
         $aidata = $DB->get_record(constants::M_AITABLE,array('attemptid'=>$attempt->id));
         echo $attempt_renderer->show_summary($moduleinstance,$attempt,$aidata, $stats);
     }
@@ -116,8 +116,8 @@ if($start_or_continue) {
     require_once($CFG->libdir.'/gradelib.php');
     //rubric grades
     $gradinginfo = grade_get_grades($moduleinstance->course, 'mod', 'solo', $moduleinstance->id, $USER->id);
-    if(!empty($gradinginfo ) && $attempt->grade !=null) {
-        $rubricresults= utils::display_rubricgrade($context,$moduleinstance,$attempt,$gradinginfo );
+    if($attempt && !empty($gradinginfo ) && $attempt->grade !=null) {
+        $rubricresults= utils::display_studentgrade($context,$moduleinstance,$attempt,$gradinginfo );
         $feedback=$attempt->feedback;
         echo $attempt_renderer->show_teachereval( $rubricresults,$feedback);
 

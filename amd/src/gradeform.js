@@ -16,11 +16,13 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
          *
          * @param {String} selector used to find triggers for the new grade modal.
          * @param {int} contextid
+         * @param {String} grademethod (simple or rubric)
          *
          * Each call to init gets it's own instance of this class.
          */
-        const GradeForm = function(selector, contextid) {
+        const GradeForm = function(selector, contextid, grademethod) {
             this.contextid = contextid;
+            this.grademethod = grademethod;
             this.preinit(selector);
         };
 
@@ -35,6 +37,12 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
          * @private
          */
         GradeForm.prototype.contextid = -1;
+
+        /**
+         * @let {int} contextid
+         * @private
+         */
+        GradeForm.prototype.grademethod = 'simple';
 
 
         /**
@@ -152,10 +160,15 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
             var params = {jsonformdata: JSON.stringify(formdata)};
             params.studentid = this.studentid;
             params.cmid = this.cmid;
+            var theform = 'simple_grade_form';
+            if(this.grademethod==='rubric'){
+                theform = 'rubric_grade_form';
+            }
+
 
             return Fragment.loadFragment(
                 'mod_solo',
-                'new_grade_form',
+                theform,
                 this.contextid,
                 params);
         };
@@ -184,7 +197,7 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
                 if(response && response.response[0]) {
                     log.debug(response.response[0]);
                     log.debug(element);
-                    $(element).find('.chatrubricscore').html(response.response[0].rubricscore);
+                    $(element).find('.chatgrade').html(response.response[0].grade);
                     $(element).find('.chatfeedback').html(response.response[0].feedback);
                 }
             }).fail(function(ex) {
@@ -242,10 +255,14 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
 
             // Convert all the form elements values to a serialised string.
             var formData = this.modal.getRoot().find('form').serialize();
+            var methodName ='mod_solo_submit_simple_grade_form';
+            if(this.grademethod==='rubric'){
+                methodName ='mod_solo_submit_rubric_grade_form';
+            }
 
             // Now we can continue...
             Ajax.call([{
-                methodname: 'mod_solo_submit_create_grade_form',
+                methodname: methodName,
                 args: {
                     contextid: this.contextid,
                     jsonformdata: JSON.stringify(formData),
@@ -279,10 +296,11 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
              * @method init
              * @param {string} selector The CSS selector used to find nodes that will trigger this module.
              * @param {int} contextid The contextid for the course.
+             * @param {String} grademethod simple or rubric
              * @return {Promise}
              */
-            init: function(selector, contextid) {
-                return new GradeForm(selector, contextid);
+            init: function(selector, contextid, grademethod) {
+                return new GradeForm(selector, contextid, grademethod);
             }
         };
     });

@@ -93,12 +93,15 @@ class external extends external_api {
                     'jsontranscript' => new external_value(PARAM_TEXT, 'JSON transcript', VALUE_OPTIONAL),
                     'selftranscript' => new external_value(PARAM_TEXT, 'Self Transcript', VALUE_OPTIONAL),
                     'words' => new external_value(PARAM_TEXT, 'Words', VALUE_OPTIONAL),
+                     'uniquewords' => new external_value(PARAM_TEXT, 'Unique Words', VALUE_OPTIONAL),
+                    'longwords' => new external_value(PARAM_TEXT, 'Long Words', VALUE_OPTIONAL),
                     'longestturn' => new external_value(PARAM_TEXT, 'Longest Turn', VALUE_OPTIONAL),
                     'targetwords' => new external_value(PARAM_TEXT, 'Target Words', VALUE_OPTIONAL),
                     'totaltargetwords' => new external_value(PARAM_TEXT, 'Total Target Words', VALUE_OPTIONAL),
-                    'questions' => new external_value(PARAM_TEXT, 'Questions', VALUE_OPTIONAL),
+                    'autogrammarscore' => new external_value(PARAM_TEXT, 'Grammar score', VALUE_OPTIONAL),
+                    'autospellscore' => new external_value(PARAM_TEXT, 'Spelling score', VALUE_OPTIONAL),
                     'aiaccuracy' => new external_value(PARAM_TEXT, 'AI Accuracy', VALUE_OPTIONAL),
-                    'rubricscore' => new external_value(PARAM_TEXT, 'Rubrics score', VALUE_OPTIONAL),
+                    'grade' => new external_value(PARAM_TEXT, 'Grade', VALUE_OPTIONAL),
                     'remark' => new external_value(PARAM_TEXT, 'Remark', VALUE_OPTIONAL),
                     'feedback' => new external_value(PARAM_TEXT, 'Feedback', VALUE_OPTIONAL),
                 ])
@@ -107,10 +110,10 @@ class external extends external_api {
     }
 
     /**
-     * Describes the parameters for submit_create_grade_form webservice.
+     * Describes the parameters for submit_rubric_grade_form webservice.
      * @return external_function_parameters
      */
-    public static function submit_create_grade_form_parameters() {
+    public static function submit_rubric_grade_form_parameters() {
         return new external_function_parameters(
             array(
                 'contextid' => new external_value(PARAM_INT, 'The context id for the course'),
@@ -122,7 +125,7 @@ class external extends external_api {
     }
 
     /**
-     * Submit the create grade form.
+     * Submit the rubric grade form.
      *
      * @param int $contextid The context id for the course.
      * @param string $jsonformdata The data from the form, encoded as a json array.
@@ -136,15 +139,15 @@ class external extends external_api {
      * @throws \required_capability_exception
      * @throws \restricted_context_exception
      */
-    public static function submit_create_grade_form($contextid, $jsonformdata, $studentid, $cmid) {
+    public static function submit_rubric_grade_form($contextid, $jsonformdata, $studentid, $cmid) {
         global $CFG, $DB;
 
-        require_once($CFG->dirroot . '/mod/solo/grade_form.php');
+        require_once($CFG->dirroot . '/mod/solo/rubric_grade_form.php');
         require_once($CFG->dirroot . '/grade/grading/lib.php');
         require_once($CFG->dirroot . '/mod/solo/lib.php');
 
         // We always must pass webservice params through validate_parameters.
-        $params = self::validate_parameters(self::submit_create_grade_form_parameters(),
+        $params = self::validate_parameters(self::submit_rubric_grade_form_parameters(),
             ['contextid' => $contextid, 'jsonformdata' => $jsonformdata]);
 
         $context = \context::instance_by_id($params['contextid'], MUST_EXIST);
@@ -173,7 +176,7 @@ class external extends external_api {
         $gradingdisabled=false;
         $gradinginstance = utils::get_grading_instance($attempt->attemptid, $gradingdisabled,$moduleinstance, $modulecontext);
 
-        $mform = new \grade_form(null, array('gradinginstance' => $gradinginstance), 'post', '', null, true, $data);
+        $mform = new \rubric_grade_form(null, array('gradinginstance' => $gradinginstance), 'post', '', null, true, $data);
 
         $validateddata = $mform->get_data();
 
@@ -191,6 +194,7 @@ class external extends external_api {
             $feedbackobject = new \stdClass();
             $feedbackobject->id = $attempt->attemptid;
             $feedbackobject->feedback = $validateddata->feedback;
+            $feedbackobject->manualgraded = 1;
             $feedbackobject->grade = $thegrade;
             $DB->update_record('solo_attempts', $feedbackobject);
             $grade = new \stdClass();
@@ -211,8 +215,107 @@ class external extends external_api {
      * @return external_value
      * @since Moodle 3.0
      */
-    public static function submit_create_grade_form_returns() {
+    public static function submit_rubric_grade_form_returns() {
         return new external_value(PARAM_INT, 'grade id');
     }
+
+
+    //---------------
+    /**
+     * Describes the parameters for submit_simple_grade_form webservice.
+     * @return external_function_parameters
+     */
+    public static function submit_simple_grade_form_parameters() {
+        return new external_function_parameters(
+                array(
+                        'contextid' => new external_value(PARAM_INT, 'The context id for the course'),
+                        'jsonformdata' => new external_value(PARAM_RAW, 'The data from the create grade form, encoded as a json array'),
+                        'studentid' => new external_value(PARAM_INT, 'The id for the student', false),
+                        'cmid' => new external_value(PARAM_INT, 'The course module id for the item', false),
+                )
+        );
+    }
+
+    /**
+     * Submit the rubric grade form.
+     *
+     * @param int $contextid The context id for the course.
+     * @param string $jsonformdata The data from the form, encoded as a json array.
+     * @param $studentid
+     * @param $cmid
+     * @return int new grade id.
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \invalid_parameter_exception
+     * @throws \moodle_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     */
+    public static function submit_simple_grade_form($contextid, $jsonformdata, $studentid, $cmid) {
+        global $CFG, $DB;
+
+        require_once($CFG->dirroot . '/mod/solo/simple_grade_form.php');
+        require_once($CFG->dirroot . '/grade/grading/lib.php');
+        require_once($CFG->dirroot . '/mod/solo/lib.php');
+
+        // We always must pass webservice params through validate_parameters.
+        $params = self::validate_parameters(self::submit_simple_grade_form_parameters(),
+                ['contextid' => $contextid, 'jsonformdata' => $jsonformdata]);
+
+        $context = \context::instance_by_id($params['contextid'], MUST_EXIST);
+
+        // We always must call validate_context in a webservice.
+        self::validate_context($context);
+        require_capability('moodle/course:managegroups', $context);
+
+        $serialiseddata = json_decode($params['jsonformdata']);
+
+        $data = array();
+        parse_str($serialiseddata, $data);
+
+        $sql = "select  pa.solo, pa.feedback, pa.id as attemptid
+        from {" . constants::M_ATTEMPTSTABLE . "} pa
+        inner join {" . constants::M_TABLE . "} pc on pa.solo = pc.id
+        inner join {course_modules} cm on cm.instance = pc.id and pc.course = cm.course and pa.userid = ?
+        where cm.id = ?";
+
+        $attempt = $DB->get_record_sql($sql, array($studentid, $cmid));
+        if (!$attempt) { return 0; }
+
+        $moduleinstance = $DB->get_record(constants::M_TABLE, array('id'=>$attempt->solo));
+
+        $mform = new \simple_grade_form(null, array(), 'post', '', null, true, $data);
+
+        $validateddata = $mform->get_data();
+
+        if ($validateddata) {
+            $feedbackobject = new \stdClass();
+            $feedbackobject->id = $attempt->attemptid;
+            $feedbackobject->feedback = $validateddata->feedback;
+            $feedbackobject->manualgraded = 1;
+            $feedbackobject->grade = $validateddata->grade;
+            $DB->update_record('solo_attempts', $feedbackobject);
+            $grade = new \stdClass();
+            $grade->userid = $studentid;
+            $grade->rawgrade = $validateddata->grade;
+            \solo_grade_item_update($moduleinstance,$grade);
+        } else {
+            // Generate a warning.
+            throw new \moodle_exception('erroreditgroup', 'group');
+        }
+
+        return 1;
+    }
+
+    /**
+     * Returns description of method result value.
+     *
+     * @return external_value
+     * @since Moodle 3.0
+     */
+    public static function submit_simple_grade_form_returns() {
+        return new external_value(PARAM_INT, 'grade id');
+    }
+
 
 }

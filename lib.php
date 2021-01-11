@@ -89,9 +89,9 @@ function solo_editor_with_files_options($context){
 function solo_editor_no_files_options($context){
 	return array('maxfiles' => 0, 'noclean' => true,'context'=>$context);
 }
-function solo_picturefile_options($context){
+function solo_filemanager_options($context){
     return array('maxfiles' => EDITOR_UNLIMITED_FILES,
-        'noclean' => true, 'context' => $context, 'subdirs' => true, 'accepted_types' => array('image'));
+        'noclean' => true, 'context' => $context, 'subdirs' => true, 'accepted_types' => array('image,audio,video'));
 }
 
 /**
@@ -158,7 +158,9 @@ function solo_reset_userdata($data) {
     return $status;
 }
 
-
+function solo_get_filemanagernames(){
+    return array('topicmedia');
+}
 
 function solo_get_editornames(){
 	return array('tips');
@@ -181,6 +183,8 @@ function solo_add_instance(stdClass $moduleinstance, mod_solo_mod_form $mform = 
 
     $moduleinstance->timecreated = time();
 	$moduleinstance = solo_process_editors($moduleinstance,$mform);
+    $moduleinstance = solo_process_filemanagers($moduleinstance,$mform);
+    $moduleinstance = solo_process_autogradeoptions($moduleinstance,$mform);
     $moduleinstance->id = $DB->insert_record(constants::M_TABLE, $moduleinstance);
     solo_grade_item_update($moduleinstance);
 	return $moduleinstance->id;
@@ -197,9 +201,56 @@ function solo_process_editors(stdClass $moduleinstance, mod_solo_mod_form $mform
 	foreach($editors as $editor){
 		$moduleinstance = file_postupdate_standard_editor( $moduleinstance, $editor, $edoptions,$context,constants::M_COMPONENT,$editor,$itemid);
 	}
-
 	return $moduleinstance;
 }
+
+function solo_process_autogradeoptions(stdClass $moduleinstance, $mform) {
+    $ag_options = new \stdClass();
+    $ag_options->graderatio = $moduleinstance->graderatio;
+    $ag_options->gradewordcount = $moduleinstance->gradewordcount;
+    $ag_options->graderatiostart = $moduleinstance->graderatiostart;
+
+    $ag_options->gradebonus1direction = $moduleinstance->gradebonus1direction;
+    $ag_options->gradebonuspoints1 = $moduleinstance->gradebonuspoints1;
+    $ag_options->gradebonus1 = $moduleinstance->gradebonus1;
+
+    $ag_options->gradebonus2direction = $moduleinstance->gradebonus2direction;
+    $ag_options->gradebonuspoints2 = $moduleinstance->gradebonuspoints2;
+    $ag_options->gradebonus2 = $moduleinstance->gradebonus2;
+
+
+    $ag_options->gradebonus3direction = $moduleinstance->gradebonus3direction;
+    $ag_options->gradebonuspoints3 = $moduleinstance->gradebonuspoints3;
+    $ag_options->gradebonus3 = $moduleinstance->gradebonus3;
+
+
+    $ag_options->gradebonus4direction = $moduleinstance->gradebonus4direction;
+    $ag_options->gradebonuspoints4 = $moduleinstance->gradebonuspoints4;
+    $ag_options->gradebonus4 = $moduleinstance->gradebonus4;
+    $moduleinstance->autogradeoptions=json_encode($ag_options);
+    return $moduleinstance;
+
+}
+
+function solo_process_filemanagers(stdClass $moduleinstance, mod_solo_mod_form $mform = null) {
+    global $DB;
+    $cmid = $moduleinstance->coursemodule;
+    $context = context_module::instance($cmid);
+    $itemid=0;
+    $filemanagers = solo_get_filemanagernames();
+    $filemanageroptions = solo_filemanager_options($context);
+    foreach($filemanagers as $fm){
+        if (property_exists($moduleinstance, $fm)) {
+            file_save_draft_area_files($moduleinstance->{$fm},
+                    $context->id, constants::M_COMPONENT,
+                    $fm, $itemid,
+                    $filemanageroptions);
+        }
+    }
+
+    return $moduleinstance;
+}
+
 
 /**
  * Updates an instance of the module in the database
@@ -223,6 +274,8 @@ function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform
     $moduleinstance->id = $moduleinstance->instance;
 
 	$moduleinstance = solo_process_editors($moduleinstance,$mform);
+    $moduleinstance = solo_process_filemanagers($moduleinstance,$mform);
+    $moduleinstance = solo_process_autogradeoptions($moduleinstance,$mform);
 	$success = $DB->update_record(constants::M_TABLE, $moduleinstance);
     solo_grade_item_update($moduleinstance);
 
@@ -377,7 +430,7 @@ function solo_get_extra_capabilities() {
  * @return array of [(string)filearea] => (string)description
  */
 function solo_get_file_areas($course, $cm, $context) {
-    return solo_get_editornames();
+    return array_merge(solo_get_editornames(),solo_get_filemanagernames());
 }
 
 /**
@@ -673,10 +726,10 @@ function mod_solo_grading_areas_list() {
  * @return string
  * @throws dml_exception
  */
-function mod_solo_output_fragment_new_grade_form($args) {
+function mod_solo_output_fragment_rubric_grade_form($args) {
     global $DB;
 
-    require_once('grade_form.php');
+    require_once('rubric_grade_form.php');
 
     $args = (object)$args;
     $o = '';
@@ -705,7 +758,7 @@ function mod_solo_output_fragment_new_grade_form($args) {
     $gradingdisabled = false;
     $gradinginstance = utils::get_grading_instance($attempt->attemptid, $gradingdisabled, $moduleinstance, $modulecontext);
 
-    $mform = new grade_form(null, array('gradinginstance' => $gradinginstance), 'post', '', null, true, $formdata);
+    $mform = new rubric_grade_form(null, array('gradinginstance' => $gradinginstance), 'post', '', null, true, $formdata);
 
     if ($mform->is_cancelled()) {
         // Window closes.
@@ -714,6 +767,66 @@ function mod_solo_output_fragment_new_grade_form($args) {
     $feedbackdata = [];
     $feedbackdata['feedback'] = $attempt->feedback;
     $mform->set_data($feedbackdata);
+
+    if (!empty($args->jsonformdata)) {
+        // If we were passed non-empty form data we want the mform to call validation functions and show errors.
+        $mform->is_validated();
+    }
+
+    // Display the form. Ob* functions used since this is called in an ajax call.
+    ob_start();
+    $mform->display();
+    $o .= ob_get_contents();
+    ob_end_clean();
+
+    return $o;
+}
+
+/**
+ * Displays the solo popup window for grading.
+ *
+ * @param array $args List of named arguments for the fragment loader.
+ * @return string
+ * @throws dml_exception
+ */
+function mod_solo_output_fragment_simple_grade_form($args) {
+    global $DB;
+
+    require_once('simple_grade_form.php');
+
+    $args = (object)$args;
+    $o = '';
+
+    // Get form data for the form if parsed to push to mform.
+    $formdata = [];
+    if (!empty($args->jsonformdata)) {
+        $serialiseddata = json_decode($args->jsonformdata);
+        parse_str($serialiseddata, $formdata);
+    }
+
+    $sql = "select  pa.solo, pa.feedback, pa.id as attemptid, pa.grade as grade
+        from {" . constants::M_ATTEMPTSTABLE . "} pa
+        inner join {" . constants::M_TABLE . "} pc on pa.solo = pc.id
+        inner join {course_modules} cm on cm.instance = pc.id and pc.course = cm.course and pa.userid = ?
+        where cm.id = ?";
+
+    $modulecontext = context_module::instance($args->cmid);
+    $attempt = $DB->get_record_sql($sql, array($args->studentid, $args->cmid));
+
+    if (!$attempt) {
+        return "";
+    }
+
+    $mform = new simple_grade_form(null, array(), 'post', '', null, true, $formdata);
+
+    if ($mform->is_cancelled()) {
+        // Window closes.
+    }
+
+    $formdata = [];
+    $formdata['grade'] = $attempt->grade;
+    $formdata['feedback'] = $attempt->feedback;
+    $mform->set_data($formdata);
 
     if (!empty($args->jsonformdata)) {
         // If we were passed non-empty form data we want the mform to call validation functions and show errors.
@@ -747,7 +860,7 @@ function solo_get_completion_state($course,$cm,$userid,$type) {
     // If completion option is enabled, evaluate it and return true/false
     if($moduleinstance->completionallsteps) {
         $latestattempt = utils::fetch_latest_attempt($moduleinstance);
-        if ($latestattempt && $latestattempt->completedsteps == constants::STEP_SELFREVIEW){
+        if ($latestattempt && $latestattempt->completedsteps == constants::STEP_SELFTRANSCRIBE){
             return true;
         }else{
             return false;

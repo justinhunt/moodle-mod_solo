@@ -77,7 +77,7 @@ class solo_s3_adhoc extends \core\task\adhoc_task {
                  //process transcripts (find matches etc)
                  $selftranscript='';
                  if(!empty($attempt_with_transcripts->selftranscript)){
-                     $selftranscript=utils::extract_simple_transcript($attempt_with_transcripts->selftranscript);
+                     $selftranscript=$attempt_with_transcripts->selftranscript;
                  }
                  if(!empty($selftranscript)) {
                      try {

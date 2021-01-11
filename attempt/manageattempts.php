@@ -103,85 +103,36 @@ $token= utils::fetch_token($siteconfig->apiuser,$siteconfig->apisecret);
 
 
 //get the mform for our attempt
-switch($type){
+switch($type) {
 
     case constants::STEP_AUDIORECORDING:
         $targetwords = $attempt ? $attempt->topictargetwords : '';
-        if($attempt && !empty(trim($attempt->mywords))){
+        if ($attempt && !empty(trim($attempt->mywords))) {
             $targetwords .= $attempt ? PHP_EOL . trim($attempt->mywords) : '';
         }
         $mform = new \mod_solo\attempt\audiorecordingform(null,
-                array('moduleinstance'=>$moduleinstance,
-                        'token'=>$token,
-                        'targetwords'=>$targetwords,
-                        'attempt'=>$attempt));
+                array('moduleinstance' => $moduleinstance,
+                        'token' => $token,
+                        'targetwords' => $targetwords,
+                        'attempt' => $attempt));
         break;
 
     case constants::STEP_USERSELECTIONS:
-        if(!$topichelper) {
-            $topichelper = new \mod_solo\topichelper($cm);
-        }
-        $topics = $topichelper->fetch_selected_topics();
-        $users = get_enrolled_users($context);
         $targetwords = $attempt ? $attempt->topictargetwords : '';
         $mform = new \mod_solo\attempt\userselectionsform(null,
-                array('moduleinstance'=>$moduleinstance,
-                        'topics'=>$topics,
-                        'users'=>$users,
-                        'targetwords'=>$targetwords));
+                array('moduleinstance' => $moduleinstance,
+                        'cm'=>$cm));
         break;
 
     case constants::STEP_SELFTRANSCRIBE:
         $audiofilename = '';
-        if($attempt){
-            $audiofilename =$attempt->filename;
+        if ($attempt) {
+            $audiofilename = $attempt->filename;
         }
         $mform = new \mod_solo\attempt\selftranscribeform(null,
-                array('moduleinstance'=>$moduleinstance,'filename'=>$audiofilename));
+                array('moduleinstance' => $moduleinstance, 'filename' => $audiofilename));
         break;
 
-    case constants::STEP_SELFREVIEW:
-        $selftranscript='';
-        $autotranscript='';
-        $stats = false;
-        $attempt_with_transcripts = false;
-        $aidata = false;
-        if($attempt){
-            if(!empty($attempt->selftranscript)){
-                $selftranscript=utils::extract_simple_transcript($attempt->selftranscript);
-            }
-            //try to pull transcripts if we have none. Why wait for cron?
-            $hastranscripts = !empty($attempt->jsontranscript);
-            if(!$hastranscripts){
-                $attempt_with_transcripts = utils::retrieve_transcripts_from_s3($attempt);
-                $hastranscripts = $attempt_with_transcripts !==false;
-                if($hastranscripts && !empty($selftranscript)){
-                    $autotranscript=$attempt_with_transcripts->transcript;
-                    $aitranscript = new \mod_solo\aitranscript($attempt_with_transcripts->id,
-                            $context->id, $selftranscript,
-                            $attempt_with_transcripts->transcript,
-                            $attempt_with_transcripts->jsontranscript);
-                    $aidata = $aitranscript->aidata;
-                }
-            }else{
-                $autotranscript=$attempt->transcript;
-            }
-            if(!$hastranscripts ){$autotranscript=get_string('transcriptnotready',constants::M_COMPONENT);}
-
-            $stats =utils::fetch_stats($attempt);
-            if(!$aidata){
-                $aidata= $DB->get_record(constants::M_AITABLE,array('attemptid'=>$attempt->id));
-            }
-        }
-
-        $mform = new \mod_solo\attempt\selfreviewform(null,
-                array('moduleinstance'=>$moduleinstance,
-                        'selftranscript'=>$selftranscript,
-                        'autotranscript'=>$autotranscript,
-                        'attempt'=>$attempt_with_transcripts ? $attempt_with_transcripts : $attempt,
-                        'aidata'=>$aidata,
-                        'stats'=>$stats));
-        break;
 
     case constants::STEP_NONE:
     default:
@@ -211,9 +162,6 @@ if ($data = $mform->get_data()) {
     }else{
         $newattempt->timecreated=time();
         $newattempt->createdby=$USER->id;
-        //this comes in as an array, but we save as string. That will be processed shortly
-        //for now lets avoid the error trying to save an array in text field.
-        $newattempt->interlocutors =utils::interlocutors_array_to_string($data->interlocutors);
 
         //try to insert it
         if (!$newattempt->id = $DB->insert_record(constants::M_ATTEMPTSTABLE,$newattempt)){
@@ -226,19 +174,7 @@ if ($data = $mform->get_data()) {
     //type specific settings
     switch($type) {
         case constants::STEP_USERSELECTIONS:
-            if($data->topicid) {
-                if(!$topichelper) {
-                    $topichelper = new \mod_solo\topichelper($cm);
-                }
-                $topic = $topichelper->fetch_topic($data->topicid);
-                if($topic) {
-                    $newattempt->topicname = $topic->name;
-                    $newattempt->topicfonticon = $topic->fonticon;
-                    $newattempt->topictargetwords = $topic->targetwords;
-                }
-            }
-            //the incoming data is an array, and we need to csv it.
-            $newattempt->interlocutors =utils::interlocutors_array_to_string($data->interlocutors);
+            $newattempt->topictargetwords = $moduleinstance->targetwords;
             break;
 
         case constants::STEP_AUDIORECORDING:
@@ -277,17 +213,22 @@ if ($data = $mform->get_data()) {
             if($st_altered) {
                 $stats = utils::calculate_stats($newattempt->selftranscript, $attempt);
                 if ($stats) {
+                    $stats = utils::fetch_sentence_stats($newattempt->selftranscript,$stats);
+                    $stats = utils::fetch_word_stats($newattempt->selftranscript,$moduleinstance->ttslanguage,$stats);
+                    $stats = utils::calc_grammarspell_stats($newattempt->selftranscript,$moduleinstance->region,
+                            $moduleinstance->ttslanguage,$stats);
+
                     utils::save_stats($stats, $attempt);
                 }
                 //recalculate AI data, if the selftranscription is altered AND we have a jsontranscript
                 if($attempt->jsontranscript){
-                    $passage = utils::extract_simple_transcript($newattempt->selftranscript);
+                    $passage = $newattempt->selftranscript;
                     $aitranscript = new \mod_solo\aitranscript($attempt->id, $context->id,$passage,$attempt->transcript, $attempt->jsontranscript);
                     $aitranscript->recalculate($passage,$attempt->transcript, $attempt->jsontranscript);
                 }
             }
             break;
-        case constants::STEP_SELFREVIEW:
+
         default:
     }
 
@@ -303,7 +244,7 @@ if ($data = $mform->get_data()) {
     }
 
     //if we just finished the last step then lets indicate this activity complete in the Moodle sense.
-    if($type==constants::STEP_SELFREVIEW){
+    if($type==constants::STEP_SELFTRANSCRIBE){
         //notify completion handler that we are finished
         $completion=new completion_info($course);
         if($completion->is_enabled($cm) && $moduleinstance->completionallsteps) {
@@ -333,7 +274,6 @@ switch($type){
     case constants::STEP_AUDIORECORDING:
     case constants::STEP_USERSELECTIONS:
     case constants::STEP_SELFTRANSCRIBE:
-    case constants::STEP_SELFREVIEW:
     default:
 }
 $mform->set_data($data);

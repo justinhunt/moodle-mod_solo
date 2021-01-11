@@ -76,58 +76,6 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2019092400, 'solo');
     }
 
-    if ($oldversion < 2019092701) {
-        $table = new xmldb_table('solo');
-        $fields = array();
-        $fields[] = new xmldb_field('userconvlength', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
-        $fields[] = new xmldb_field('revq1', XMLDB_TYPE_TEXT, null, null, null, null);
-        $fields[] = new xmldb_field('revq2', XMLDB_TYPE_TEXT, null, null, null, null);
-        $fields[] = new xmldb_field('revq3', XMLDB_TYPE_TEXT, null, null, null, null);
-        $fields[] = new xmldb_field('tips', XMLDB_TYPE_TEXT, null, null, null, null);
-        $fields[] = new xmldb_field('tipsformat', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
-
-        // Add field introformat
-        foreach ($fields as $field) {
-            if (!$dbman->field_exists($table, $field)) {
-                $dbman->add_field($table, $field);
-            }
-        }
-
-        upgrade_mod_savepoint(true, 2019092701, 'solo');
-    }
-
-    if ($oldversion < 2019092702) {
-        $table = new xmldb_table('solo');
-        $fields = array();
-        $fields[] = new xmldb_field('convlength', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
-
-        // Add field introformat
-        foreach ($fields as $field) {
-            if (!$dbman->field_exists($table, $field)) {
-                $dbman->add_field($table, $field);
-            }
-        }
-
-        upgrade_mod_savepoint(true, 2019092702, 'solo');
-    }
-    if ($oldversion < 2019092704) {
-        $table = new xmldb_table('solo_attempts');
-        $field = new xmldb_field('reviewquestions', XMLDB_TYPE_TEXT, null, null, null, null);
-        if ($dbman->field_exists($table, $field)) {
-                $dbman->rename_field($table,$field,'revq1');
-        }
-        $field = new xmldb_field('reviewlonganswers', XMLDB_TYPE_TEXT, null, null, null, null);
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->rename_field($table,$field,'revq2');
-        }
-        $field = new xmldb_field('reviewimprove', XMLDB_TYPE_TEXT, null, null, null, null);
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->rename_field($table,$field,'revq3');
-        }
-
-
-        upgrade_mod_savepoint(true, 2019092704, 'solo');
-    }
 
     if ($oldversion < 2019100500) {
         $table = new xmldb_table('solo_attemptstats');

@@ -25,6 +25,9 @@ class audiorecordingform extends baseform
         $this->add_title(get_string('attempt_parttwo', constants::M_COMPONENT));
         $this->add_instructions(get_string('attempt_parttwo_instructions', constants::M_COMPONENT));
 
+        //add speaking topic
+        $this->add_speakingtopic();
+
         //add tips
         $this->add_tips_field();
 

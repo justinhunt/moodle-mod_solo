@@ -554,17 +554,17 @@ class aitranscriptutils{
     }
 
     public static function prepare_turn_markers($attempt){
-        $turns = $attempt->selftranscript;
-        if(empty($turns) || !self::is_json($turns)){
+        $st = $attempt->selftranscript;
+        if(empty($st)){
             return [];
-        }else{
-            $turns = json_decode($turns);
         }
+        $sentences = utils::fetch_selftranscript_parts($attempt);
+
 
         $markers = array();
         $nextstart=1;
-        foreach ($turns as $turn){
-            $wordcount = self::count_turn_words($turn->part);
+        foreach ($sentences as $sentence){
+            $wordcount = self::count_turn_words($sentence);
             if($wordcount) {
                 $turnend = $nextstart + $wordcount - 1;
                 $markers[] = ['start' => $nextstart, 'end' => $turnend];

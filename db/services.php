@@ -24,13 +24,22 @@ $functions = array(
             'type'        => 'write',
             'ajax' => true,
         ),
-        'mod_solo_submit_create_grade_form' => array(
+        'mod_solo_submit_rubric_grade_form' => array(
             'classname' => '\mod_solo\external',
-            'methodname' => 'submit_create_grade_form',
-            'description' => 'Creates a grade from submitted form data',
+            'methodname' => 'submit_rubric_grade_form',
+            'description' => 'Creates a grade from submitted rubric grade form',
             'ajax' => true,
             'type' => 'write',
             'capabilities' => 'mod/solo:managegrades',
         ),
+        'mod_solo_submit_simple_grade_form' => array(
+                'classname' => '\mod_solo\external',
+                'methodname' => 'submit_simple_grade_form',
+                'description' => 'Creates a grade from submitted simple form',
+                'ajax' => true,
+                'type' => 'write',
+                'capabilities' => 'mod/solo:managegrades',
+        ),
+
 
 );

@@ -121,7 +121,7 @@ class aitranscript
         $data->courseid=$courseid;
         $data->moduleid=$attemptdata->{constants::M_AI_PARENTFIELDNAME};
         $data->sessiontime=isset($attemptdata->sessiontime) ?
-                $attemptdata->sessiontime:$attemptdata->{constants::M_AI_TIMELIMITFIELDNAME};
+                $attemptdata->sessiontime:$attemptdata->{constants::M_TARGET_CONVLENGTHFIELDNAME};
         $data->passage=$passage;
         $data->transcript=$transcript;
         $data->sessionerrors='';

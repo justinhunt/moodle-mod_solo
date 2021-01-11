@@ -25,7 +25,8 @@ class gradesubmissions {
     public function getGradeData(int $courseid, int $studentid, int $moduleinstance): array {
         global $DB;
 
-        $sql = "select pa.id, u.lastname, u.firstname, p.name, p.transcriber, pat.words, pat.avturn, pat.longestturn, pat.targetwords, pat.totaltargetwords, pat.questions, pat.aiaccuracy
+        $sql = "select pa.id, u.lastname, u.firstname, p.name, p.transcriber, pat.words, pat.avturn, pat.longestturn, pat.targetwords, 
+              pat.totaltargetwords, pat.autogrammarscore,pat.autospellscore, pat.aiaccuracy, pat.uniquewords, pat.longwords
                 from {" . constants::M_TABLE . "} as p
                     inner join  (select max(mpa.id) as id, mpa.userid, mpa.solo
                             from {" . constants::M_ATTEMPTSTABLE . "} mpa
@@ -71,12 +72,15 @@ class gradesubmissions {
                     pat.turns,
                     pat.words,
                     pat.avturn,
+                    pat.uniquewords,
+                    pat.longwords,
                     pat.longestturn,
                     pat.targetwords,
                     pat.totaltargetwords,
-                    pat.questions,
+                    pat.autogrammarscore,
+                    pat.autospellscore,
                     pat.aiaccuracy,
-                    ca.grade as rubricscore,
+                    ca.grade as grade,
                     pa.feedback
             from {" . constants::M_TABLE . "} as p
                 inner join (select max(mpa.id) as id, mpa.userid, mpa.solo, mpa.feedback
@@ -101,13 +105,38 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getStudentsToGrade(int $attempt): array {
+    public function getStudentsToGrade($attempt,$moduleinstance) {
         global $DB;
 
-        $sql = "select concat(userid, ',', interlocutors) as students
+        //fetch all finished attempts
+        $sql = "select userid as students
                     from {solo_attempts} pa
-                    where pa.id = ?";
+                    where pa.solo = ? AND pa.completedsteps = " . constants::STEP_SELFTRANSCRIBE .
+                    " order by pa.id ASC";
 
-        return $DB->get_records_sql($sql, [$attempt]);
-    }
-}
+        $results = $DB->get_records_sql($sql, [$attempt, $moduleinstance->id]);
+        //if we do not have results just return
+        if(!$results){return $results;}
+
+        //if we have results, try to get 3 of them including the selected one
+        if(count($results<4)){
+            return $results;
+        }else{
+            $ret = [];
+            $returning=0;
+            foreach($results as $result){
+                if($result->id == $attempt){
+                    $returning=1;
+                    $ret[] = $result;
+                }elseif($returning>0 && $returning<3){
+                    $ret[] = $result;
+                }
+                if($returning==3){
+                    return $ret;
+                }
+            }
+            //if we looped and did not get 3 lets just return what we got
+            return $ret;
+        }//end of if
+    }//end of function
+}//end of class

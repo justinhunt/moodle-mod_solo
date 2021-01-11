@@ -43,7 +43,7 @@ class utils{
             $userid = $USER->id;
         }
         $attempts = $DB->get_records(constants::M_ATTEMPTSTABLE,
-                array('solo'=>$solo->id,'userid'=>$userid,'completedsteps'=>constants::STEP_SELFREVIEW),'timemodified DESC','*',0,1);
+                array('solo'=>$solo->id,'userid'=>$userid,'completedsteps'=>constants::STEP_SELFTRANSCRIBE),'timemodified DESC','*',0,1);
         if($attempts){
             $attempt=  array_shift($attempts);
         }else {
@@ -160,20 +160,6 @@ class utils{
     }
 
 
-
-    public static function extract_simple_transcript($selftranscript){
-        if(!$selftranscript || empty($selftranscript)){
-            return '';
-        }else{
-            $transcriptarray=json_decode($selftranscript);
-            $ret = '';
-            foreach($transcriptarray as $turn){
-                $ret .= $turn->part . ' ' ;
-            }
-            return $ret;
-        }
-    }
-
     //check if curl return from transcript url is valid
     public static function is_valid_transcript($transcript){
         if(strpos($transcript,"<Error><Code>AccessDenied</Code>")>0){
@@ -254,37 +240,141 @@ class utils{
         return $ret;
     }
 
-    //fetch interlocutor names
-    public static function fetch_interlocutor_names($attempt) {
-        global $DB;
-        //user names
-        $userids= explode(',',$attempt->interlocutors);
-        $usernames = array();
-        foreach($userids as $userid){
-            $user = $DB->get_record('user',array('id'=>$userid));
-            if($user){
-                $usernames[] =fullname($user);
-            }
-
+    //fetch lang server url, services incl. 'transcribe' , 'lm', 'lt', 'spellcheck'
+    public static function fetch_lang_server_url($region,$service='transcribe'){
+        switch($region) {
+            case 'tokyo':
+                $ret = 'https://tokyo.ls.poodll.com/';
+                break;
+            case 'sydney':
+                $ret = 'https://sydney.ls.poodll.com/';
+                break;
+            case 'dublin':
+                $ret = 'https://dublin.ls.poodll.com/';
+                break;
+            case 'useast1':
+            default:
+                $ret = 'https://useast.ls.poodll.com/';
         }
-        return $usernames;
+        return $ret . $service;
     }
+
     //fetch self transcript parts
     public static function fetch_selftranscript_parts($attempt) {
-        global $DB;
-        //user names
         $sc= $attempt->selftranscript;
         if(!empty($sc)){
-            $sc_object = json_decode($sc);
-            $parts= array();
-            foreach($sc_object as $turn){
-                $parts[]=$turn->part;
-            }
-            return $parts;
+            $items = preg_split('/[!?.]+(?![0-9])/', $sc);
+            $items = array_filter($items);
+            return $items;
         }else{
             return array();
         }
     }
+
+    public static function fetch_sentence_stats($text,$stats){
+
+        //count sentences
+        $items = preg_split('/[!?.]+(?![0-9])/', $text);
+        $items = array_filter($items);
+        $sentencecount = count($items);
+
+        //longest sentence length
+        //average sentence length
+        $longestsentence=1;
+        $averagesentence=1;
+        $totallengths = 0;
+        foreach($items as $sentence){
+            $length = str_word_count($sentence,0);
+            if($length>$longestsentence){
+                $longestsentence =$length;
+            }
+            $totallengths+=$length;
+        }
+        if($totallengths>0 && $sentencecount>0){
+            $averagesentence=round($totallengths / $sentencecount);
+        }
+
+        //return values
+        $stats->avturn = $averagesentence;
+        $stats->longestturn = $longestsentence;
+        return $stats;
+    }
+
+    public static function fetch_word_stats($text,$language, $stats) {
+
+        //prepare data
+        $is_english=strpos($language,'en')===0;
+        $items = \core_text::strtolower($text);
+        $items = str_word_count($items, 1);
+        $items = array_unique($items);
+
+        //unique words
+        $uniquewords = count($items);
+
+        //long words
+        $longwords = 0;
+        foreach ($items as $item) {
+            if($is_english) {
+                if (self::count_syllables($item) > 2) {
+                    $longwords++;
+                }
+            }else{
+                if (\core_text::strlen($item) > 5) {
+                    $longwords++;
+                }
+            }
+        }
+
+        //return results
+        $stats->uniquewords= $uniquewords;
+        $stats->longwords= $longwords;
+        return $stats;
+    }
+
+
+    /**
+     * count_syllables
+     *
+     * based on: https://github.com/e-rasvet/sassessment/blob/master/lib.php
+     */
+    public static function count_syllables($word) {
+        // https://github.com/vanderlee/phpSyllable (multilang)
+        // https://github.com/DaveChild/Text-Statistics (English only)
+        // https://pear.php.net/manual/en/package.text.text-statistics.intro.php
+        // https://pear.php.net/package/Text_Statistics/docs/latest/__filesource/fsource_Text_Statistics__Text_Statistics-1.0.1TextWord.php.html
+        $str = strtoupper($word);
+        $oldlen = strlen($str);
+        if ($oldlen < 2) {
+            $count = 1;
+        } else {
+            $count = 0;
+
+            // detect syllables for double-vowels
+            $vowels = array('AA','AE','AI','AO','AU',
+                    'EA','EE','EI','EO','EU',
+                    'IA','IE','II','IO','IU',
+                    'OA','OE','OI','OO','OU',
+                    'UA','UE','UI','UO','UU');
+            $str = str_replace($vowels, '', $str);
+            $newlen = strlen($str);
+            $count += (($oldlen - $newlen) / 2);
+
+            // detect syllables for single-vowels
+            $vowels = array('A','E','I','O','U');
+            $str = str_replace($vowels, '', $str);
+            $oldlen = $newlen;
+            $newlen = strlen($str);
+            $count += ($oldlen - $newlen);
+
+            // adjust count for special last char
+            switch (substr($str, -1)) {
+                case 'E': $count--; break;
+                case 'Y': $count++; break;
+            };
+        }
+        return $count;
+    }
+
 
     public static function fetch_targetwords($attempt){
         $targetwords = explode(PHP_EOL,$attempt->topictargetwords);
@@ -293,16 +383,104 @@ class utils{
         return $alltargetwords;
     }
 
+    //we leave it up to the grading logic how/if it adds the ai grades to gradebook
+    public static function calc_grammarspell_stats($selftranscript, $region, $language, $stats){
+
+        //if we have no words for whatever reason the calc will not work
+        if(!$stats->words || $stats->words<1) {
+            //update spelling and grammar stats in DB
+            $stats->autospell="";
+            $stats->autogrammar="";
+            $stats->autospellscore=100;
+            $stats->autogrammarscore=100;
+            $stats->autospellerrors = 0;
+            $stats->autogrammarerrors=0;
+            return $stats;
+
+        }
+
+        //fetch grammar stats
+        $lt_url = utils::fetch_lang_server_url($region,'lt');
+        $postdata =array('text'=> $selftranscript,'language'=>$language);
+        $autogrammar = utils::curl_fetch($lt_url,$postdata,'post');
+        //default grammar score
+        $autogrammarscore =100;
+
+        //fetch spell stats
+        $spellcheck_url = utils::fetch_lang_server_url($region,'spellcheck');
+        $spelltranscript = diff::cleanText($selftranscript);
+        $postdata =array('passage'=>$spelltranscript,'lang'=>$language);
+        $autospell = utils::curl_fetch($spellcheck_url,$postdata,'post');
+        //default spell score
+        $autospellscore =100;
+
+
+
+        //calc grammar score
+        if(self::is_json($autogrammar)) {
+            //work out grammar
+            $grammarobj = json_decode($autogrammar);
+            $incorrect = count($grammarobj->matches);
+            $stats->autogrammarerrors= $incorrect;
+            $raw = $stats->words - ($incorrect * 3);
+            if ($raw < 1) {
+                $autogrammarscore = 0;
+            } else {
+                $autogrammarscore = round($raw / $stats->words, 2) * 100;
+            }
+
+            $stats->autogrammar = $autogrammar;
+            $stats->autogrammarscore = $autogrammarscore;
+        }
+
+        //calculate spell score
+        if(self::is_json($autospell)) {
+
+            //work out spelling
+            $spellobj = json_decode($autospell);
+            $correct = 0;
+            if($spellobj->status) {
+                $spellarray = $spellobj->data->results;
+                foreach ($spellarray as $val) {
+                    if ($val) {
+                        $correct++;
+                    }else{
+                        $stats->autospellerrors++;
+                    }
+                }
+
+                if ($correct > 0) {
+                    $autospellscore = round($correct / $stats->words, 2) * 100;
+                } else {
+                    $autospellscore = 0;
+                }
+            }
+        }
+
+        //update spelling and grammar stats in data object and return
+        $stats->autospell=$autospell;
+        $stats->autogrammar=$autogrammar;
+        $stats->autospellscore=$autospellscore;
+        $stats->autogrammarscore=$autogrammarscore;
+        return $stats;
+    }
 
     //fetch stats, one way or the other
-    public static function fetch_stats($attempt) {
+    public static function fetch_stats($attempt,$moduleinstance=false) {
         global $DB;
         //if we have stats in the database, lets use those
         $stats = $DB->get_record(constants::M_STATSTABLE,array('attemptid'=>$attempt->id));
+        if(!$moduleinstance) {
+            $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $attempt->solo));
+        }
         if(!$stats){
             $stats = self::calculate_stats($attempt->selftranscript, $attempt);
             //if that worked, and why wouldn't it, lets save them too.
             if ($stats) {
+                $stats = utils::fetch_sentence_stats($attempt->selftranscript,$stats);
+                $stats = utils::fetch_word_stats($attempt->selftranscript,$moduleinstance->ttslanguage,$stats);
+                $stats = self::calc_grammarspell_stats($attempt->selftranscript,
+                        $moduleinstance->region,$moduleinstance->ttslanguage,$stats);
                 self::save_stats($stats, $attempt);
             }
         }
@@ -344,27 +522,25 @@ class utils{
         $stats->longestturn=0;
         $stats->targetwords=0;
         $stats->totaltargetwords=0;
-        $stats->questions=0;
         $stats->aiaccuracy=-1;
 
         if(!$usetranscript || empty($usetranscript)){
             return false;
         }
 
-        $transcriptarray=json_decode($usetranscript);
+        $items = preg_split('/[!?.]+(?![0-9])/', $usetranscript);
+        $transcriptarray = array_filter($items);
         $totalturnlengths=0;
         $jsontranscript = '';
 
-        foreach($transcriptarray as $turn){
-            $part = $turn->part;
-            $wordcount = str_word_count($part,0);
+        foreach($transcriptarray as $sentence){
+            $wordcount = str_word_count($sentence,0);
             if($wordcount===0){continue;}
-            $jsontranscript .= $turn->part . ' ' ;
+            $jsontranscript .= $sentence . ' ' ;
             $stats->turns++;
             $stats->words+= $wordcount;
             $totalturnlengths += $wordcount;
             if($stats->longestturn < $wordcount){$stats->longestturn = $wordcount;}
-            $stats->questions+= substr_count($turn->part,"?");
         }
         if(!$stats->turns){
             return false;
@@ -372,7 +548,7 @@ class utils{
         $stats->avturn= round($totalturnlengths  / $stats->turns);
         $topictargetwords = utils::fetch_targetwords($attempt);
         $mywords = explode(PHP_EOL,$attempt->mywords);
-        $targetwords = array_unique(array_merge($topictargetwords, $mywords));
+        $targetwords = array_filter(array_unique(array_merge($topictargetwords, $mywords)));
         $stats->totaltargetwords = count($targetwords);
 
 
@@ -388,6 +564,7 @@ class utils{
         }
         return $stats;
     }
+
 
     //clear AI data
     // we might do this if the user re-records
@@ -518,14 +695,18 @@ class utils{
     //this is our helper
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
     //this is our helper
-    public static function curl_fetch($url,$postdata=false)
+    public static function curl_fetch($url,$postdata=false, $method='get')
     {
         global $CFG;
 
         require_once($CFG->libdir.'/filelib.php');
         $curl = new \curl();
 
-        $result = $curl->get($url, $postdata);
+        if($method=='post') {
+            $result = $curl->post($url, $postdata);
+        }else{
+            $result = $curl->get($url, $postdata);
+        }
         return $result;
     }
 
@@ -706,6 +887,25 @@ class utils{
         return '';
     }
 
+
+    public static function fetch_media_urls($contextid, $filearea,$itemid){
+        //get question audio div (not so easy)
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($contextid,  constants::M_COMPONENT,$filearea,$itemid);
+        $urls=[];
+        foreach ($files as $file) {
+            $filename = $file->get_filename();
+            if($filename=='.'){continue;}
+            $filepath = '/';
+            $mediaurl = \moodle_url::make_pluginfile_url($contextid, constants::M_COMPONENT,
+                    $filearea, $itemid,
+                    $filepath, $filename);
+            $urls[]= $mediaurl->__toString();
+
+        }
+        return $urls;
+    }
+
     public static function fetch_duration_from_transcript($jsontranscript){
         $transcript = json_decode($jsontranscript);
         $titems=$transcript->results->items;
@@ -723,7 +923,37 @@ class utils{
         }
     }
 
+    public static function get_skin_options(){
+        $rec_options = array( constants::SKIN_PLAIN => get_string("skinplain", constants::M_COMPONENT),
+                constants::SKIN_BMR => get_string("skinbmr", constants::M_COMPONENT),
+                constants::SKIN_123 => get_string("skin123", constants::M_COMPONENT),
+                constants::SKIN_FRESH => get_string("skinfresh", constants::M_COMPONENT),
+                constants::SKIN_ONCE => get_string("skinonce", constants::M_COMPONENT),
+                constants::SKIN_UPLOAD => get_string("skinupload", constants::M_COMPONENT));
+        return $rec_options;
+    }
 
+    public static function get_recorders_options(){
+        $rec_options = array( constants::REC_AUDIO => get_string("recorderaudio", constants::M_COMPONENT),
+               // constants::REC_VIDEO  => get_string("recordervideo", constants::M_COMPONENT)
+        );
+        return $rec_options;
+    }
+
+    public static function get_grade_element_options(){
+        $options = [];
+        for($x=0;$x<101;$x++){
+            $options[$x]=$x;
+        }
+        return $options;
+    }
+
+    public static function get_word_count_options(){
+        return array(
+                "totalunique" => get_string("totalunique",constants::M_COMPONENT),
+                "totalwords" => get_string("totalwords",constants::M_COMPONENT),
+        );
+    }
 
   public static function get_region_options(){
       return array(
@@ -832,6 +1062,26 @@ class utils{
     }
 
     //grading stuff
+    public static function fetch_bonus_grade_options(){
+        return array(
+                '--'=>'--',
+                'bigword'=>get_string('bigword',constants::M_COMPONENT),
+                'spellingmistake'=>get_string('spellingmistake',constants::M_COMPONENT),
+                'grammarmistake'=>get_string('grammarmistake',constants::M_COMPONENT),
+                'targetwordspoken'=>get_string('targetwordspoken',constants::M_COMPONENT),
+                'sentence'=>get_string('sentence',constants::M_COMPONENT)
+        );
+    }
+    public static function fetch_ratio_grade_options(){
+        return array(
+                '--'=>'--',
+                'spelling'=>get_string('stats_autospellscore',constants::M_COMPONENT),
+                'grammar'=>get_string('stats_autogrammarscore',constants::M_COMPONENT),
+                'clarity'=>get_string('stats_aiaccuracy',constants::M_COMPONENT),
+        );
+    }
+
+
 
 
     /**
@@ -842,7 +1092,7 @@ class utils{
      * @param \stdClass| $attempt
      * @return string rubric results
      */
-    public static function display_rubricgrade($modulecontext, $moduleinstance, $attempt, $gradinginfo){
+    public static function display_studentgrade($modulecontext, $moduleinstance, $attempt, $gradinginfo){
         global  $PAGE;
 
         $gradingitem = null;
@@ -859,16 +1109,22 @@ class utils{
         $gradingdisabled = false;
         $gradeid =$attempt->id;
 
-        if ($controller = $gradingmanager->get_active_controller()) {
-            $menu = make_grades_menu($moduleinstance->grade);
-            $controller->set_grade_range($menu, $moduleinstance->grade > 0);
-            $gradefordisplay = $controller->render_grade($PAGE,
-                    $gradeid,
-                    $gradingitem,
-                    $gradebookgrade->str_long_grade,
-                    $gradingdisabled);
-        } else {
-            $gradefordisplay = 'no grade available';
+        $method = $gradingmanager->get_active_method();
+        if($method=='rubric') {
+            if ($controller = $gradingmanager->get_active_controller()) {
+                $menu = make_grades_menu($moduleinstance->grade);
+                $controller->set_grade_range($menu, $moduleinstance->grade > 0);
+                $gradefordisplay = $controller->render_grade($PAGE,
+                        $gradeid,
+                        $gradingitem,
+                        $gradebookgrade->str_long_grade,
+                        $gradingdisabled);
+            } else {
+                $gradefordisplay = 'no grade available';
+            }
+        }else{
+            //TO DO add a label and source to the grade number here
+            $gradefordisplay = $attempt->grade;
         }
         return $gradefordisplay;
     }
@@ -922,6 +1178,18 @@ class utils{
             $gradinginstance->get_controller()->set_grade_range($grademenu, $allowgradedecimals);
         }
         return $gradinginstance;
+    }
+
+    //see if this is truly json or some error
+    public static function is_json($string) {
+        if (!$string) {
+            return false;
+        }
+        if (empty($string)) {
+            return false;
+        }
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
     }
 
 }

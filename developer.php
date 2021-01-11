@@ -84,7 +84,7 @@ switch ($action){
 	//not a true report, separate implementation in renderer
 	case 'generatedata':
 	    $attempts = $DB->get_records(constants::M_ATTEMPTSTABLE,
-            array('solo'=>  $moduleinstance->id,'completedsteps'=>constants::STEP_SELFREVIEW),'timemodified DESC','*',0,1);
+            array('solo'=>  $moduleinstance->id,'completedsteps'=>constants::STEP_SELFTRANSCRIBE),'timemodified DESC','*',0,1);
 	    if(!$attempts){
             echo $header;
 	        echo '<h3>No attempt to generate data from</h3>';
@@ -111,37 +111,10 @@ switch ($action){
 	        //reindex array
 	        $users = array_values($users);
 	        $created = 0;
-	        for($x=0;$x<count($users);$x+=3){
+	        for($x=0;$x<count($users);$x++){
                 $user1 = $users[$x];
-                $partners=0;
-                if($x+1 < count($users)) {
-                    $user2 = $users[$x + 1];
-                    $partners=1;
-                }
-                if($x+2 < count($users)) {
-                    $user3 = $users[$x + 2];
-                    $partners=2;
-                }
-
-                switch($partners){
-                    case 0:
-                        //dont do it
-                        break;
-                    case 1:
-                       $ret = copyAttempt($latestattempt,$stats,$ai,$user1,$user2->id);
-                       if($ret){$created++;}
-                       $ret = copyAttempt($latestattempt,$stats,$ai,$user2,$user1->id);
-                        if($ret){$created++;}
-                        break;
-                    case 2:
-                       $ret =  copyAttempt($latestattempt,$stats,$ai,$user1,$user2->id . ',' . $user3->id);
-                        if($ret){$created++;}
-                       $ret =  copyAttempt($latestattempt,$stats,$ai,$user2,$user1->id . ',' . $user3->id);
-                        if($ret){$created++;}
-                        $ret = copyAttempt($latestattempt,$stats,$ai,$user3,$user1->id . ',' . $user2->id);
-                        if($ret){$created++;}
-
-                }//end of switch
+	            $ret = copyAttempt($latestattempt,$stats,$ai,$user1,$user2->id);
+                $user1 = $users[$x];
             }//end of user loop
             redirect(new \moodle_url(constants::M_URL . '/developer.php',
                 array('id' => $cm->id)),'Created Attempts:' . $created);
@@ -162,7 +135,7 @@ foreach($items as $item){
 }
 echo $renderer->footer();
 
-function copyAttempt($attempt, $stats, $ai, $user, $partners){
+function copyAttempt($attempt, $stats, $ai, $user){
     global $DB;
     $newatt = $attempt;
     $newstats = $stats;
@@ -172,7 +145,6 @@ function copyAttempt($attempt, $stats, $ai, $user, $partners){
     $newatt->id = null;
     $newatt->timemodified = time();
     $newatt->userid=$user->id;
-    $newatt->interlocutors=$partners;
     $attemptid = $DB->insert_record(constants::M_ATTEMPTSTABLE,$newatt);
     if(!$attemptid){return false;}
 

@@ -32,7 +32,7 @@ const M_USE_DATATABLES=true;
 
 //AI Transcript constants
 const M_AI_PARENTFIELDNAME = 'solo';
-const M_AI_TIMELIMITFIELDNAME = 'convlength';
+const M_TARGET_CONVLENGTHFIELDNAME = 'convlength';
 const ACCMETHOD_NONE =0;
 const ACCMETHOD_AUTO =1;
 const ACCMETHOD_FIXED =2;
@@ -49,17 +49,26 @@ const M_GRADELATEST= 2; // we only use this one currently
 const M_GRADEAVERAGE= 3;
 const M_GRADENONE= 4;
 
+//recorder options
+const REC_AUDIO = 'audio';
+const REC_VIDEO = 'video';
+
+const SKIN_PLAIN = 'standard';
+const SKIN_BMR = 'bmr';
+const SKIN_123 = 'onetwothree';
+const SKIN_FRESH = 'fresh';
+const SKIN_ONCE = 'once';
+const SKIN_UPLOAD = 'upload';
+
 //Constants for Attempt Steps
 const STEP_NONE=0;
 const STEP_USERSELECTIONS= 1;
 const STEP_AUDIORECORDING= 2;
 const STEP_SELFTRANSCRIBE= 3;
-const STEP_SELFREVIEW= 4;
 
 const T_AUDIORECORDING= "audiorecording";
 const T_USERSELECTIONS= "userselections";
 const T_SELFTRANSCRIBE= "selftranscribe";
-const T_SELFREVIEW= "selfreview";
 
 const TEXTDESCR = 'itemtext';
 const TEXTDESCR_FILEAREA = 'itemarea';
@@ -95,7 +104,7 @@ const TRANSCRIBER_AMAZONSTREAMING =4;
 const M_TOPICLEVEL_CUSTOM =1;
 const M_TOPICLEVEL_COURSE =0;
 
-const DEF_CONVLENGTH=7;
+const DEF_CONVLENGTH=2;
 const M_C_TRANSCRIPTDISPLAY='mod_solo_transcriptdisplay';
 const M_C_TRANSCRIPTEDITOR='mod_solo_transcripteditor';
 const M_C_CONVERSATION='mod_solo_conversation';

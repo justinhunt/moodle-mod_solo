@@ -25,7 +25,8 @@
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once(dirname(dirname(dirname(__FILE__))) . '/grade/grading/lib.php');
-require_once('grade_form.php');
+require_once('rubric_grade_form.php');
+require_once('simple_grade_form.php');
 
 use mod_solo\constants;
 use mod_solo\grades\gradesubmissions as gradesubmissions;
@@ -43,6 +44,7 @@ $gradesubmissions = new gradesubmissions();
 // Course module ID.
 $id = required_param('id', PARAM_INT);
 $attempt = required_param('attempt', PARAM_INT);
+$grademethod = required_param('grademethod', PARAM_TEXT);
 // Course and course module data.
 $cm = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, IGNORE_MISSING);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', IGNORE_MISSING);
@@ -54,18 +56,15 @@ require_capability('mod/solo:grades', $modulecontext);
 $PAGE->set_url(constants::M_URL . '/gradesubmissions.php');
 require_login($course, true, $cm);
 
-
 // Get student grade data.
-$studentAndInterlocutors = $gradesubmissions->getStudentsToGrade($attempt);
-$studentAndInterlocutors = explode(',', current($studentAndInterlocutors)->students);
-$studentsToGrade = new ArrayIterator(array_pad($studentAndInterlocutors, MAX_GRADE_DISPLAY, ''));
+$studentlist = $gradesubmissions->getStudentsToGrade($attempt,$moduleinstance);
+$students = explode(',', current($studentlist)->students);
+$studentsToGrade = new ArrayIterator(array_pad($students, MAX_GRADE_DISPLAY, ''));
 $submissionCandidates = get_enrolled_users($modulecontext, 'mod/solo:submit');
 // Ensure selected items.
-array_walk($submissionCandidates, function ($candidate) use ($studentAndInterlocutors) {
-    if (in_array($candidate->id, $studentAndInterlocutors, true)) {
+array_walk($submissionCandidates, function ($candidate) use ($students) {
+    if (in_array($candidate->id, $students, true)) {
         $candidate->selected = "selected='selected'";
-
-
     }
 });
 $submissionCandidates = new ArrayIterator($submissionCandidates);
@@ -86,6 +85,7 @@ $gradesrenderer =
         array(
             'studentsToGrade' => $studentsToGrade,
             'submissionCandidates' => $submissionCandidates,
+            'grademethod' => $grademethod,
             'contextid' => $context->id,
             'cmid' => $cm->id
         )

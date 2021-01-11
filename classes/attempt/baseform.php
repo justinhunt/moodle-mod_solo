@@ -182,48 +182,23 @@ abstract class baseform extends \moodleform {
         $PAGE->requires->js_call_amd("mod_solo/toggleselected", 'init', array($opts));
     }
 
-    protected final function add_conversationlength_field() {
-        if($this->moduleinstance->userconvlength) {
-            $options = utils::get_conversationlength_options();
-            //the size attribute doesn't work because the attributes are applied on the div container holding the select
-            $this->_form->addElement('select', 'convlength', get_string('convlength', constants::M_COMPONENT), $options,
-                    array("size" => "5"));
-            $this->_form->setDefault('convlength', $this->moduleinstance->convlength);
-        }else{
-            $this->_form->addElement('hidden','convlength', $this->moduleinstance->convlength);
-            $this->_form->setType('convlength',PARAM_INT);
-            $this->_form->addElement('static','convlengthtitle',get_string('convlength', constants::M_COMPONENT),get_string('xminutes', constants::M_COMPONENT, $this->moduleinstance->convlength));
-        }
-    }
-
     protected final function add_targetwords_fields() {
         global $PAGE;
         $this->_form->addElement('hidden','targetwords');
         $this->_form->setType('targetwords',PARAM_TEXT);
 
         //display target words in a "tag" like way.
-        $this->add_targetwords_display($this->targetwords);
-
+        $this->add_targetwords_display($this->moduleinstance->targetwords);
+        //we no longer use "my words"
+        $this->_form->addElement('hidden','mywords', '');
+        $this->_form->setType('mywords',PARAM_TEXT);
+/*
         $this->_form->addElement('textarea','mywords',get_string('mywords', constants::M_COMPONENT),'wrap="virtual" rows="5" cols="50"');
         $this->_form->setType('mywords',PARAM_TEXT);
         $this->_form->addElement('static','targetwordsexplanation','',
                 get_string('targetwordsexplanation',constants::M_COMPONENT));
+*/
 
-        $opts =Array();
-        $opts['topics']=$this->topics;
-        $opts['triggercontrol']='topicid';
-        $opts['updatecontrol']='targetwords';
-        //convert opts to json
-        $jsonstring = json_encode($opts);
-
-        $controlid = constants::M_RECORDERID . '_opts_targetwords';
-        $this->_form->addElement('hidden','targetwordsopts',$jsonstring,
-                array('id' => 'amdopts_' . $controlid, 'type' => 'hidden'));
-        $this->_form->setType('targetwordsopts',PARAM_RAW);
-
-
-        $basicopts=array('controlid'=>$controlid);
-        $PAGE->requires->js_call_amd("mod_solo/updatetargetwords", 'init', array($basicopts));
     }
 
     //add a field to display target words in a "tag" like way.
@@ -253,27 +228,79 @@ abstract class baseform extends \moodleform {
         $this->_form->addElement('static','title','', $instructionsdiv);
     }
 
+    protected final function add_activitycontent() {
+        global $OUTPUT;
+
+        //contentitem
+        $contentitem = [];
+        $context = \context_module::instance($this->cm->id);
+
+        //Prepare speaking topic text
+        $contentitem['itemtext']=$this->moduleinstance->speakingtopic;
+
+        //Prepare IFrame
+        if(!empty(trim($this->moduleinstance->topiciframe))){
+            $contentitem['itemiframe']=$this->moduleinstance->topiciframe;
+        }
+
+        //media items
+        $itemid=0;
+        $filearea='topicmedia';
+        $mediaurls = utils::fetch_media_urls($context->id,$filearea,$itemid);
+        if($mediaurls && count($mediaurls)>0){
+            foreach($mediaurls as $mediaurl){
+                $file_parts = pathinfo(strtolower($mediaurl));
+                switch($file_parts['extension'])
+                {
+                    case "jpg":
+                    case "png":
+                    case "gif":
+                    case "bmp":
+                    case "svg":
+                        $contentitem['itemimage'] = $mediaurl;
+                        break;
+
+                    case "mp4":
+                    case "mov":
+                    case "webm":
+                    case "ogv":
+                        $contentitem['itemvideo'] = $mediaurl;
+                        break;
+
+                    case "mp3":
+                    case "ogg":
+                    case "wav":
+                        $contentitem['itemaudio'] = $mediaurl;
+                        break;
+
+                    default:
+                        //do nothing
+                }//end of extension switch
+            }//end of for each
+        }//end of if mediaurls
+        $staticcontent = $OUTPUT->render_from_template(constants::M_COMPONENT . '/activitycontent', $contentitem);
+        $contentdiv = \html_writer::div($staticcontent,'mod_solo_forminstructions');
+        $this->_form->addElement('static','title',get_string('speakingtopic', constants::M_COMPONENT), $contentdiv);
+    }
+
     protected final function add_tips_field() {
         $this->_form->addElement('static','tips',get_string('tips', constants::M_COMPONENT),
                 $this->moduleinstance->tips ,array("class"=>'mod_solo_bordered mod_solo_readonly'));
 
     }
 
+    protected final function add_speakingtopic() {
+
+        $this->_form->addElement('static','speakingtopic',get_string('speakingtopic', constants::M_COMPONENT),
+                $this->moduleinstance->speakingtopic ,array("class"=>'mod_solo_speakingtopic_readonly'));
+    }
+
     protected final function set_targetwords() {
         global $OUTPUT;
 
-        $topicidelement =& $this->_form->getElement('topicid');
         $targetwordselement =& $this->_form->getElement('targetwords');
-        if ($topicidelement && $targetwordselement) {
-            $topicid = $this->_form->getElementValue('topicid');
-            if($topicid){
-                foreach($this->topics as $topic){
-                    if($topicid==$topic->id){
-                        $targetwordselement->setValue($topic->targetwords);
-                        break;
-                    }
-                }
-            }
+        if ($targetwordselement) {
+            $targetwordselement->setValue($this->moduleinstance->targetwords);
         }
     }
 
@@ -322,46 +349,20 @@ abstract class baseform extends \moodleform {
         $this->_form->addRule($name, null, 'required', null, 'client');
     }
 
+
     protected final function add_transcript_editor($name, $label){
         global $OUTPUT, $PAGE, $CFG;
 
-        $this->_form->addElement('hidden', $name);
-        $this->_form->setType($name,PARAM_TEXT);
-
         $tdata=array();
-        $tdata['imgpath']=$CFG->wwwroot . constants::M_URL .'/pix/e/';
+        $tdata['audiofilename']=$this->filename;
 
-        $conversationeditor = $OUTPUT->render_from_template( constants::M_COMPONENT . '/convcontainer', $tdata);
-        $staticcontent = \html_writer::div($conversationeditor,constants::M_C_CONVERSATION,array());
+        $transcripteditoraudio = $OUTPUT->render_from_template( constants::M_COMPONENT . '/transcripteditor', $tdata);
+        $staticcontent = \html_writer::div($transcripteditoraudio,constants::M_C_CONVERSATION,array());
         $this->_form->addElement('static', 'control_' . $name, $label, $staticcontent);
 
-        $opts =Array();
-        $opts['updatecontrol']=$name;
-        $opts['mediaurl']=$this->filename;
-        $PAGE->requires->js_call_amd("mod_solo/transcripteditor", 'init', array($opts));
-
-    }
-
-    protected final function add_selfreviewsummary($name, $label) {
-        global $OUTPUT;
-        $tdata=array();
-        $tdata['audiofilename']=$this->attempt->filename;
-        $tdata['markedpassage']=$this->fetch_markedpassage();
-        $tdata['stats']=$this->fetch_stats();
-        $selfreviewsummary = $OUTPUT->render_from_template( constants::M_COMPONENT . '/selfreviewsummary', $tdata);
-        $this->_form->addElement('static', 'combo_' . $name, $label, $selfreviewsummary);
-
-    }
-
-    protected final function add_comparison_field($name, $label) {
-        global $OUTPUT, $PAGE, $CFG;
-        $tdata=array();
-        $tdata['selftranscript']=$this->selftranscript;
-        $tdata['autotranscript']=$this->autotranscript;
-        $transcriptscompare = $OUTPUT->render_from_template( constants::M_COMPONENT . '/selfreviewtranscripts', $tdata);
-
-        $this->_form->addElement('static', 'combo_' . $name, $label, $transcriptscompare);
-
+        $opts= array('rows'=>'5', 'cols'=>'80');
+        $this->_form->addElement('textarea', $name, '', $opts);
+        $this->_form->setType($name, PARAM_TEXT);
     }
 
     protected final function fetch_markedpassage() {
@@ -389,25 +390,6 @@ abstract class baseform extends \moodleform {
 
     }
 
-    protected final function add_selfreview_fields() {
-        $opts= array('rows'=>'5', 'cols'=>'80');
-        $names = array('revq1','revq2','revq3');
-
-        //header
-        // $this->_form->addElement('static', 'revqs', get_string('selfreview', constants::M_COMPONENT),'');
-
-        //add visible review question fields, when there is a question
-        foreach($names as $name){
-            if(!empty($this->moduleinstance->{$name})) {
-                $this->_form->addElement('static', $name . 'text' ,'',$this->moduleinstance->{$name});
-                $this->_form->addElement('textarea', $name, '', $opts);
-                $this->_form->setType($name, PARAM_TEXT);
-            }else{
-                $this->_form->addElement('hidden', $name);
-                $this->_form->setType($name,PARAM_TEXT);
-            }
-        }
-    }
 
     protected final function add_recordingurl_field() {
         $this->_form->addElement('hidden', constants::RECORDINGURLFIELD,null,array('id'=>constants::M_WIDGETID . constants::RECORDINGURLFIELD));
@@ -465,15 +447,14 @@ abstract class baseform extends \moodleform {
 
         $width=450;
         $height=380;
-        $timelimit=0;
-        if($this->attempt) {
-            $timelimit = $this->attempt->convlength * 60;
-        }
+        $timelimit = $this->moduleinstance->maxconvlength * 60;
 
         $error_message = utils::fetch_token_error($this->token);
+        $recorderskin = $this->moduleinstance->recorderskin;
+        $recordertype = $this->moduleinstance->recordertype;
         if(empty($error_message)) {
             $recorder_html =
-                    $this->fetch_recorder($this->moduleinstance, 'audio', 'fresh', $timelimit, $this->token, $width, $height);
+                    $this->fetch_recorder($this->moduleinstance, $recordertype, $recorderskin, $timelimit, $this->token, $width, $height);
         }else{
             $recorder_html = $error_message;
         }

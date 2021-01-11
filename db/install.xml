@@ -15,17 +15,22 @@
         <FIELD NAME="gradeoptions" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="gradeoptions"/>
         <FIELD NAME="mingrade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="completion condition mingrade"/>
         <FIELD NAME="ttslanguage" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="none" SEQUENCE="false" COMMENT="the audio filename"/>
+        <FIELD NAME="recorderskin" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="once" SEQUENCE="false" COMMENT="the recorder skin"/>
+        <FIELD NAME="recordertype" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="audio" SEQUENCE="false" COMMENT="the recorder type"/>
         <FIELD NAME="enableai" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to use AI on this activity"/>
         <FIELD NAME="expiredays" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="100" SEQUENCE="false"/>
         <FIELD NAME="region" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="useast1" SEQUENCE="false" COMMENT="aws region"/>
         <FIELD NAME="transcriber" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="transcriber"/>
-        <FIELD NAME="multiattempts" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="multiattempts" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" DEFAULT="0" />
         <FIELD NAME="postattemptedit" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Allow user to edit post-attempt submission"/>
-        <FIELD NAME="convlength" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="userconvlength" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="revq1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="revq2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="revq3" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="convlength" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="maxconvlength" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" DEFAULT="0" />
+        <FIELD NAME="speakingtopic" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="topiciframe" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="targetwords" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="enabletranscription" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Whether to require student to transcribe manually"/>
+        <FIELD NAME="enableautograde" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to use autograde on this activity"/>
+        <FIELD NAME="autogradeoptions" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The autograde options"/>
         <FIELD NAME="tips" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Tips for the solo activity"/>
         <FIELD NAME="tipsformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the tips field (MOODLE, HTML, MARKDOWN...)"/>
         <FIELD NAME="completionallsteps" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Mark activity complete when all steps done"/>
@@ -45,25 +50,19 @@
         <FIELD NAME="solo" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="userid of entry"/>
         <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="manualgraded" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="visible" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
-        <FIELD NAME="interlocutors" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="filename" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="transcript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The plain text AI transcript."/>
         <FIELD NAME="jsontranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The full AI transcript (JSON)"/>
         <FIELD NAME="vtttranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The AI subtitles"/>
         <FIELD NAME="selftranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The users self transcript"/>
-        <FIELD NAME="topicid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="topicname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="topicfonticon" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="topictargetwords" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="mywords" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="convlength" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="customtext1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="customtext1format" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="revq1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="revq2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="revq3" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="completedsteps" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="feedback" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="customint1" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
@@ -86,12 +85,19 @@
         <FIELD NAME="attemptid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="attemptid of stats"/>
         <FIELD NAME="turns" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="words" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="uniquewords" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="longwords" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="avturn" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="longestturn" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="targetwords" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="total unique spoken words that matched target words" />
         <FIELD NAME="totaltargetwords" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="total target words in the selected topic and custom" />
-        <FIELD NAME="questions" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="aiaccuracy" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="autogrammarscore" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="autogrammarerrors" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="autogrammar" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="autospellscore" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="autospellerrors" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="autospell" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="modifiedby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>

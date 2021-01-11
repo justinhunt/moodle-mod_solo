@@ -40,7 +40,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <span class="badge badge-light">AV Turn: <span class="chatavturns">0</span></span>
+                    <span class="badge badge-light">AV Sentence: <span class="chatavturns">0</span></span>
                 </div>
                 <div class="col">
                     <span class="badge badge-light">Longest: <span class="chatlongesturns">0</span></span>
@@ -56,7 +56,7 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <span class="badge badge-light">Questions: <span class="chatquestions">0</span></span>
+                    <span class="badge badge-light">Spelling: <span class="chatautospellscore">0</span></span>
                 </div>
                 <div class="col">
                     <span class="badge badge-light">AI Score: <span class="chataiscore">0</span></span>
@@ -71,7 +71,7 @@
         </div>
         <div class="card-footer">
             <small class="text-muted">
-                <strong>Rubric Score</strong>: <span class="chatrubricscore">0</span><br >
+                <strong>Grade</strong>: <span class="chatgrade">0</span><br >
                 <strong>Feedback</strong>: <span class="chatfeedback"></span>
             </small>
         </div>
@@ -91,7 +91,7 @@
                 selectBox.value = originalStudentId;
                 $("[data-original-student]").first().find('select').attr('disabled','disabled');
                 loadStudentData(element);
-                GradeForm.init($(element).find('input[type=button]'), {{contextid}});
+                GradeForm.init($(element).find('input[type=button]'), {{contextid}}, '{{grademethod}}');
             }
         );
 
@@ -109,8 +109,8 @@
             $(element).find('.chatlongestturns').html(0);
             $(element).find('.chattargetwords').html(0);
             $(element).find('.chattotaltargetwords').html(0);
-            $(element).find('.chatquestions').html(0);
-            $(element).find('.chatrubricscore').html(0);
+            $(element).find('.chatautospellscore').html(0);
+            $(element).find('.chatgrade').html(0);
             $(element).find('.chatfeedback').html("");
             $(element).find('.chataiscore').html("");
             if (studentId) {
@@ -129,11 +129,8 @@
                         $(element).find('.chatplayer').attr('src', response.response[0].filename);
 
     var a ={};
-    var st = JSON.parse(response.response[0].selftranscript);
-    a.selftranscriptparts=[];
-    $.each(st,function(index,oneturn){
-      a.selftranscriptparts.push(oneturn.part);
-    });
+    var st = response.response[0].selftranscript;
+    a.selftranscriptparts=st.match( /[^\.!\?]+[\.!\?]+/g );
     templates.render('mod_solo/summarytranscript',{a: a}).then(
          function(html,js){
             $(element).find('.chattranscript').html(html);
@@ -147,8 +144,8 @@
                         $(element).find('.chatlongestturns').html(response.response[0].longestturns);
                         $(element).find('.chattargetwords').html(response.response[0].targetwords);
                         $(element).find('.chattotaltargetwords').html(response.response[0].totaltargetwords);
-                        $(element).find('.chatquestions').html(response.response[0].questions);
-                        $(element).find('.chatrubricscore').html(response.response[0].rubricscore);
+                        $(element).find('.chatautospellscore').html(response.response[0].autospellscore);
+                        $(element).find('.chatgrade').html(response.response[0].rubricscore);
                         $(element).find('.chatfeedback').html(response.response[0].feedback);
                         $(element).find('.chataiscore').html(response.response[0].aiaccuracy);
                     }

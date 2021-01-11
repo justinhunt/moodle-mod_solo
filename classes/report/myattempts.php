@@ -15,7 +15,7 @@ class myattempts extends basereport
 {
 
     protected $report="myattempts";
-    protected $fields = array('id','audiofile','topicname','partners','turns','stats_avturn','stats_longestturn','stats_targetwords','stats_questions','stats_aiaccuracy','grade','timemodified','view');
+    protected $fields = array('id','audiofile','partners','turns','stats_avturn','stats_longestturn','stats_targetwords','stats_autospellscore','stats_aiaccuracy','grade','timemodified','view');
     protected $headingdata = null;
     protected $qcache=array();
     protected $ucache=array();
@@ -29,31 +29,6 @@ class myattempts extends basereport
                 $ret = $record->id;
                 break;
 
-            case 'topicname':
-                $ret = $record->topicname;
-                break;
-
-            case 'partners':
-                //we need to work out usernames and stuff.
-                //just return blank if we have none, right from the start
-                if(empty($record->interlocutors)){
-                    $ret='';
-                    break;
-                }
-                $partners = explode(',',$record->interlocutors);
-                $users = array();
-                foreach ($partners as $partner){
-                    $users[] = fullname($this->fetch_cache('user', $partner));
-                }
-                //this is bad. We use the targetwords tags for users. It just seemed like a good idea
-                if ($withlinks) {
-                    $tdata = array('targetwords' => $users);
-                    $ret =$targetwordcontent = $OUTPUT->render_from_template(constants::M_COMPONENT . '/targetwords', $tdata);
-                }else{
-                    $ret =implode(',' , $users);
-                }
-
-                break;
 
             case 'grade':
 
@@ -80,8 +55,8 @@ class myattempts extends basereport
 
                 break;
 
-            case 'stats_questions':
-                $ret = $record->questions ;
+            case 'stats_autospellscore':
+                $ret = $record->autospellscore ;
                 break;
 
             case 'stats_aiaccuracy':
@@ -154,7 +129,8 @@ class myattempts extends basereport
         $this->headingdata->userid=$USER->id;
 
         $emptydata = array();
-        $sql = 'SELECT at.id,at.grade,  at.userid, at.topicname, at.interlocutors,at.filename, st.turns, st.avturn, st.longestturn, st.targetwords, st.totaltargetwords,st.questions,st.aiaccuracy, at.timemodified ';
+        $sql = 'SELECT at.id,at.grade,  at.userid, at.filename, st.turns, st.avturn, st.longestturn, st.targetwords, 
+        st.totaltargetwords,st.autospellscore,st.aiaccuracy, at.timemodified ';
         $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at INNER JOIN {' . constants::M_STATSTABLE .  '} st ON at.id = st.attemptid ';
         $sql .= '  INNER JOIN {' . constants::M_TABLE .  '} p ON p.id = at.solo ';
         $sql .= ' WHERE at.userid = :userid AND p.course = :courseid';

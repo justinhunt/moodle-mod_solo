@@ -15,7 +15,7 @@ class detailedattempts extends basereport
 {
 
     protected $report="detailedattempts";
-    protected $fields = array('id','idnumber', 'username','audiofile','topicname','partners','turns','words','ATL','LTL','TW','QS','ACC','grade','selftranscript','transcript','timemodified','view','deletenow');
+    protected $fields = array('id','idnumber', 'username','audiofile','partners','turns','words','ATL','LTL','TW','SPL','ACC','grade','selftranscript','transcript','timemodified','view','deletenow');
     protected $headingdata = null;
     protected $qcache=array();
     protected $ucache=array();
@@ -66,46 +66,15 @@ class detailedattempts extends basereport
                 break;
 
             case 'selftranscript':
-                if(!empty($record->selftranscript)){
-
+                if(!empty($record->selftranscript)) {
                     if ($withlinks) {
-                        $ret="[self-transcript]";
-                    }else{
-                        $parts = json_decode($record->selftranscript);
-                        $ret='';
-                        foreach($parts as $part)
-                        {
-                            $ret.=' ' . $part->part;
-                        }                    }
+                        $ret = "[self-transcript]";
+                    } else {
+                        $ret = $record->selftranscript;
+                    }
                 }else{
                     $ret="";
                 }
-                break;
-
-            case 'topicname':
-                $ret = $record->topicname;
-                break;
-
-            case 'partners':
-                //we need to work out usernames and stuff.
-                //just return blank if we have none, right from the start
-                if(empty($record->interlocutors)){
-                    $ret='';
-                    break;
-                }
-                $partners = explode(',',$record->interlocutors);
-                $users = array();
-                foreach ($partners as $partner){
-                    $users[] = fullname($this->fetch_cache('user', $partner));
-                }
-                //this is bad. We use the targetwords tags for users. It just seemed like a good idea
-                if ($withlinks) {
-                    $tdata = array('targetwords' => $users);
-                    $ret =$targetwordcontent = $OUTPUT->render_from_template(constants::M_COMPONENT . '/targetwords', $tdata);
-                }else{
-                    $ret =implode(',' , $users);
-                }
-
                 break;
 
             case 'words':
@@ -131,8 +100,8 @@ class detailedattempts extends basereport
 
                 break;
 
-            case 'QS':
-                $ret = $record->questions ;
+            case 'SPL':
+                $ret = $record->autospellscore;
                 break;
 
             case 'ACC':
@@ -214,8 +183,8 @@ class detailedattempts extends basereport
         $this->headingdata->activityname = $formdata->activityname;
 
         $emptydata = array();
-        $sql = 'SELECT at.id, at.grade, at.userid, at.topicname, at.interlocutors,at.filename, st.turns, st.words,
-        st.avturn, st.longestturn, st.targetwords, st.totaltargetwords,st.questions,st.aiaccuracy,at.selftranscript,at.transcript, at.timemodified ';
+        $sql = 'SELECT at.id, at.grade, at.userid, at.filename, st.turns, st.words,
+        st.avturn, st.longestturn, st.targetwords, st.totaltargetwords,st.autospellscore,st.aiaccuracy,at.selftranscript,at.transcript, at.timemodified ';
         $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at INNER JOIN {' . constants::M_STATSTABLE .  '} st ON at.id = st.attemptid ';
         $sql .= ' WHERE at.solo = :soloid';
         $sql .= ' ORDER BY at.userid ASC';

@@ -82,8 +82,7 @@ div.mod_solo_mbuttons {
 	flex-grow: 1;
 	width: 50%;
 }
-.mod_solo_summarychoices .summarybox,
-.mod_solo_summaryselfreview .summarybox {
+.mod_solo_summarychoices .summarybox {
 	border: 1px solid;
 	border-radius: 3px;
 	padding: 5px;
@@ -91,20 +90,17 @@ div.mod_solo_mbuttons {
 	text-align: center;
 }
 
-.mod_solo_summarychoices,
-.mod_solo_summaryselfreview {
+.mod_solo_summarychoices {
 	display: flex;
 	margin-bottom: 15px;
 }
 
-.mod_solo_summarychoices .summaryboxtitle,
-.mod_solo_summaryselfreview .summaryboxtitle {
+.mod_solo_summarychoices .summaryboxtitle {
 	background-color: aliceblue;
 	border-bottom: 1px solid;
 }
 
-.mod_solo_summarychoices .summaryboxcontent,
-.mod_solo_summaryselfreview .summaryboxcontent {
+.mod_solo_summarychoices .summaryboxcontent {
     position: relative;
     top: 40%;
     -webkit-transform: translateY(-50%);
@@ -978,4 +974,73 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 	border: 1px solid black;
 	z-index: 100;
 	background-color: white;
+}
+
+.mod_solo_activitycontent {
+	/* text-align: center; */
+	margin-bottom: 10px;
+}
+
+.mod_solo_activitycontent_image_cont,
+.mod_solo_activitycontent_video_cont,
+.mod_solo_activitycontent_audio_cont,
+.mod_solo_activitycontent_iframe_cont {
+	width: 100%;
+	margin-top: 10px;
+	/* text-align: center; */
+}
+
+.mod_solo_activitycontent_text {
+	width: 100%;
+	max-width: 400px;
+	/* margin: auto; */
+	/* text-align: center; */
+}
+
+.mod_solo_activitycontent_iframe_cont {
+	margin-top: 10px;
+	/* margin-left: auto; */
+	/* margin-right: auto; */
+	text-align: center;
+	width: 100%;
+	height: 100%;
+	max-width: 400px;
+	max-height: 225px;
+}
+
+.mod_solo_activitycontent_audio {
+	width: 100%;
+	max-width: 400px;
+	margin: auto;
+}
+.mod_solo_activitycontent_video {
+	width: 100%;
+	max-width: 400px;
+	margin: auto;
+}
+.mod_solo_activitycontent_image {
+	width: 100%;
+	max-width: 400px;
+	margin: auto;
+}
+
+
+
+.mod_solo_activitycontent_iframe_responsive {
+overflow:hidden;
+padding-bottom:56.25%;
+position:relative;
+height:0;
+margin: auto;
+}
+
+
+.mod_solo_activitycontent_iframe_responsive iframe {
+left:0;
+top:0;
+height:100%;
+width:100%;
+position: absolute;
+max-width: 400px;
+max-height: 225px;
 }

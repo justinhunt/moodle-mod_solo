@@ -54,10 +54,21 @@
             <td class="text-center">{{aiaccuracy}}</td>
             <td class="text-center">{{turns}}</td>
             <td class="text-center">{{avturn}}</td>
-            <td><a href="gradesubmissions.php?id={{cmid}}&attempt={{attemptid}}">
+
+            <td>
+                {{#methodrubric}}
+                <a href="gradesubmissions.php?id={{cmid}}&attempt={{attemptid}}&grademethod=rubric">
                 <button type="button" class="btn btn-primary">
                     {{# str }} gradesgrade, mod_solo {{/ str }}
-                </button>&nbsp;</a></td>
+                </button>&nbsp;</a>
+            {{/methodrubric}}
+                {{#methodsimple}}
+                    <a href="gradesubmissions.php?id={{cmid}}&attempt={{attemptid}}&grademethod=simple">
+                        <button type="button" class="btn btn-primary">
+                            {{# str }} gradesgrade, mod_solo {{/ str }}
+                        </button>&nbsp;</a>
+                {{/methodsimple}}
+            </td>
             <td class="m-0 text-center">{{grade}}</td>
 
         </tr>

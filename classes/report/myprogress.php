@@ -15,7 +15,7 @@ class myprogress extends basereport
 {
 
     protected $report="myprogress";
-    protected $fields = array('soloname','stats_words','stats_turns','stats_avturn','stats_longestturn','stats_questions','stats_aiaccuracy');
+    protected $fields = array('soloname','stats_words','stats_turns','stats_avturn','stats_longestturn','stats_autospellscore','stats_aiaccuracy');
     protected $headingdata = null;
     protected $qcache=array();
     protected $ucache=array();
@@ -110,7 +110,7 @@ class myprogress extends basereport
         $this->headingdata->userid=$USER->id;
 
         $emptydata = array();
-        $sql = 'SELECT p.id, p.name soloname, MAX(st.words) stats_words, MAX(st.turns) stats_turns, MAX(st.avturn) stats_avturn, MAX(st.longestturn) stats_longestturn,   MAX(st.questions)stats_questions ,MAX(st.aiaccuracy) stats_aiaccuracy';
+        $sql = 'SELECT p.id, p.name soloname, MAX(st.words) stats_words, MAX(st.turns) stats_turns, MAX(st.avturn) stats_avturn, MAX(st.longestturn) stats_longestturn,   MAX(st.autospellscore)stats_autospellscore ,MAX(st.aiaccuracy) stats_aiaccuracy';
         $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at INNER JOIN {' . constants::M_STATSTABLE .  '} st ON at.id = st.attemptid ';
         $sql .= '  INNER JOIN {' . constants::M_TABLE .  '} p ON p.id = at.solo ';
         $sql .= ' WHERE p.course = :courseid AND at.userid= :userid';

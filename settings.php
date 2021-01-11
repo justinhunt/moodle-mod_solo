@@ -45,18 +45,28 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/multipleattempts',
             get_string('multiattempts', constants::M_COMPONENT), get_string('multiattempts_details',constants::M_COMPONENT), 0));
 
+    $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enabletranscription',
+            get_string('enabletranscription', constants::M_COMPONENT), get_string('enabletranscription_details',constants::M_COMPONENT), 1));
+
+    $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enableautograde',
+            get_string('enableautograde', constants::M_COMPONENT), get_string('enableautograde_details',constants::M_COMPONENT), 1));
+
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enableai',
         get_string('enableai', constants::M_COMPONENT), get_string('enableai_details',constants::M_COMPONENT), 1));
 
 
     $regions = \mod_solo\utils::get_region_options();
-    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/awsregion', get_string('awsregion', constants::M_COMPONENT), '', 'useast1', $regions));
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/awsregion',
+            get_string('awsregion', constants::M_COMPONENT), '', 'useast1', $regions));
 
     $expiredays = \mod_solo\utils::get_expiredays_options();
-    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/expiredays', get_string('expiredays', constants::M_COMPONENT), '', '365', $expiredays));
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/expiredays',
+            get_string('expiredays', constants::M_COMPONENT), '', '365', $expiredays));
 
 	 $langoptions = \mod_solo\utils::get_lang_options();
-	 $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/ttslanguage', get_string('ttslanguage', constants::M_COMPONENT), '', 'en', $langoptions));
+	 $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/ttslanguage',
+             get_string('ttslanguage', constants::M_COMPONENT), '',
+             constants::M_LANG_ENUS, $langoptions));
 
 
     // Transcriber options

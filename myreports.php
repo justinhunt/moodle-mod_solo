@@ -127,7 +127,7 @@ switch ($showreport){
         if($attempt) {
             if($attempt->userid === $USER->id) {
                 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', constants::M_COMPONENT));
-                $stats = utils::fetch_stats($attempt);
+                $stats = utils::fetch_stats($attempt,$moduleinstance);
                 $aidata = $DB->get_record(constants::M_AITABLE, array('attemptid' => $attemptid));
                 $attempt_renderer = $PAGE->get_renderer(constants::M_COMPONENT,'attempt');
                 echo $attempt_renderer->show_userattemptsummary($moduleinstance, $attempt, $aidata, $stats);
@@ -137,7 +137,7 @@ switch ($showreport){
                 require_once($CFG->libdir.'/gradelib.php');
                 $gradinginfo = grade_get_grades($moduleinstance->course, 'mod', 'solo', $moduleinstance->id, $attempt->userid);
                 if(!empty($gradinginfo ) && $attempt->grade !=null) {
-                    $rubricresults= utils::display_rubricgrade($modulecontext,$moduleinstance,$attempt,$gradinginfo );
+                    $rubricresults= utils::display_studentgrade($modulecontext,$moduleinstance,$attempt,$gradinginfo );
                     $feedback=$attempt->feedback;
                     echo $attempt_renderer->show_teachereval( $rubricresults,$feedback);
 
@@ -178,7 +178,7 @@ switch($format){
         echo $reportrenderer->heading($reportheading, 4);
         switch($showreport) {
             case 'myprogress':
-                $fields = array('soloname', 'stats_turns', 'stats_avturn', 'stats_longestturn', 'stats_questions');
+                $fields = array('soloname', 'stats_turns', 'stats_avturn', 'stats_longestturn', 'stats_autospellscore');
                 echo $reportrenderer->render_linechart($report->fetch_chart_data($fields));
                 $fields = array('soloname', 'stats_aiaccuracy');
                 echo $reportrenderer->render_linechart($report->fetch_chart_data($fields));
@@ -186,7 +186,7 @@ switch($format){
                 echo $reportrenderer->render_linechart($report->fetch_chart_data($fields));
                 break;
             case 'classprogress':
-                $fields = array('soloname', 'avturns', 'avatl', 'avltl', 'avtw', 'avq');
+                $fields = array('soloname', 'avturns', 'avatl', 'avltl', 'avtw', 'avspell');
                 echo $reportrenderer->render_linechart($report->fetch_chart_data($fields));
                 $fields = array('soloname', 'avacc');
                 echo $reportrenderer->render_linechart($report->fetch_chart_data($fields));

@@ -15,7 +15,7 @@ class userattempts extends basereport
 {
 
     protected $report="userattempts";
-    protected $fields = array('id','audiofile','topicname','partners','turns','ATL','LTL','TW','QS','ACC','timemodified','view','deletenow');
+    protected $fields = array('id','audiofile','partners','turns','ATL','LTL','TW','SPL','ACC','timemodified','view','deletenow');
     protected $headingdata = null;
     protected $qcache=array();
     protected $ucache=array();
@@ -29,31 +29,6 @@ class userattempts extends basereport
                 $ret = $record->id;
                 break;
 
-            case 'topicname':
-                $ret = $record->topicname;
-                break;
-
-            case 'partners':
-                //we need to work out usernames and stuff.
-                //just return blank if we have none, right from the start
-                if(empty($record->interlocutors)){
-                    $ret='';
-                    break;
-                }
-                $partners = explode(',',$record->interlocutors);
-                $users = array();
-                foreach ($partners as $partner){
-                    $users[] = fullname($this->fetch_cache('user', $partner));
-                }
-                //this is bad. We use the targetwords tags for users. It just seemed like a good idea
-                if ($withlinks) {
-                    $tdata = array('targetwords' => $users);
-                    $ret =$targetwordcontent = $OUTPUT->render_from_template(constants::M_COMPONENT . '/targetwords', $tdata);
-                }else{
-                    $ret =implode(',' , $users);
-                }
-
-                break;
 
             case 'turns':
                 $ret = $record->turns;
@@ -72,8 +47,8 @@ class userattempts extends basereport
                 $ret = $record->targetwords;
                 break;
 
-            case 'QS':
-                $ret = $record->questions ;
+            case 'SPL':
+                $ret = $record->autospellscore ;
                 break;
 
             case 'ACC':
@@ -157,7 +132,8 @@ class userattempts extends basereport
         $this->headingdata->userid=$formdata->userid;
 
         $emptydata = array();
-        $sql = 'SELECT at.id, at.userid, at.topicname, at.interlocutors,at.filename, st.turns, st.avturn, st.longestturn, st.targetwords, st.totaltargetwords,st.questions,st.aiaccuracy, at.timemodified ';
+        $sql = 'SELECT at.id, at.userid, at.filename, st.turns, st.avturn, st.longestturn, st.targetwords, st.totaltargetwords,
+        st.autospellscore,st.aiaccuracy, at.timemodified ';
         $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at INNER JOIN {' . constants::M_STATSTABLE .  '} st ON at.id = st.attemptid ';
         $sql .= '  INNER JOIN {' . constants::M_TABLE .  '} p ON p.id = at.solo ';
         $sql .= ' WHERE at.userid = :userid AND p.course = :courseid';

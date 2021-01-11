@@ -80,16 +80,6 @@ class attempt_renderer extends \plugin_renderer_base {
      }
      $parts[] = \html_writer::link($addurl, get_string('attempt_partthree', constants::M_COMPONENT), $buttonopts);
 
-     //Step Four Button (self REVIEW)
-     if($latestattempt && $latestattempt->completedsteps>=constants::STEP_SELFTRANSCRIBE) {
-         $addurl = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                 array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_SELFREVIEW));
-         $buttonopts =  array('class'=>$buttonclass . ($thisstep == constants::STEP_SELFREVIEW ? '_activemenubutton' : '_completemenubutton'));
-     }else{
-         $addurl="#";
-         $buttonopts =  array('class'=>$buttonclass .'_deadmenubutton ');
-     }
-     $parts[] = \html_writer::link($addurl, get_string('attempt_partfour', constants::M_COMPONENT), $buttonopts);
 
 
     //$glue = '<i class="fa fa-arrow-right"></i>';
@@ -116,7 +106,7 @@ class attempt_renderer extends \plugin_renderer_base {
      */
     public function fetch_postattemptedit_link($cm, $attemptid){
         $editurl = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                array('id' => $cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_SELFREVIEW));
+                array('id' => $cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_SELFTRANSCRIBE));
 
         $button = \html_writer::link($editurl,get_string('dopostattemptedit',constants::M_COMPONENT),array('class'=>''));
         $ret = \html_writer::div($button ,constants::M_CLASS  . '_postattemptedit_cont');
@@ -138,7 +128,8 @@ class attempt_renderer extends \plugin_renderer_base {
 
     function show_summary($moduleinstance,$attempt,$aidata, $stats,$userheader=false){
         $attempt->targetwords = utils::fetch_targetwords($attempt);
-        $attempt->interlocutornames = utils::fetch_interlocutor_names($attempt);
+        $attempt->convlength = $moduleinstance->convlength;
+        $attempt->speakingtopic = $moduleinstance->speakingtopic;
         $attempt->selftranscriptparts = utils::fetch_selftranscript_parts($attempt);
         if($userheader){
             $ret = $this->output->render_from_template( constants::M_COMPONENT . '/summaryuserattemptheader', $attempt);
@@ -153,7 +144,7 @@ class attempt_renderer extends \plugin_renderer_base {
         if($aidata) {
             $simpleselftranscript='';
             if(!empty($attempt->selftranscript)){
-                $simpleselftranscript=utils::extract_simple_transcript($attempt->selftranscript);
+                $simpleselftranscript=$attempt->selftranscript;
             }
             $markedpassage = \mod_solo\aitranscriptutils::render_passage($simpleselftranscript);
             $js_opts_html = \mod_solo\aitranscriptutils::prepare_passage_amd($attempt, $aidata);
@@ -166,13 +157,7 @@ class attempt_renderer extends \plugin_renderer_base {
         $tdata=array('a'=>$attempt, 's'=>$stats, 'audiofilename'=>$attempt->filename, 'markedpassage'=>$markedpassage);
         $ret .= $this->output->render_from_template( constants::M_COMPONENT . '/summaryresults', $tdata);
 
-        $revqs=array();
-        if($moduleinstance->revq1){$revqs[] = array('q'=>$moduleinstance->revq1,'a'=>$attempt->revq1);}
-        if($moduleinstance->revq2){$revqs[] = array('q'=>$moduleinstance->revq2,'a'=>$attempt->revq2);}
-        if($moduleinstance->revq3){$revqs[] = array('q'=>$moduleinstance->revq3,'a'=>$attempt->revq3);}
-        if(count($revqs)>0) {
-            $ret .= $this->output->render_from_template(constants::M_COMPONENT . '/summaryselfreview', array('revqs' => $revqs));
-        }
+
         return $ret;
     }
 
@@ -218,14 +203,13 @@ class attempt_renderer extends \plugin_renderer_base {
 
 		$table->head = array(
             get_string('timemodified', constants::M_COMPONENT),
-            get_string('topic', constants::M_COMPONENT),
             get_string('users', constants::M_COMPONENT),
 			get_string('actions', constants::M_COMPONENT),
             ''
 		);
-		$table->headspan = array(1,1,1,1,1);
+		$table->headspan = array(1,1,1);
 		$table->colclasses = array(
-                'timemodified','topic','users', 'actions','actions'
+                'timemodified', 'actions','actions'
 		);
 
 		//loop through the attempts and add to table
@@ -237,13 +221,6 @@ class attempt_renderer extends \plugin_renderer_base {
             //modify date
             $datecell_content = date("Y-m-d H:i:s",$attempt->timemodified);
             $attemptdatecell = new \html_table_cell($datecell_content);
-
-            //user names
-            $usernames = utils::fetch_interlocutor_names($attempt);
-            $usernamescell = new \html_table_cell(implode('<br>',$usernames));
-
-            //topic cell
-            $topiccell = new \html_table_cell($attempt->topicname);
 
 
             //attempt edit
@@ -282,15 +259,6 @@ class attempt_renderer extends \plugin_renderer_base {
                 $parts[] = $itemtitle;
             }
 
-            $itemtitle = get_string('attempt_partfour', constants::M_COMPONENT);
-            if($attempt->completedsteps >= constants::STEP_SELFTRANSCRIBE) {
-                    $editurl = new \moodle_url($actionurl,
-                            array('id' => $cm->id, 'attemptid' => $attempt->id, 'type' => constants::STEP_SELFREVIEW));
-                    $comparetranscripts = \html_writer::link($editurl, $itemtitle);
-                    $parts[] = $comparetranscripts;
-            }else{
-                $parts[] = $itemtitle;
-            }
 
 
             $editcell = new \html_table_cell(implode('<br />', $parts));
@@ -301,7 +269,7 @@ class attempt_renderer extends \plugin_renderer_base {
 			$deletecell = new \html_table_cell($deletelink);
 
 			$row->cells = array(
-                    $attemptdatecell, $topiccell, $usernamescell, $editcell, $deletecell
+                    $attemptdatecell, $editcell, $deletecell
 			);
 			$table->data[] = $row;
 		}
