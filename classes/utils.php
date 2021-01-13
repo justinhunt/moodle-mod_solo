@@ -385,18 +385,19 @@ class utils{
 
     //we leave it up to the grading logic how/if it adds the ai grades to gradebook
     public static function calc_grammarspell_stats($selftranscript, $region, $language, $stats){
+        //init stats with defaults
+        $stats->autospell="";
+        $stats->autogrammar="";
+        $stats->autospellscore=100;
+        $stats->autogrammarscore=100;
+        $stats->autospellerrors = 0;
+        $stats->autogrammarerrors=0;
+
 
         //if we have no words for whatever reason the calc will not work
         if(!$stats->words || $stats->words<1) {
             //update spelling and grammar stats in DB
-            $stats->autospell="";
-            $stats->autogrammar="";
-            $stats->autospellscore=100;
-            $stats->autogrammarscore=100;
-            $stats->autospellerrors = 0;
-            $stats->autogrammarerrors=0;
             return $stats;
-
         }
 
         //fetch grammar stats
