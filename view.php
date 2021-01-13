@@ -107,6 +107,22 @@ if($start_or_continue) {
 
     $attempt = utils::fetch_latest_finishedattempt($moduleinstance);
     if($attempt) {
+
+        //try to pull transcripts if we have none. Why wait for cron?
+        $hastranscripts = !empty($attempt->jsontranscript);
+        if(!$hastranscripts){
+            $attempt_with_transcripts = utils::retrieve_transcripts_from_s3($attempt);
+            $hastranscripts = $attempt_with_transcripts !==false;
+            if($hastranscripts && !empty($attempt->selftranscript)){
+                $autotranscript=$attempt_with_transcripts->transcript;
+                $aitranscript = new \mod_solo\aitranscript($attempt_with_transcripts->id,
+                        $context->id, $attempt->selftranscript,
+                        $attempt_with_transcripts->transcript,
+                        $attempt_with_transcripts->jsontranscript);
+                $attempt = utils::fetch_latest_finishedattempt($moduleinstance);
+            }
+        }
+
         $stats=utils::fetch_stats($attempt,$moduleinstance);
         $aidata = $DB->get_record(constants::M_AITABLE,array('attemptid'=>$attempt->id));
         echo $attempt_renderer->show_summary($moduleinstance,$attempt,$aidata, $stats);
