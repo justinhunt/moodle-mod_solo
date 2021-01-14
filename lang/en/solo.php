@@ -532,3 +532,4 @@ $string['rating_fair'] = 'Thank you';
 $string['rating_good'] = 'Good Job';
 $string['rating_verygood'] = 'Very Good';
 $string['rating_excellent'] = 'Excellent !';
+$string['maybereloadaudio']='If audioplayer does not play, try reloading the page.';

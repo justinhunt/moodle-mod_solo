@@ -22,9 +22,6 @@ class selftranscribeform extends baseform
         //we set the title and instructions
         $this->add_title(get_string('attempt_partthree', constants::M_COMPONENT));
         $this->add_instructions(get_string('attempt_partthree_instructions', constants::M_COMPONENT));
-
-        // $this->add_audio_player('audioplayer','audioplayer');
-
         $this->add_transcript_editor('selftranscript',get_string('transcripteditor', constants::M_COMPONENT));
     }
     public function custom_definition_after_data() {

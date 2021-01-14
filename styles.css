@@ -1074,5 +1074,8 @@ audio#mod_solo_passageaudioplayer {
 	text-align: center;
 }
 .mod_solo_nativeaudioplayer_cont {
-	text-align: center;
+	/* text-align: center; */
+}
+.mod_solo_maybereloadaudio {
+	font-style: italic;
 }
