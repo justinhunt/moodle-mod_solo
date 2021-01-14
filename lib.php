@@ -91,7 +91,7 @@ function solo_editor_no_files_options($context){
 }
 function solo_filemanager_options($context){
     return array('maxfiles' => EDITOR_UNLIMITED_FILES,
-        'noclean' => true, 'context' => $context, 'subdirs' => true, 'accepted_types' => array('image,audio,video'));
+        'noclean' => true, 'context' => $context, 'subdirs' => true, 'accepted_types' => array('image','audio','video'));
 }
 
 /**
