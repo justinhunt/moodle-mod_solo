@@ -17,7 +17,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'Poodll Solo';
 $string['modulenameplural'] = 'Poodll Solo';
-$string['modulename_help'] = 'Poodll Solo is an activity designed to give students conversation practice and feedback. Students record their conversation, transcribe their own speech and compare their transcript with an auto generated one.';
+$string['modulename_help'] = 'Poodll Solo is an activity designed to give students conversation practice and feedback. Students record their conversation, transcribe their own speech and receive feedback on their work.';
 $string['solofieldset'] = 'Custom example fieldset';
 $string['soloname'] = 'Poodll Solo';
 $string['soloname_help'] = 'This is the content of the help tooltip associated with the soloname field. Markdown syntax is supported.';
@@ -165,7 +165,7 @@ $string['transcript']="Transcript";
 $string['quickgrade']="Quick Grade";
 $string['ok']="OK";
 
-$string['notimelimit']='No time limit';
+$string['notimelimit']='Unlimited';
 $string['xsecs']='{$a} seconds';
 $string['onemin']='1 minute';
 $string['xmins']='{$a} minutes';
@@ -277,7 +277,7 @@ $string['solo:attemptedit'] = 'Edit attempts';
 $string['attemptname'] = 'Attempt';
 $string['nodataavailable'] = 'No data available';
 $string['transcriber'] = 'Transcriber';
-$string['transcriber_details'] = 'The transcription engine to use. Instant transcription only works if passage language is US/AU/GB English and FR/CA French, or when using US/Dublin/Sydney/Ireland AWS regions.';
+$string['transcriber_details'] = 'The transcription engine to use. ';
 $string['transcriber_amazontranscribe'] = 'Regular transcription(AWS)';
 $string['transcriber_amazonstreaming'] = 'Instant Transcription(AWS)';
 $string['transcriber_googlechrome'] = 'Instant transcription (Chrome only)';
@@ -384,7 +384,7 @@ $string['targetwordsexplanation']= 'Add target words each on a new line.';
 $string['confirmtopicdeletetitle']= 'Confirm Delete Topic:';
 
 $string['maxconvlength_details']= 'Audio recorder time limit';
-$string['maxconvlength']= 'Max. conv. length';
+$string['maxconvlength']= 'Time limit';
 $string['heard']= 'Heard';
 $string['SPL']= 'Spell';
 $string['ACC']= 'Acc';
@@ -467,6 +467,11 @@ $string['completionallsteps']='Complete when all steps completed';
 $string['completionallsteps_help']='Complete when all steps completed';
 $string['yes']='Yes';
 $string['no']='No';
+
+$string['topiciframe_help']='Paste iframe embed code(html only)for any media that should be shown to students as part of the speaking topic.';
+$string['topicmedia_help']='Upload an audio/video or image file that will be shown to students as part of the speaking topic on the prepare page.';
+$string['speakingtopic_help']='Short instructions to students on what to speak about.';
+$string['targetwords_help']='Target words or phrases that student should try to use while speaking. Each om a new line.';
 
 $string['avturns']='Avg Sentences';
 $string['avatl']='Avg ASL';

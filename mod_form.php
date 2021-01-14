@@ -103,6 +103,8 @@ class mod_solo_mod_form extends moodleform_mod {
         // Speaking topic text
         $mform->addElement('textarea', 'speakingtopic', get_string('speakingtopic', constants::M_COMPONENT, '1'),  array('rows'=>'3', 'cols'=>'80'));
         $mform->setType('speakingtopic', PARAM_TEXT);
+        $mform->addHelpButton('speakingtopic', 'speakingtopic', constants::M_MODNAME);
+        $mform->addRule('speakingtopic', get_string('required'), 'required', null, 'client');
 
         //Speaking topic upload
         $filemanageroptions = solo_filemanager_options($this->context);
@@ -112,16 +114,19 @@ class mod_solo_mod_form extends moodleform_mod {
                 null,
                 $filemanageroptions
         );
+        $mform->addHelpButton('topicmedia', 'topicmedia', constants::M_MODNAME);
 
         //Speaking topic iframe
         $mform->addElement('text', 'topiciframe', get_string('topiciframe', constants::M_COMPONENT), array('size'=>100));
         $mform->setType('topiciframe', PARAM_RAW);
+        $mform->addHelpButton('topiciframe', 'topiciframe', constants::M_MODNAME);
 
         //targetwords
         $mform->addElement('static','targetwordsexplanation','',get_string('targetwordsexplanation',constants::M_COMPONENT));
         $mform->addElement('textarea', 'targetwords', get_string('topictargetwords', constants::M_COMPONENT), 'wrap="virtual" rows="12" cols="50"');
         $mform->setType('targetwords', PARAM_TEXT);
         $mform->addRule('targetwords', get_string('required'), 'required', null, 'client');
+        $mform->addHelpButton('targetwords', 'targetwords', constants::M_MODNAME);
 
 
         //add tips field
@@ -130,6 +135,7 @@ class mod_solo_mod_form extends moodleform_mod {
         $mform->addElement('editor','tips_editor',get_string('tips', constants::M_COMPONENT),$opts,$edoptions);
         $mform->setDefault('tips_editor',array('text'=>$config->speakingtips, 'format'=>FORMAT_HTML));
         $mform->setType('tips_editor',PARAM_RAW);
+
 
         //Enable Manual Transcription [for now lets foprce this ]
         $mform->addElement('hidden', 'enabletranscription', 1);
