@@ -58,7 +58,7 @@ require_login($course, true, $cm);
 
 // Get student grade data.
 $studentlist = $gradesubmissions->getStudentsToGrade($attempt,$moduleinstance);
-$students = explode(',', current($studentlist)->students);
+$students = $studentlist;
 $studentsToGrade = new ArrayIterator(array_pad($students, MAX_GRADE_DISPLAY, ''));
 $submissionCandidates = get_enrolled_users($modulecontext, 'mod/solo:submit');
 // Ensure selected items.

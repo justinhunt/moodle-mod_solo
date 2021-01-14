@@ -105,31 +105,29 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getStudentsToGrade($attempt,$moduleinstance) {
+    public function getStudentsToGrade($attemptid,$moduleinstance) {
         global $DB;
 
         //fetch all finished attempts
-        $sql = "select userid as students
+        $sql = "select pa.id as id, userid
                     from {solo_attempts} pa
                     where pa.solo = ? AND pa.completedsteps = " . constants::STEP_SELFTRANSCRIBE .
                     " order by pa.id ASC";
 
-        $results = $DB->get_records_sql($sql, [$attempt, $moduleinstance->id]);
+        $results = $DB->get_records_sql($sql, [$moduleinstance->id]);
         //if we do not have results just return
         if(!$results){return $results;}
 
         //if we have results, try to get 3 of them including the selected one
-        if(count($results<4)){
-            return $results;
-        }else{
+
             $ret = [];
             $returning=0;
             foreach($results as $result){
-                if($result->id == $attempt){
+                if($result->id == $attemptid){
                     $returning=1;
-                    $ret[] = $result;
-                }elseif($returning>0 && $returning<3){
-                    $ret[] = $result;
+                    $ret[] = $result->userid;
+                }elseif($returning>0 && $returning<3 && !in_array($result->userid,$ret)){
+                    $ret[] = $result->userid;
                 }
                 if($returning==3){
                     return $ret;
@@ -137,6 +135,6 @@ class gradesubmissions {
             }
             //if we looped and did not get 3 lets just return what we got
             return $ret;
-        }//end of if
+
     }//end of function
 }//end of class
