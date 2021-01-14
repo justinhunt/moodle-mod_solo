@@ -29,14 +29,18 @@ class grades {
                     u.firstname,
                     p.name,
                     p.transcriber,
+                    pat.words,
+                    pat.targetwords,
+                    pat.totaltargetwords,
                     pat.turns,
                     pat.avturn,
                     par.accuracy,
                     pa.solo,
                     pat.aiaccuracy,
+                    pa.manualgraded,
                     pa.grade
                 from {solo} as p
-                    inner join  (select max(mpa.id) as id, mpa.userid, mpa.solo, mpa.grade
+                    inner join  (select max(mpa.id) as id, mpa.userid, mpa.solo, mpa.grade, mpa.manualgraded 
                             from {solo_attempts} mpa
                             group by mpa.userid, mpa.solo, mpa.grade
                         ) as pa on p.id = pa.solo

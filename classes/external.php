@@ -196,7 +196,7 @@ class external extends external_api {
             $feedbackobject->feedback = $validateddata->feedback;
             $feedbackobject->manualgraded = 1;
             $feedbackobject->grade = $thegrade;
-            $DB->update_record('solo_attempts', $feedbackobject);
+            $DB->update_record(constants::M_ATTEMPTSTABLE, $feedbackobject);
             $grade = new \stdClass();
             $grade->userid = $studentid;
             $grade->rawgrade = $thegrade;

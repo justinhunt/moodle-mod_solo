@@ -131,9 +131,11 @@ class mod_solo_mod_form extends moodleform_mod {
         $mform->setDefault('tips_editor',array('text'=>$config->speakingtips, 'format'=>FORMAT_HTML));
         $mform->setType('tips_editor',PARAM_RAW);
 
-        //Enable Manual Transcription
-        $mform->addElement('advcheckbox', 'enabletranscription', get_string('enabletranscription', constants::M_COMPONENT), get_string('enabletranscription_details', constants::M_COMPONENT));
-        $mform->setDefault('enabletranscription',$config->enabletranscription);
+        //Enable Manual Transcription [for now lets foprce this ]
+        $mform->addElement('hidden', 'enabletranscription', 1);
+        $mform->setType('enabletranscription',PARAM_BOOL);
+        //$mform->addElement('advcheckbox', 'enabletranscription', get_string('enabletranscription', constants::M_COMPONENT), get_string('enabletranscription_details', constants::M_COMPONENT));
+        //$mform->setDefault('enabletranscription',$config->enabletranscription);
 
 
         //Enable AI
@@ -171,10 +173,10 @@ class mod_solo_mod_form extends moodleform_mod {
         $mform->setDefault('enableautograde',$config->enableautograde);
 
         //Target word-count
-        $mform->addElement('text', 'targetwordcount', get_string('targetwordcount', constants::M_COMPONENT), array('size'=>20));
-        $mform->setType('targetwordcount', PARAM_INT);
-        $mform->setDefault('targetwordcount',200);
-        $mform->addHelpButton('targetwordcount', 'targetwordcount', constants::M_MODNAME);
+        $mform->addElement('text', 'gradewordgoal', get_string('gradewordgoal', constants::M_COMPONENT), array('size'=>20));
+        $mform->setType('gradewordgoal', PARAM_INT);
+        $mform->setDefault('gradewordgoal',60);
+        $mform->addHelpButton('gradewordgoal', 'gradewordgoal', constants::M_MODNAME);
 
         //auto grading options
         $aggroup=array();
@@ -184,62 +186,38 @@ class mod_solo_mod_form extends moodleform_mod {
         $ratiogradeoptions = utils::fetch_ratio_grade_options();
         $plusminusoptions = array('plus'=>'+','minus'=>'-');
         $points_per = get_string("ag_pointsper",constants::M_COMPONENT);
-        $over_target_words = get_string("ag_overtargetwords",constants::M_COMPONENT);
+        $over_target_words = get_string("ag_overgradewordgoal",constants::M_COMPONENT);
 
-        $aggroup[] =& $mform->createElement('static', 'statictext00', '','( ');
+        $aggroup[] =& $mform->createElement('static', 'stext0', '','( ');
         $aggroup[] =& $mform->createElement('select', 'gradewordcount', '', $wordcountoptions);
-        $aggroup[] =& $mform->createElement('static', 'statictext0', '',$over_target_words );
-        $aggroup[] =& $mform->createElement('select', 'graderatiostart', '', $startgradeoptions);
-        $mform->setDefault('graderatiostart',80);
+        $aggroup[] =& $mform->createElement('static', 'statictext00', '',$over_target_words );
+        $aggroup[] =& $mform->createElement('select', 'gradebasescore', '', $startgradeoptions);
+        $mform->setDefault('gradebasescore',100);
 
 
-        $aggroup[] =& $mform->createElement('static', 'statictext1', '','% x ');
-        $aggroup[] =& $mform->createElement('select', 'graderatio', '', $ratiogradeoptions);
-        $mform->setDefault('graderatio','clarity');
-        $aggroup[] =& $mform->createElement('static', 'statictext2', '','% ');
+        $aggroup[] =& $mform->createElement('static', 'stext1', '','% x ');
+        $aggroup[] =& $mform->createElement('select', 'graderatioitem', '', $ratiogradeoptions);
+        $mform->setDefault('graderatioitem','accuracy');
+        $aggroup[] =& $mform->createElement('static', 'stext11', '','% ');
         $mform->addGroup($aggroup, 'aggroup', get_string('aggroup', constants::M_COMPONENT),
                 '', false);
         $mform->addHelpButton('aggroup', 'aggroup', constants::M_MODNAME);
 
-        $bggroup[] =& $mform->createElement('select', 'gradebonus1direction', '', $plusminusoptions);
-        $bggroup[] =& $mform->createElement('static', 'statictext3', '',' ');
-        $bggroup[] =& $mform->createElement('select', 'gradebonuspoints1','', $startgradeoptions);
-        $mform->setDefault('gradebonuspoints1',5);
-        $bggroup[] =& $mform->createElement('static', 'statictext3', '',$points_per);
-        $bggroup[] =& $mform->createElement('select', 'gradebonus1', '', $bonusgradeoptions);
-        $mform->setDefault('gradebonus1','targetwordspoken');
-        $mform->addGroup($bggroup, 'bggroup', '', '', false);
-
-        $cggroup[] =& $mform->createElement('select', 'gradebonus2direction', '', $plusminusoptions);
-        $mform->setDefault('gradebonus2direction','minus');
-        $cggroup[] =& $mform->createElement('static', 'statictext4', '',' ');
-        $cggroup[] =& $mform->createElement('select', 'gradebonuspoints2','', $startgradeoptions);
-        $mform->setDefault('gradebonuspoints2',3);
-        $cggroup[] =& $mform->createElement('static', 'statictext5', '',$points_per);
-        $cggroup[] =& $mform->createElement('select', 'gradebonus2', '', $bonusgradeoptions);
-        $mform->setDefault('gradebonus2','spellingmistake');
-        $mform->addGroup($cggroup, 'cggroup', '', '', false);
-
-        $dggroup[] =& $mform->createElement('select', 'gradebonus3direction', '', $plusminusoptions);
-        $mform->setDefault('gradebonus3direction','plus');
-        $dggroup[] =& $mform->createElement('static', 'statictext6', '',' ');
-        $dggroup[] =& $mform->createElement('select', 'gradebonuspoints3','', $startgradeoptions);
-        $mform->setDefault('gradebonuspoints3',0);
-        $dggroup[] =& $mform->createElement('static', 'statictext7', '',$points_per);
-        $dggroup[] =& $mform->createElement('select', 'gradebonus3', '', $bonusgradeoptions);
-        $mform->setDefault('gradebonus3','--');
-        $mform->addGroup($dggroup, 'dggroup', '', '', false);
-
-        $eggroup[] =& $mform->createElement('select', 'gradebonus4direction', '', $plusminusoptions);
-        $mform->setDefault('gradebonus4direction','plus');
-        $eggroup[] =& $mform->createElement('static', 'statictext8', '',' ');
-        $eggroup[] =& $mform->createElement('select', 'gradebonuspoints4','', $startgradeoptions);
-        $mform->setDefault('gradebonuspoints4',0);
-        $eggroup[] =& $mform->createElement('static', 'statictext9', '',$points_per);
-        $eggroup[] =& $mform->createElement('select', 'gradebonus4', '', $bonusgradeoptions);
-        $mform->setDefault('gradebonus4','--');
-        $mform->addGroup($eggroup, 'eggroup', '', '', false);
-
+        for ($bonusno=1;$bonusno<=4;$bonusno++){
+            $bg = array();
+            $bg[] =& $mform->createElement('select', 'bonusdirection' . $bonusno, '', $plusminusoptions);
+            $bg[] =& $mform->createElement('static', 'stext2'. $bonusno, '',' ');
+            $bg[] =& $mform->createElement('select', 'bonuspoints' . $bonusno,'', $startgradeoptions);
+            $mform->setDefault('bonuspoints' . $bonusno,3);
+            $bg[] =& $mform->createElement('static', 'stext22' . $bonusno, '',$points_per);
+            $bg[] =& $mform->createElement('select', 'bonus' . $bonusno, '', $bonusgradeoptions);
+            if($bonusno==1) {
+                $mform->setDefault('bonus' . $bonusno, 'targetwordspoken');
+            }else{
+                $mform->setDefault('bonus' . $bonusno, '--');
+            }
+            $mform->addGroup($bg, 'bonusgroup' . $bonusno, '', '', false);
+        }
 
         //grade options
         //for now we hard code this to latest attempt
@@ -277,25 +255,14 @@ class mod_solo_mod_form extends moodleform_mod {
 		//autograde options
         if(isset($form_data->autogradeoptions)) {
             $ag_options = json_decode($form_data->autogradeoptions);
-            $form_data->graderatio = $ag_options->graderatio;
+            $form_data->graderatioitem = $ag_options->graderatioitem;
             $form_data->gradewordcount = $ag_options->gradewordcount;
-            $form_data->graderatiostart = $ag_options->graderatiostart;
-
-            $form_data->gradebonus1direction = $ag_options->gradebonus1direction;
-            $form_data->gradebonuspoints1 = $ag_options->gradebonuspoints1;
-            $form_data->gradebonus1 = $ag_options->gradebonus1;
-
-            $form_data->gradebonus2direction = $ag_options->gradebonus2direction;
-            $form_data->gradebonuspoints2 = $ag_options->gradebonuspoints2;
-            $form_data->gradebonus2 = $ag_options->gradebonus2;
-
-            $form_data->gradebonus3direction = $ag_options->gradebonus3direction;
-            $form_data->gradebonuspoints3 = $ag_options->gradebonuspoints3;
-            $form_data->gradebonus3 = $ag_options->gradebonus3;
-
-            $form_data->gradebonus4direction = $ag_options->gradebonus4direction;
-            $form_data->gradebonuspoints4 = $ag_options->gradebonuspoints4;
-            $form_data->gradebonus4 = $ag_options->gradebonus4;
+            $form_data->gradebasescore = $ag_options->gradebasescore;
+            for ($bonusno=1;$bonusno<=4;$bonusno++) {
+                $form_data->{'bonusdirection' . $bonusno} = $ag_options->{'bonusdirection' . $bonusno};
+                $form_data->{'bonuspoints' . $bonusno}  = $ag_options->{'bonuspoints' . $bonusno} ;
+                $form_data->{'bonus' . $bonusno} = $ag_options->{'bonus' . $bonusno};
+            }
         }
 
 	}

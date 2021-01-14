@@ -28,6 +28,9 @@ class audiorecordingform extends baseform
         //add speaking topic
         $this->add_speakingtopic();
 
+        //targettime
+        $this->add_targettime_field();
+
         //add tips
         $this->add_tips_field();
 

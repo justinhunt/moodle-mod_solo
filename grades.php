@@ -43,7 +43,7 @@ $modulecontext = context_module::instance($cm->id);
 require_capability('mod/solo:grades', $modulecontext);
 
 // Set page login data.
-$PAGE->set_url(constants::M_URL . '/grades.php');
+$PAGE->set_url(constants::M_URL . '/grades.php',array('id'=>$id));
 require_login($course, true, $cm);
 
 require_once($CFG->dirroot.'/grade/grading/lib.php');
@@ -63,6 +63,15 @@ $studentgrades = $grades->getGrades($course->id, $id, $moduleinstance->id);
 foreach($studentgrades as $studentgrade){
     if($studentgrade->grade===null){
         $studentgrade->grade ='';
+        $studentgrade->grader='';
+    }elseif($studentgrade->manualgraded){
+        $studentgrade->grader=get_string('humangraded',constants::M_COMPONENT);
+    }else{
+        $studentgrade->grader=get_string('autograded',constants::M_COMPONENT);
+    }
+    //if we do not have an accuracy score, dash dash
+    if($studentgrade->aiaccuracy===null){
+        $studentgrade->aiaccuracy='--';
     }
 }
 $data = new ArrayIterator($studentgrades);

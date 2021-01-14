@@ -30,6 +30,8 @@
         <FIELD NAME="targetwords" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="enabletranscription" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Whether to require student to transcribe manually"/>
         <FIELD NAME="enableautograde" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to use autograde on this activity"/>
+        <FIELD NAME="enablesharing" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to let students share their submission on this activity"/>
+        <FIELD NAME="gradewordgoal" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="200" SEQUENCE="false"/>
         <FIELD NAME="autogradeoptions" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The autograde options"/>
         <FIELD NAME="tips" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Tips for the solo activity"/>
         <FIELD NAME="tipsformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the tips field (MOODLE, HTML, MARKDOWN...)"/>
@@ -65,6 +67,7 @@
         <FIELD NAME="customtext1format" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="completedsteps" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="feedback" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="allowsharing" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="customint1" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="customint2" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="customint3" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>

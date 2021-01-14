@@ -20,6 +20,7 @@ namespace mod_solo\output;
 
 defined('MOODLE_INTERNAL') || die();
 
+use const bar\foo\baz\const1;
 use \mod_solo\constants;
 use \mod_solo\utils;
 
@@ -119,11 +120,33 @@ class attempt_renderer extends \plugin_renderer_base {
         return $this->show_summary($moduleinstance,$attempt,$aidata, $stats,$userheader);
     }
 
-    function show_teachereval($rubricresults, $feedback){
+    function show_teachereval($rubricresults, $feedback, $evaluator){
         $data = new \stdClass();
         $data->rubricresults = $rubricresults;
         $data->feedback=$feedback;
+        $data->evaluator=$evaluator;
         return $this->output->render_from_template( constants::M_COMPONENT . '/summaryteachereval', $data);
+    }
+
+    function show_spellingerrors($spellingerrors){
+        $data = new \stdClass();
+        if(count($spellingerrors)) {
+            $data->spellingerrors = $spellingerrors;
+            $data->spellingerrorslabel = get_string('possiblespellingerrors',constants::M_COMPONENT);
+        }else{
+            $data->spellingerrorslabel = get_string('nospellingerrors',constants::M_COMPONENT);
+        }
+        return $this->output->render_from_template( constants::M_COMPONENT . '/summaryspellingeval', $data);
+    }
+    function show_grammarerrors($grammarerrors){
+        $data = new \stdClass();
+        if(count($grammarerrors)) {
+            $data->grammarerrors = $grammarerrors;
+            $data->grammarerrorslabel = get_string('possiblegrammarerrors',constants::M_COMPONENT);
+        }else{
+            $data->grammarerrorslabel = get_string('nogrammarerrors',constants::M_COMPONENT);
+        }
+        return $this->output->render_from_template( constants::M_COMPONENT . '/summarygrammareval', $data);
     }
 
     function show_summary($moduleinstance,$attempt,$aidata, $stats,$userheader=false){
@@ -139,8 +162,13 @@ class attempt_renderer extends \plugin_renderer_base {
 
         $ret .= $this->output->render_from_template( constants::M_COMPONENT . '/summarychoices', $attempt);
 
+        return $ret;
+    }
+
+    function show_summarypassageandstats($attempt,$aidata,$stats){
         //mark up our passage for review
         //if we have ai we need all the js and markup, otherwise we just need the formated transcript
+        $ret='';
         if($aidata) {
             $simpleselftranscript='';
             if(!empty($attempt->selftranscript)){
@@ -156,8 +184,6 @@ class attempt_renderer extends \plugin_renderer_base {
 
         $tdata=array('a'=>$attempt, 's'=>$stats, 'audiofilename'=>$attempt->filename, 'markedpassage'=>$markedpassage);
         $ret .= $this->output->render_from_template( constants::M_COMPONENT . '/summaryresults', $tdata);
-
-
         return $ret;
     }
 

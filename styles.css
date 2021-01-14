@@ -77,6 +77,7 @@ div.mod_solo_mbuttons {
 	padding: 5px;
 	border-radius: 5px;
 	margin: 7px;
+	background-color: floralwhite;
 }
 .mod_solo_ct_right, .mod_solo_ct_left {
 	flex-grow: 1;
@@ -109,7 +110,8 @@ div.mod_solo_mbuttons {
 }
 .mod_solo_summaryresults {
 	display: flex;
-	margin-bottom: 15px
+	margin-bottom: 15px;
+	flex-wrap: wrap;
 }
 .mod_solo_sr_title{
 	margin: auto;
@@ -123,9 +125,11 @@ div.mod_solo_mbuttons {
 	border-radius: 5px;
 	margin: 7px;
 }
-.mod_solo_sr_right, .mod_solo_sr_left {
+.mod_solo_sr_right,
+.mod_solo_sr_left {
 	flex-grow: 1;
 	width: 50%;
+	min-width: 250px;
 }
 
 .mod_solo_grading_passagecont {
@@ -1043,4 +1047,32 @@ width:100%;
 position: absolute;
 max-width: 400px;
 max-height: 225px;
+}
+
+.mod_solo_summary_teachereval {
+	flex-grow: 1;
+	width: 100%;
+}
+
+.mod_solo_grammareval_label,
+.mod_solo_spellingeval_label {
+	text-align: center;
+}
+.mod_solo_grammarerror {
+	background-color: beige;
+}
+.mod_solo_grammaradvice {
+	font-style: italic;
+}
+
+audio#mod_solo_passageaudioplayer {
+	width: 100%;
+	max-width: 400px;
+}
+.mod_solo_rubric_results,
+.mod_solo_teacherfeedback {
+	text-align: center;
+}
+.mod_solo_nativeaudioplayer_cont {
+	text-align: center;
 }

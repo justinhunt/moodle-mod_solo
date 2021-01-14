@@ -134,6 +134,17 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020082500, 'solo');
     }
 
+    if ($oldversion < 2021011001) {
+        $table = new xmldb_table('solo');
+        $field =  new xmldb_field('gradewordgoal', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 200);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2021011001, 'solo');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

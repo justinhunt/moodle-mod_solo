@@ -572,11 +572,143 @@ class utils{
     public static function update_stat_aiaccuracy($attemptid, $accuracy) {
         global $DB;
 
-        $record = $DB->get_record(constants::M_STATSTABLE,array('attemptid'=>$attemptid));
-        if($record) {
-            $record->aiaccuracy=$accuracy;
-            $DB->update_record(constants::M_STATSTABLE, $record);
+        $stats = $DB->get_record(constants::M_STATSTABLE,array('attemptid'=>$attemptid));
+        if($stats) {
+            if($stats->aiaccuracy!==$accuracy) {
+                $stats->aiaccuracy = $accuracy;
+                $DB->update_record(constants::M_STATSTABLE, $stats);
+
+                //update grades in this case
+                self::autograde_attempt($attemptid,$stats);
+
+            }
         }
+    }
+
+    public static function autograde_attempt($attemptid,$stats=false){
+        global $DB;
+
+        $attempt = $DB->get_record(constants::M_ATTEMPTSTABLE, array('id'=>$attemptid));
+        //if not attempt found, all is lost.
+        if(!$attempt) {
+            return;
+        }
+        //if this was human graded do not mess with it
+        if($attempt->manualgraded){
+            return;
+        }
+        //we will need our module instance too
+        $moduleinstance=$DB->get_record(constants::M_TABLE,array('id'=>$attempt->solo));
+        if(!$moduleinstance) {
+            return;
+        }
+        if(!$moduleinstance->enableautograde){
+            return;
+        }
+
+        //we might need AI table data too
+        $airesult = $DB->get_record(constants::M_AITABLE,array('attemptid'=>$attemptid));
+
+        //figure out the autograde
+        $ag_options = json_decode($moduleinstance->autogradeoptions);
+
+        //basescore
+        $basescore = $ag_options->gradebasescore;
+
+        //wordcount value
+        $thewordcount = $ag_options->gradewordcount== 'totalunique' ? $stats->uniquewords : $stats->words;
+        $gradewordgoal = $moduleinstance->gradewordgoal;
+        if($gradewordgoal<1){$gradewordgoal=1;}//what kind of person would set to 0 anyway?
+
+        //ratio to apply to start ratio
+        $useratio = 100;
+        switch($ag_options->graderatioitem){
+            case 'spelling':
+                $useratio = $stats->autospellscore;
+                break;
+            case 'grammar':
+                $useratio = $stats->autogrammarscore;
+                break;
+            case 'accuracy':
+                if($airesult){
+                    $useratio = $stats->aiaccuracy;
+                }
+                break;
+            case '--':
+            default:
+                $useratio = 100;
+                break;
+
+        }
+
+        //get starting value from which to add/minus bonuses
+        //eg 80 unique words over target words 100 :
+        // round(80/100,2) = .80
+        $autograde = round(($thewordcount / $gradewordgoal),2);
+        if($autograde>1){$autograde=1;}
+
+        //apply basescore (default 80%)
+        //eg we allow 20% for bonuses so start at 80%. And we already have 80%
+        //.80 x 80 = 64
+        $autograde = $autograde * $basescore;
+
+        //apply use ratio (default aiaccuracy)
+        //eg we reduce score according to accuracy. in this case 50%
+        // 64 x 50 x .01 = 32
+        $autograde = $autograde * $useratio * .01;
+
+        //apply bonuses
+        for($bonusno =1;$bonusno<=4;$bonusno++){
+            $factor=1;
+            if($ag_options->{'bonusdirection' . $bonusno}=='minus'){
+                $factor=-1;
+            }
+            $bonusscore=0;
+            switch($ag_options->{'bonus' . $bonusno}){
+                case 'spellingmistake':
+                    $bonusscore=$stats->autospellerrors;
+                    break;
+                case 'grammarmistake':
+                    $bonusscore=$stats->autogrammarerrors;
+                    break;
+                case 'bigword':
+                    $bonusscore=$stats->longwords;
+                    break;
+                case 'targetwordspoken':
+                    $bonusscore=$stats->targetwords;
+                    break;
+                case 'sentence':
+                    $bonusscore=$stats->turns;
+                    break;
+                case '--':
+                default:
+                    $bonusscore=0;
+                    break;
+
+            }
+            //eg 3 points minus'ed for each of 7 spelling mistakes:
+            //if we had 32% : 32 - [3 points] * [-1] * [7] = 11%
+            $autograde += $ag_options->{'bonuspoints' . $bonusno} * $factor * $bonusscore;
+        }
+
+
+        //sanitize result
+        $autograde = round($autograde,0);
+        if($autograde > 100){
+            $autograde=100;
+        }else if($autograde < 0){
+            $autograde=0;
+        }
+
+        //update attempts table
+        $attempt->grade = round($autograde,0);
+        $DB->update_record(constants::M_ATTEMPTSTABLE, $attempt);
+
+        //update gradebook
+        $grade = new \stdClass();
+        $grade->userid = $attempt->userid;
+        $grade->rawgrade = $autograde;
+        \solo_grade_item_update($moduleinstance,$grade);
     }
 
     //remove stats
@@ -989,8 +1121,9 @@ class utils{
     public static function fetch_options_transcribers() {
         $options =
                 array(constants::TRANSCRIBER_AMAZONTRANSCRIBE => get_string("transcriber_amazontranscribe", constants::M_COMPONENT),
-                        constants::TRANSCRIBER_AMAZONSTREAMING => get_string("transcriber_amazonstreaming", constants::M_COMPONENT),
-                        constants::TRANSCRIBER_GOOGLECLOUDSPEECH => get_string("transcriber_googlecloud", constants::M_COMPONENT));
+                       // constants::TRANSCRIBER_AMAZONSTREAMING => get_string("transcriber_amazonstreaming", constants::M_COMPONENT),
+                       // constants::TRANSCRIBER_GOOGLECLOUDSPEECH => get_string("transcriber_googlecloud", constants::M_COMPONENT)
+              );
         return $options;
     }
 
@@ -1017,8 +1150,8 @@ class utils{
                 constants::M_LANG_HEIL => get_string('he-il', constants::M_COMPONENT),
                 constants::M_LANG_IDID => get_string('id-id', constants::M_COMPONENT),
                 constants::M_LANG_ITIT => get_string('it-it', constants::M_COMPONENT),
-                constants::M_LANG_JAJP => get_string('ja-jp', constants::M_COMPONENT),
-                constants::M_LANG_KOKR => get_string('ko-kr', constants::M_COMPONENT),
+              //  constants::M_LANG_JAJP => get_string('ja-jp', constants::M_COMPONENT),
+              //  constants::M_LANG_KOKR => get_string('ko-kr', constants::M_COMPONENT),
                 constants::M_LANG_MSMY => get_string('ms-my', constants::M_COMPONENT),
                 constants::M_LANG_NLNL => get_string('nl-nl', constants::M_COMPONENT),
                 constants::M_LANG_PTBR => get_string('pt-br', constants::M_COMPONENT),
@@ -1027,7 +1160,7 @@ class utils{
                 constants::M_LANG_TAIN => get_string('ta-in', constants::M_COMPONENT),
                 constants::M_LANG_TEIN => get_string('te-in', constants::M_COMPONENT),
                 constants::M_LANG_TRTR => get_string('tr-tr', constants::M_COMPONENT),
-                constants::M_LANG_ZHCN => get_string('zh-cn', constants::M_COMPONENT)
+             //   constants::M_LANG_ZHCN => get_string('zh-cn', constants::M_COMPONENT)
         );
     }
 
@@ -1078,11 +1211,44 @@ class utils{
                 '--'=>'--',
                 'spelling'=>get_string('stats_autospellscore',constants::M_COMPONENT),
                 'grammar'=>get_string('stats_autogrammarscore',constants::M_COMPONENT),
-                'clarity'=>get_string('stats_aiaccuracy',constants::M_COMPONENT),
+                'accuracy'=>get_string('stats_aiaccuracy',constants::M_COMPONENT),
         );
     }
 
+    public static function fetch_spellingerrors($stats, $transcript) {
+        $spellingerrors=array();
+        $usetranscript = diff::cleanText($transcript);
+        //sanity check
+        if(empty($usetranscript) ||!self::is_json($stats->autospell)){
+            return $spellingerrors;
+        }
 
+        //return errors
+        $spellobj = json_decode($stats->autospell);
+        if($spellobj->status) {
+            $spellarray = $spellobj->data->results;
+            $wordarray = explode(' ', $usetranscript);
+            for($index=0;$index<count($spellarray); $index++) {
+                if (!$spellarray[$index]) {
+                    $spellingerrors[]=$wordarray[$index];
+                }
+            }
+        }
+        return $spellingerrors;
+
+    }
+    public static function fetch_grammarerrors($stats, $transcript) {
+        $usetranscript = diff::cleanText($transcript);
+        //sanity check
+        if(empty($usetranscript) ||!self::is_json($stats->autogrammar)){
+            return [];
+        }
+
+        //return errors
+        $grammarobj = json_decode($stats->autogrammar);
+        return $grammarobj->matches;
+
+    }
 
 
     /**
@@ -1093,7 +1259,7 @@ class utils{
      * @param \stdClass| $attempt
      * @return string rubric results
      */
-    public static function display_studentgrade($modulecontext, $moduleinstance, $attempt, $gradinginfo){
+    public static function display_studentgrade($modulecontext, $moduleinstance, $attempt, $gradinginfo, $starrating=false){
         global  $PAGE;
 
         $gradingitem = null;
@@ -1124,8 +1290,41 @@ class utils{
                 $gradefordisplay = 'no grade available';
             }
         }else{
-            //TO DO add a label and source to the grade number here
-            $gradefordisplay = $attempt->grade;
+            //star rating
+            if($starrating){
+                switch(true){
+                    case $attempt->grade > 79:
+                        $message = get_string('rating_excellent',constants::M_COMPONENT);
+                        $stars=5;
+                        break;
+                    case $attempt->grade > 59:
+                        $message = get_string('rating_verygood',constants::M_COMPONENT);
+                        $stars=4;
+                        break;
+                    case $attempt->grade > 39:
+                        $message = get_string('rating_good',constants::M_COMPONENT);
+                        $stars=3;
+                        break;
+                    case $attempt->grade > 19:
+                        $message = get_string('rating_fair',constants::M_COMPONENT);
+                        $stars=2;
+                        break;
+                    default:
+                        $message = get_string('rating_poor',constants::M_COMPONENT);
+                        $stars=1;
+                }
+                $displaystars ='';
+                for($i=0;$i<5;$i++){
+                    if($i<$stars){
+                        $displaystars .= '<i class="fa fa-3x fa-star"></i>';
+                    }else{
+                        $displaystars .= '<i class="fa fa-3x fa-star-o"></i>';
+                    }
+                }
+                $gradefordisplay = \html_writer::span($message . '<br>' . $displaystars,'mod_solo_evalstars');
+            }else {
+                $gradefordisplay = get_string('gradelabel', constants::M_COMPONENT, $attempt->grade);
+            }
         }
         return $gradefordisplay;
     }

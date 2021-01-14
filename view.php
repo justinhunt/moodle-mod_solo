@@ -106,8 +106,9 @@ if($start_or_continue) {
 
 
     $attempt = utils::fetch_latest_finishedattempt($moduleinstance);
+    $stats=false;
     if($attempt) {
-
+        $requiresgrading = ($attempt->grade==0 && $attempt->manualgraded==0);
         //try to pull transcripts if we have none. Why wait for cron?
         $hastranscripts = !empty($attempt->jsontranscript);
         if(!$hastranscripts){
@@ -124,28 +125,66 @@ if($start_or_continue) {
         }
 
         $stats=utils::fetch_stats($attempt,$moduleinstance);
+        //if we have an ungraded activity, lets grade it
+        if($requiresgrading) {
+            utils::autograde_attempt($attempt->id, $stats);
+        }
+
+
         $aidata = $DB->get_record(constants::M_AITABLE,array('attemptid'=>$attempt->id));
+
+
         echo $attempt_renderer->show_summary($moduleinstance,$attempt,$aidata, $stats);
+
+        //open the summary results div
+        echo html_writer::start_div('mod_solo_summaryresults');
+
+        //show evaluation (auto or teacher)
+        //necessary for M3.3
+        require_once($CFG->libdir.'/gradelib.php');
+        $gradinginfo = grade_get_grades($moduleinstance->course, 'mod', 'solo', $moduleinstance->id, $USER->id);
+        if($attempt && !empty($gradinginfo ) && $attempt->grade !=null) {
+            $feedback=$attempt->feedback;
+            if($attempt->manualgraded){
+                $evaluator = get_string("teachereval", constants::M_COMPONENT);
+                $rubricresults= utils::display_studentgrade($context,$moduleinstance,$attempt,$gradinginfo );
+            }else{
+                $evaluator = get_string("autoeval", constants::M_COMPONENT);
+                $starrating=true;
+                $rubricresults= utils::display_studentgrade($context,$moduleinstance,$attempt,$gradinginfo,$starrating );
+            }
+            echo $attempt_renderer->show_teachereval( $rubricresults,$feedback,$evaluator);
+
+        }
+
+        echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats);
+
+
+        //spelling errors
+        $spellingerrors = utils::fetch_spellingerrors($stats,$attempt->selftranscript);
+        echo $attempt_renderer->show_spellingerrors( $spellingerrors);
+
+        //grammar errors
+        $grammarerrors = utils::fetch_grammarerrors($stats,$attempt->selftranscript);
+        echo $attempt_renderer->show_grammarerrors( $grammarerrors);
+
+
+        //myreports
+        echo $attempt_renderer->show_myreports($moduleinstance,$cm);
+
+        //close the summary results div
+        echo '</div>';
+
+
     }
 
-    //necessary for M3.3
-    require_once($CFG->libdir.'/gradelib.php');
-    //rubric grades
-    $gradinginfo = grade_get_grades($moduleinstance->course, 'mod', 'solo', $moduleinstance->id, $USER->id);
-    if($attempt && !empty($gradinginfo ) && $attempt->grade !=null) {
-        $rubricresults= utils::display_studentgrade($context,$moduleinstance,$attempt,$gradinginfo );
-        $feedback=$attempt->feedback;
-        echo $attempt_renderer->show_teachereval( $rubricresults,$feedback);
 
-    }
-    //myreports
-    echo $attempt_renderer->show_myreports($moduleinstance,$cm);
 
     //all attempts by user table [good for debugging]
     // do not delete this I think
     // echo $attempt_renderer->show_attempts_list($attempts,$tableid,$cm);
 
-    if(empty($gradinginfo ) && ($moduleinstance->multiattempts || has_capability('mod/solo:manageattempts', $context) )){
+    if((!$attempt->manualgraded && $moduleinstance->multiattempts) || has_capability('mod/solo:manageattempts', $context)){
         echo $attempt_renderer->fetch_reattempt_button($cm);
     }
     if($attempt) {

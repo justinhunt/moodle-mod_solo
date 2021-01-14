@@ -25,6 +25,9 @@ class userselectionsform extends baseform
         //$this->add_instructions(get_string('attempt_partone_instructions', constants::M_COMPONENT));
         $this->add_activitycontent();
 
+        //targettime
+        $this->add_targettime_field();
+
         //add tips
         $this->add_tips_field();
 

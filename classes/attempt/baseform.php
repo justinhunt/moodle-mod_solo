@@ -289,6 +289,12 @@ abstract class baseform extends \moodleform {
 
     }
 
+    protected final function add_targettime_field() {
+        $this->_form->addElement('static','targettime',get_string('targettime', constants::M_COMPONENT),
+                get_string('xminutes',constants::M_COMPONENT ,$this->moduleinstance->convlength) ,array("class"=>'mod_solo_bordered mod_solo_readonly'));
+
+    }
+
     protected final function add_speakingtopic() {
 
         $this->_form->addElement('static','speakingtopic',get_string('speakingtopic', constants::M_COMPONENT),
@@ -446,7 +452,7 @@ abstract class baseform extends \moodleform {
         }
 
         $width=450;
-        $height=380;
+        $height=280;
         $timelimit = $this->moduleinstance->maxconvlength * 60;
 
         $error_message = utils::fetch_token_error($this->token);

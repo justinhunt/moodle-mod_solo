@@ -28,22 +28,26 @@
     <tr>
         <th>{{# str }} gradeslast, mod_solo {{/ str }}</th>
         <th>{{# str }} gradesfirst, mod_solo {{/ str }}</th>
-        <th>{{# str }} gradesaiscore, mod_solo {{/ str }}</th>
-        <th>{{# str }} gradesturns, mod_solo {{/ str }}</th>
-        <th>{{# str }} gradesavturnlength, mod_solo {{/ str }}</th>
-        <th>{{# str }} gradesactions, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradesclarity, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradeswords, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradestargetwords, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradesmethod, mod_solo {{/ str }}</th>
         <th>{{# str }} gradesgrade, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradesactions, mod_solo {{/ str }}</th>
+
     </tr>
     </thead>
     <tfoot>
     <tr>
         <th>{{# str }} gradeslast, mod_solo {{/ str }}</th>
         <th>{{# str }} gradesfirst, mod_solo {{/ str }}</th>
-        <th>{{# str }} gradesaiscore, mod_solo {{/ str }}</th>
-        <th>{{# str }} gradesturns, mod_solo {{/ str }}</th>
-        <th>{{# str }} gradesavturnlength, mod_solo {{/ str }}</th>
-        <th>{{# str }} gradesactions, mod_solo {{/ str }}&nbsp;</th>
+        <th>{{# str }} gradesclarity, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradeswords, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradestargetwords, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradesgrader, mod_solo {{/ str }}</th>
         <th>{{# str }} gradesgrade, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradesactions, mod_solo {{/ str }}&nbsp;</th>
+
     </tr>
     </tfoot>
     <tbody id="history-table-body">
@@ -52,9 +56,10 @@
             <td>{{lastname}}</td>
             <td>{{firstname}}</td>
             <td class="text-center">{{aiaccuracy}}</td>
-            <td class="text-center">{{turns}}</td>
-            <td class="text-center">{{avturn}}</td>
-
+            <td class="text-center">{{words}}</td>
+            <td class="text-center">{{targetwords}}/{{totaltargetwords}}</td>
+            <td class="text-center">{{grader}}</td>
+            <td class="m-0 text-center">{{grade}}</td>
             <td>
                 {{#methodrubric}}
                 <a href="gradesubmissions.php?id={{cmid}}&attempt={{attemptid}}&grademethod=rubric">
@@ -69,8 +74,6 @@
                         </button>&nbsp;</a>
                 {{/methodsimple}}
             </td>
-            <td class="m-0 text-center">{{grade}}</td>
-
         </tr>
     {{/data}}
     </tbody>

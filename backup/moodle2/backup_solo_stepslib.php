@@ -53,7 +53,7 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
             'course','name','intro','introformat','grade','gradeoptions','manualgraded','mingrade',
                 'convlength','maxconvlength','speakingtopic','topiciframe','targetwords','tips','tipsformat',
             'ttslanguage','recorderskin','recordertype','enableai','enabletranscribe','expiredays','region','transcriber','multiattempts',
-                'enabletranscription','enableautograde','autogradeoptions','completionallsteps','postattemptedit','timecreated','timemodified'
+                'enabletranscription','enablesharing','enableautograde','gradewordgoal','autogradeoptions','completionallsteps','postattemptedit','timecreated','timemodified'
 			));
 
         // attempt
@@ -63,7 +63,7 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
             'selftranscript','topictargetwords','mywords','convlength',
             'customtext1', 'customtext1format','completedsteps',
             'currentint1','currentint2','currentint3','currentint4',
-            'timemodified','createdby','modifiedby'));
+            'allowsharing', 'timemodified','createdby','modifiedby'));
 
         //attemptstats
         $attemptstats = new backup_nested_element('attemptstats');

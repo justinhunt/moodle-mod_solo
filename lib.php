@@ -206,27 +206,16 @@ function solo_process_editors(stdClass $moduleinstance, mod_solo_mod_form $mform
 
 function solo_process_autogradeoptions(stdClass $moduleinstance, $mform) {
     $ag_options = new \stdClass();
-    $ag_options->graderatio = $moduleinstance->graderatio;
+    $ag_options->graderatioitem = $moduleinstance->graderatioitem;
     $ag_options->gradewordcount = $moduleinstance->gradewordcount;
-    $ag_options->graderatiostart = $moduleinstance->graderatiostart;
+    $ag_options->gradebasescore = $moduleinstance->gradebasescore;
 
-    $ag_options->gradebonus1direction = $moduleinstance->gradebonus1direction;
-    $ag_options->gradebonuspoints1 = $moduleinstance->gradebonuspoints1;
-    $ag_options->gradebonus1 = $moduleinstance->gradebonus1;
+    for ($bonusno=1;$bonusno<=4;$bonusno++) {
+        $ag_options->{'bonusdirection' . $bonusno} = $moduleinstance->{'bonusdirection' . $bonusno} ;
+        $ag_options->{'bonuspoints' . $bonusno}  = $moduleinstance->{'bonuspoints' . $bonusno};
+        $ag_options->{'bonus' . $bonusno} = $moduleinstance->{'bonus' . $bonusno};
+    }
 
-    $ag_options->gradebonus2direction = $moduleinstance->gradebonus2direction;
-    $ag_options->gradebonuspoints2 = $moduleinstance->gradebonuspoints2;
-    $ag_options->gradebonus2 = $moduleinstance->gradebonus2;
-
-
-    $ag_options->gradebonus3direction = $moduleinstance->gradebonus3direction;
-    $ag_options->gradebonuspoints3 = $moduleinstance->gradebonuspoints3;
-    $ag_options->gradebonus3 = $moduleinstance->gradebonus3;
-
-
-    $ag_options->gradebonus4direction = $moduleinstance->gradebonus4direction;
-    $ag_options->gradebonuspoints4 = $moduleinstance->gradebonuspoints4;
-    $ag_options->gradebonus4 = $moduleinstance->gradebonus4;
     $moduleinstance->autogradeoptions=json_encode($ag_options);
     return $moduleinstance;
 
