@@ -51,21 +51,7 @@ class helper
         //remove files
         $fs = get_file_storage();
 
-        $fileareas = array(constants::TEXTPROMPT_FILEAREA,
-            constants::TEXTPROMPT_FILEAREA . '1',
-            constants::TEXTPROMPT_FILEAREA . '2',
-            constants::TEXTPROMPT_FILEAREA . '3',
-            constants::TEXTPROMPT_FILEAREA . '4',
-            constants::AUDIOPROMPT_FILEAREA,
-            constants::AUDIOPROMPT_FILEAREA . '1',
-            constants::AUDIOPROMPT_FILEAREA . '2',
-            constants::AUDIOPROMPT_FILEAREA . '3',
-            constants::AUDIOPROMPT_FILEAREA . '4',
-            constants::PICTUREPROMPT_FILEAREA,
-            constants::PICTUREPROMPT_FILEAREA . '1',
-            constants::PICTUREPROMPT_FILEAREA . '2',
-            constants::PICTUREPROMPT_FILEAREA . '3',
-            constants::PICTUREPROMPT_FILEAREA . '4');
+        $fileareas = array(constants::M_FILEAREA_TOPICMEDIA,constants::M_FILEAREA_SUBMISSIONS);
         foreach ($fileareas as $filearea) {
             $fs->delete_area_files($context->id, 'mod_solo', $filearea, $attemptid);
         }

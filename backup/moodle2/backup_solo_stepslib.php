@@ -150,6 +150,7 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
         // Define file annotations.
         // intro file area has 0 itemid.
         $oneactivity->annotate_files(constants::M_COMPONENT, 'intro', null);
+        $oneactivity->annotate_files(constants::M_COMPONENT, constants::M_FILEAREA_TOPICMEDIA, null);
 		
 		//file annotation if including user info
         if ($userinfo) {

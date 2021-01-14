@@ -74,6 +74,7 @@ const TEXTDESCR = 'itemtext';
 const TEXTDESCR_FILEAREA = 'itemarea';
 
 const M_FILEAREA_SUBMISSIONS='submission';
+const M_FILEAREA_TOPICMEDIA='topicmedia';
 
 const AUDIOPROMPT_FILEAREA = 'audioitem';
 const AUDIOANSWER_FILEAREA = 'audioanswer';
