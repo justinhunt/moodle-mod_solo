@@ -145,12 +145,12 @@ if($start_or_continue) {
         $gradinginfo = grade_get_grades($moduleinstance->course, 'mod', 'solo', $moduleinstance->id, $USER->id);
         if($attempt && !empty($gradinginfo ) && $attempt->grade !=null) {
             $feedback=$attempt->feedback;
+            $starrating=true;
             if($attempt->manualgraded){
                 $evaluator = get_string("teachereval", constants::M_COMPONENT);
                 $rubricresults= utils::display_studentgrade($context,$moduleinstance,$attempt,$gradinginfo,$starrating);
             }else{
                 $evaluator = get_string("autoeval", constants::M_COMPONENT);
-                $starrating=true;
                 $rubricresults= utils::display_studentgrade($context,$moduleinstance,$attempt,$gradinginfo,$starrating );
             }
             echo $attempt_renderer->show_teachereval( $rubricresults,$feedback,$evaluator);
