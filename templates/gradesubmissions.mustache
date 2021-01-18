@@ -198,7 +198,11 @@
             const selectBox = element.querySelector('select[name="gradesUserSelect"]');
             $(element).find('input[type=button]').attr('disabled', 'disabled');
             studentId = selectBox.value;
-            studentName = selectBox[selectBox.selectedIndex].innerHTML;
+            if(selectBox.selectedIndex>=0){
+                studentName = selectBox[selectBox.selectedIndex].innerHTML;
+            }else{
+                studentName = "";
+            }
             $(element).find('.chatplayer').removeAttr('src');
             $(element).find('.chattranscript').html("No data.");
             $(element).find('.chatturns').html(0);
