@@ -62,13 +62,13 @@
             <td class="m-0 text-center">{{grade}}</td>
             <td>
                 {{#methodrubric}}
-                <a href="gradesubmissions.php?id={{cmid}}&attempt={{attemptid}}&grademethod=rubric">
+                <a href="gradesubmissions.php?id={{cmid}}&userid={{userid}}&grademethod=rubric">
                 <button type="button" class="btn btn-primary">
                     {{# str }} gradesgrade, mod_solo {{/ str }}
                 </button>&nbsp;</a>
             {{/methodrubric}}
                 {{#methodsimple}}
-                    <a href="gradesubmissions.php?id={{cmid}}&attempt={{attemptid}}&grademethod=simple">
+                    <a href="gradesubmissions.php?id={{cmid}}&userid={{userid}}&grademethod=simple">
                         <button type="button" class="btn btn-primary">
                             {{# str }} gradesgrade, mod_solo {{/ str }}
                         </button>&nbsp;</a>

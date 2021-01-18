@@ -23,7 +23,7 @@ class grades {
      */
     public function getGrades(int $courseid, int $coursemoduleid, int $moduleinstance) : array {
         global $DB;
-
+        $results=false;
         $sql = "select pa.id as attemptid,
                     u.lastname,
                     u.firstname,
@@ -38,20 +38,39 @@ class grades {
                     pa.solo,
                     pat.aiaccuracy,
                     pa.manualgraded,
-                    pa.grade
+                    pa.grade,
+                    pa.userid
                 from {solo} as p
-                    inner join  (select max(mpa.id) as id, mpa.userid, mpa.solo, mpa.grade, mpa.manualgraded 
-                            from {solo_attempts} mpa
-                            group by mpa.userid, mpa.solo, mpa.grade
-                        ) as pa on p.id = pa.solo
+                    inner join {solo_attempts} pa on p.id = pa.solo
                     inner join {course_modules} as cm on cm.course = p.course and cm.id = ?
                     inner join {user} as u on pa.userid = u.id
                     inner join {solo_attemptstats} as pat on pat.attemptid = pa.id and pat.userid = u.id
                     left outer join {solo_ai_result} as par on par.attemptid = pa.id and par.courseid = p.course
                 where p.course = ?
                     AND pa.solo = ?
-                order by u.lastname";
+                order by pa.id DESC";
 
-        return $DB->get_records_sql($sql, [$coursemoduleid, $courseid, $moduleinstance]);
+        $alldata = $DB->get_records_sql($sql, [$coursemoduleid, $courseid, $moduleinstance]);
+
+        //loop through data getting most recent attempt
+        if ($alldata) {
+            $results=array();
+            $user_attempt_totals = array();
+            foreach ($alldata as $thedata) {
+
+                //we ony take the most recent attempt
+                if (array_key_exists($thedata->userid, $user_attempt_totals)) {
+                    $user_attempt_totals[$thedata->userid] = $user_attempt_totals[$thedata->userid] + 1;
+                    continue;
+                }
+                $user_attempt_totals[$thedata->userid] = 1;
+
+                $results[] = $thedata;
+            }
+            foreach ($results as $thedata) {
+                $thedata->totalattempts = $user_attempt_totals[$thedata->userid];
+            }
+        }
+        return $results;
     }
 }

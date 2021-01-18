@@ -113,7 +113,7 @@ switch ($action){
 	        $created = 0;
 	        for($x=0;$x<count($users);$x++){
                 $user1 = $users[$x];
-	            $ret = copyAttempt($latestattempt,$stats,$ai,$user1,$user2->id);
+	            $ret = copyAttempt($latestattempt,$stats,$ai,$user1);
                 $user1 = $users[$x];
             }//end of user loop
             redirect(new \moodle_url(constants::M_URL . '/developer.php',

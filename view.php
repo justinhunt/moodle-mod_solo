@@ -147,7 +147,7 @@ if($start_or_continue) {
             $feedback=$attempt->feedback;
             if($attempt->manualgraded){
                 $evaluator = get_string("teachereval", constants::M_COMPONENT);
-                $rubricresults= utils::display_studentgrade($context,$moduleinstance,$attempt,$gradinginfo );
+                $rubricresults= utils::display_studentgrade($context,$moduleinstance,$attempt,$gradinginfo,$starrating);
             }else{
                 $evaluator = get_string("autoeval", constants::M_COMPONENT);
                 $starrating=true;
@@ -181,16 +181,22 @@ if($start_or_continue) {
 
 
     //all attempts by user table [good for debugging]
-    // do not delete this I think
     // echo $attempt_renderer->show_attempts_list($attempts,$tableid,$cm);
 
+    $tdata=new \stdClass();
     if((!$attempt->manualgraded && $moduleinstance->multiattempts) || has_capability('mod/solo:manageattempts', $context)){
-        echo $attempt_renderer->fetch_reattempt_button($cm);
+        $reattempturl = new \moodle_url(constants::M_URL . '/view.php',
+                array('id'=>$cm->id,'reattempt'=>1));
+        $tdata->reattempturl=$reattempturl->out();
     }
     if($attempt) {
+
         if ($moduleinstance->postattemptedit || has_capability('mod/solo:manageattempts', $context)) {
-            echo $attempt_renderer->fetch_postattemptedit_link($cm, $attempt->id);
+            $postattemptediturl = new \moodle_url('/mod/solo/attempt/manageattempts.php',
+                    array('id' => $cm->id, 'attemptid' => $attempt->id, 'type' => constants::STEP_SELFTRANSCRIBE));
+            $tdata->postattemptediturl=$postattemptediturl->out();
         }
     }
+    echo $renderer->render_from_template(constants::M_COMPONENT . '/postattemptbuttons', $tdata);
 }
 echo $renderer->footer();

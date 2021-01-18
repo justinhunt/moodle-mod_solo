@@ -428,7 +428,7 @@ $string['gradelabel']= 'Your Grade: {$a}';
 
 $string['gradeitem:solo'] = 'Poodll Solo';
 $string['developer'] = 'Developer';
-$string['dorubricgrade'] = 'Do Rubric Grade';
+$string['dopopupgrade'] = 'Grading user: ';
 
 $string['detailedattemptsreport'] = 'Researcher Report';
 $string['detailedattemptsheading']= 'Researcher Report';
@@ -533,3 +533,9 @@ $string['rating_good'] = 'Good Job';
 $string['rating_verygood'] = 'Very Good';
 $string['rating_excellent'] = 'Excellent !';
 $string['maybereloadaudio']='(If audio does not play, try reloading the page.)';
+
+//reattempt
+$string['reattempt'] = 'Try Again';
+$string['reattempttitle'] = 'Really Try Again?';
+$string['reattemptbody'] = 'If you continue your previous attempt will be replaced with this one. OK?';
+

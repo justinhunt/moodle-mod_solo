@@ -43,7 +43,7 @@ $gradesubmissions = new gradesubmissions();
 
 // Course module ID.
 $id = required_param('id', PARAM_INT);
-$attempt = required_param('attempt', PARAM_INT);
+$userid = required_param('userid', PARAM_INT);
 $grademethod = required_param('grademethod', PARAM_TEXT);
 // Course and course module data.
 $cm = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, IGNORE_MISSING);
@@ -53,17 +53,22 @@ $modulecontext = context_module::instance($cm->id);
 require_capability('mod/solo:grades', $modulecontext);
 
 // Set page login data.
-$PAGE->set_url(constants::M_URL . '/gradesubmissions.php');
+$PAGE->set_url(constants::M_URL . '/gradesubmissions.php',array('id'=>$id,'userid'=>$userid,'grademethod'=>$grademethod));
 require_login($course, true, $cm);
 
-// Get student grade data.
-$studentlist = $gradesubmissions->getStudentsToGrade($attempt,$moduleinstance);
-$students = $studentlist;
+// Get student grade data - all students who completed an attempt
+$studentlist = $gradesubmissions->getStudentsToGrade($moduleinstance);
+//get pages of 3 students (array of 3 userids) and the current students page number
+list($pagesofstudents,$currentstudentpage) = $gradesubmissions->getPageOfStudents($studentlist,$userid);
+//get the page of students (array od f 3 student ids) for current student
+$students = $pagesofstudents[$currentstudentpage];
+//if there are fewer than 3 students, pad the array with X empty strings
 $studentsToGrade = new ArrayIterator(array_pad($students, MAX_GRADE_DISPLAY, ''));
+//get all enroled students for the course
 $submissionCandidates = get_enrolled_users($modulecontext, 'mod/solo:submit');
-// Ensure selected items.
-array_walk($submissionCandidates, function ($candidate) use ($students) {
-    if (in_array($candidate->id, $students, true)) {
+// Select students in page in drop down list.
+array_walk($submissionCandidates, function ($candidate) use ($studentlist) {
+    if (in_array($candidate->id, $studentlist, true)) {
         $candidate->selected = "selected='selected'";
     }
 });
@@ -87,7 +92,9 @@ $gradesrenderer =
             'submissionCandidates' => $submissionCandidates,
             'grademethod' => $grademethod,
             'contextid' => $context->id,
-            'cmid' => $cm->id
+            'cmid' => $cm->id,
+            'currentpage'=>$currentstudentpage,
+            'pages'=>json_encode($pagesofstudents)
         )
     );
 

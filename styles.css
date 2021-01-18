@@ -1079,3 +1079,13 @@ audio#mod_solo_passageaudioplayer {
 .mod_solo_maybereloadaudio {
 	font-style: italic;
 }
+
+.solo_actionbutton {
+	margin: 5px;
+	padding: 5px;
+	text-align: center;
+}
+
+.solo_grading_nav {
+	text-align: center;
+}

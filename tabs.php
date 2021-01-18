@@ -44,7 +44,7 @@ if (!isset($cm)) {
 if (!isset($course)) {
     $course = $DB->get_record('course', array('id' => $moduleinstance->course));
 }
-$attempt = optional_param('attempt', 0, PARAM_INT);
+$userid = optional_param('userid', 0, PARAM_INT);
 
 $tabs = $row = $inactive = $activated = array();
 
@@ -62,7 +62,7 @@ if(has_capability('mod/solo:viewreports',$context)) {
 }
 
 if(has_capability('mod/solo:grades',$context) && stristr($this->page->url, 'gradesubmissions') !== false) {
-    $row[] = new tabobject('gradesubmissions', "$CFG->wwwroot/mod/solo/gradesubmissions.php?id=$cm->id&attempt=$attempt",
+    $row[] = new tabobject('gradesubmissions', "$CFG->wwwroot/mod/solo/gradesubmissions.php?id=$cm->id&userid=$userid",
         get_string('gradesubmissions', constants::M_COMPONENT),
         get_string('managegrades', constants::M_COMPONENT));
 }

@@ -56,7 +56,8 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
             var triggers = selector;
             var that = this;
 
-            Str.get_string('dorubricgrade', 'mod_solo').then(function(title){that.formtitle=title;});
+            Str.get_string('dopopupgrade', 'mod_solo').then(function(title){that.formtitle=title;});
+
             // Fetch the title string.
             $(triggers).on('click', function(e){
                 e.preventDefault();
@@ -67,7 +68,7 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
                 // Create the modal.
                 ModalFactory.create({
                     type: ModalFactory.types.SAVE_CANCEL,
-                    title: that.formtitle,
+                    title: that.formtitle + $(this).attr('data-student-name'),
                     body: that.getBody()
                 }).then(function(modal) {
                     // Keep a reference to the modal.

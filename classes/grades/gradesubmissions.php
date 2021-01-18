@@ -54,7 +54,6 @@ class gradesubmissions {
      */
     public function getSubmissionData(int $userid, int $cmid): array {
         global $DB;
-
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
         $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
         $sql = "select pa.id,
@@ -95,7 +94,10 @@ class gradesubmissions {
             and cm.id = ?
             and p.id = ?;";
 
-        return $DB->get_records_sql($sql, [$userid, $cmid,$moduleinstance->id]);
+        $alldata = $DB->get_records_sql($sql, [$userid, $cmid,$moduleinstance->id]);
+
+        return $alldata;
+
     }
 
     /**
@@ -105,36 +107,63 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getStudentsToGrade($attemptid,$moduleinstance) {
+    public function getStudentsToGrade($moduleinstance) {
         global $DB;
 
         //fetch all finished attempts
         $sql = "select pa.id as id, userid
                     from {solo_attempts} pa
                     where pa.solo = ? AND pa.completedsteps = " . constants::STEP_SELFTRANSCRIBE .
-                    " order by pa.id ASC";
+                    " order by pa.id DESC";
 
         $results = $DB->get_records_sql($sql, [$moduleinstance->id]);
+
         //if we do not have results just return
         if(!$results){return $results;}
 
-        //if we have results, try to get 3 of them including the selected one
-
-            $ret = [];
-            $returning=0;
-            foreach($results as $result){
-                if($result->id == $attemptid){
-                    $returning=1;
-                    $ret[] = $result->userid;
-                }elseif($returning>0 && $returning<3 && !in_array($result->userid,$ret)){
-                    $ret[] = $result->userid;
-                }
-                if($returning==3){
-                    return $ret;
-                }
+        //we ony take the most recent attempt
+        $latestresults=array();
+        $user_attempt_totals = array();
+        foreach ($results as $thedata) {
+            if (array_key_exists($thedata->userid, $user_attempt_totals)) {
+                $user_attempt_totals[$thedata->userid] = $user_attempt_totals[$thedata->userid] + 1;
+                continue;
             }
-            //if we looped and did not get 3 lets just return what we got
-            return $ret;
+            $user_attempt_totals[$thedata->userid] = 1;
+            $latestresults[] = $thedata;
+        }
+
+        //if we looped and did not get 3 lets just return what we got
+        return $latestresults;
 
     }//end of function
+    /**
+     * Returns a listing of students who should be graded based on the user clicked.
+     *
+     * @param int $attempt
+     * @return array
+     * @throws dml_exception
+     */
+    public function getPageOfStudents($students, $studentid=0) {
+        $currentpagemembers=[];
+        $pages=[];
+        $studentpage=-1;
+        //build array of 3 student pages
+        foreach($students as $student){
+            if(count($currentpagemembers)>2){
+                $pages[]=$currentpagemembers;
+                $currentpagemembers=[];
+            }
+            $currentpagemembers[]=$student->userid;
+            if($studentid>0 && $student->userid ==$studentid ){
+                $studentpage=count($pages);
+            }
+        }
+        if(count($currentpagemembers)>0){
+            $pages[]=$currentpagemembers;
+        }
+        //return page details
+        $ret = [$pages,$studentpage];
+        return $ret;
+    }
 }//end of class

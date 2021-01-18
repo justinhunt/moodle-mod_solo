@@ -20,7 +20,6 @@ namespace mod_solo\output;
 
 defined('MOODLE_INTERNAL') || die();
 
-use const bar\foo\baz\const1;
 use \mod_solo\constants;
 use \mod_solo\utils;
 
@@ -88,31 +87,6 @@ class attempt_renderer extends \plugin_renderer_base {
 
     $buttonsdiv = \html_writer::div(implode($glue, $parts),constants::M_COMPONENT .'_mbuttons');
      return $this->output->box($output . $buttonsdiv, 'generalbox firstpageoptions');
-    }
-
-    /**
-     *
-     */
-    public function fetch_reattempt_button($cm){
-
-        $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
-                array('id'=>$cm->id,'reattempt'=>1)),get_string('reattempt',constants::M_COMPONENT));
-
-        $ret = \html_writer::div($button ,constants::M_CLASS  . '_reattempt_cont');
-        return $ret;
-
-    }
-    /**
-     *
-     */
-    public function fetch_postattemptedit_link($cm, $attemptid){
-        $editurl = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                array('id' => $cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_SELFTRANSCRIBE));
-
-        $button = \html_writer::link($editurl,get_string('dopostattemptedit',constants::M_COMPONENT),array('class'=>''));
-        $ret = \html_writer::div($button ,constants::M_CLASS  . '_postattemptedit_cont');
-        return $ret;
-
     }
 
     function show_userattemptsummary($moduleinstance,$attempt,$aidata, $stats){
