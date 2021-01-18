@@ -36,10 +36,10 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <span class="badge badge-light">Turns: <span class="chatturns">0</span></span>
+                    <span class="badge badge-light">Sentences: <span class="chatturns">0</span></span>
                 </div>
                 <div class="col">
-                    <span class="badge badge-light">Words: <span class="chatwords">0</span></span>
+                    <span class="badge badge-light">Words: <span class="chatwords">0</span>(<span class="chatuniquewords">0</span>)</span>
                 </div>
             </div>
             <div class="row">
@@ -61,6 +61,9 @@
             <div class="row">
                 <div class="col">
                     <span class="badge badge-light">Targ.Words: <span class="chattargetwords">0</span>/<span class="chattotaltargetwords">0</span></span>
+                </div>
+                <div class="col">
+                    <span class="badge badge-light">Big Words: <span class="chatlongwords">0</span></span>
                 </div>
             </div>
         </div>
@@ -193,6 +196,8 @@
             $(element).find('.chattranscript').html("No data.");
             $(element).find('.chatturns').html(0);
             $(element).find('.chatwords').html(0);
+            $(element).find('.chatlongwords').html(0);
+            $(element).find('.chatuniquewords').html(0);
             $(element).find('.chatavturns').html(0);
             $(element).find('.chatlongestturns').html(0);
             $(element).find('.chattargetwords').html(0);
@@ -231,6 +236,8 @@
                       // $(element).find('.chattranscript').html(response.response[0].transcript);
                         $(element).find('.chatturns').html(response.response[0].turns);
                         $(element).find('.chatwords').html(response.response[0].words);
+                        $(element).find('.chatuniquewords').html(response.response[0].uniquewords);
+                        $(element).find('.chatlongwords').html(response.response[0].longwords);
                         $(element).find('.chatavturns').html(response.response[0].avturn);
                         $(element).find('.chatlongestturns').html(response.response[0].longestturn);
                         $(element).find('.chattargetwords').html(response.response[0].targetwords);
