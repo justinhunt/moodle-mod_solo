@@ -168,6 +168,17 @@ class utils{
         return true;
     }
 
+    public static function transcripts_are_ready_on_s3($attempt) {
+        //if the audio filename is empty or wrong, its hopeless ...just return false
+        if(!$attempt->filename || empty($attempt->filename)){
+            return false;
+        }
+        $transcripturl = $attempt->filename . '.txt';
+        $postdata = array();
+        //fetch transcripts, and bail out of they are not ready or wrong
+        $transcript = self::curl_fetch($transcripturl,$postdata);
+        return self::is_valid_transcript($transcript);
+    }
 
     public static function retrieve_transcripts_from_s3($attempt){
         global $DB;

@@ -109,9 +109,12 @@ div.mod_solo_mbuttons {
     transform: translateY(-50%);
 }
 .mod_solo_summaryresults {
-	display: flex;
 	margin-bottom: 15px;
-	flex-wrap: wrap;
+	max-width: 750px;
+	min-width: 280px;
+	margin-left: auto;
+	margin-right: auto;
+
 }
 .mod_solo_sr_title{
 	margin: auto;
@@ -127,9 +130,8 @@ div.mod_solo_mbuttons {
 }
 .mod_solo_sr_right,
 .mod_solo_sr_left {
-	flex-grow: 1;
-	width: 50%;
 	min-width: 250px;
+	max-width: 750px;
 }
 
 .mod_solo_grading_passagecont {
@@ -1073,8 +1075,8 @@ audio#mod_solo_passageaudioplayer {
 .mod_solo_teacherfeedback {
 	text-align: center;
 }
-.mod_solo_nativeaudioplayer_cont {
-	/* text-align: center; */
+.mod_solo_summaryresults .mod_solo_nativeaudioplayer_cont {
+	text-align: center;
 }
 .mod_solo_maybereloadaudio {
 	font-style: italic;
@@ -1087,5 +1089,18 @@ audio#mod_solo_passageaudioplayer {
 }
 
 .solo_grading_nav {
+	text-align: center;
+}
+.mod_solo_placeholdertext {
+	text-align: center;
+}
+.mod_solo_myreports .mod_solo_listbuttons {
+	text-align: center;
+}
+.mod_solo_attemptdetailscontainer {
+	text-align: center;
+}
+.mod_solo_sr_details {
+	font-style: italic;
 	text-align: center;
 }

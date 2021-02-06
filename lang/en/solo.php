@@ -468,10 +468,10 @@ $string['completionallsteps_help']='Complete when all steps completed';
 $string['yes']='Yes';
 $string['no']='No';
 
-$string['topiciframe_help']='Paste iframe embed code(html only)for any media that should be shown to students as part of the speaking topic.';
+$string['topiciframe_help']='Paste iframe embed code (html only) for any media that should be shown to students as part of the speaking topic.';
 $string['topicmedia_help']='Upload an audio/video or image file that will be shown to students as part of the speaking topic on the prepare page.';
 $string['speakingtopic_help']='Short instructions to students on what to speak about.';
-$string['targetwords_help']='Target words or phrases that student should try to use while speaking. Each om a new line.';
+$string['targetwords_help']='Target words or phrases that student should try to use while speaking. Each on a new line.';
 
 $string['avturns']='Avg Sentences';
 $string['avatl']='Avg ASL';
@@ -501,7 +501,7 @@ $string['grammarmistake'] = 'grammar mistake';
 $string['targetwordspoken'] = 'target word spoken';
 $string['sentence'] = 'sentence';
 $string['gradewordgoal'] = 'Words goal';
-$string['gradewordgoal_help'] = 'Sets the number of words the student should speak to get 100% when using auto grading.';
+$string['gradewordgoal_help'] = 'Sets the number of words the student should speak to get maximum points when using auto grading.';
 $string['aggroup'] = 'Auto grading';
 $string['aggroup_help'] = 'Set the formula which is used to auto grade the students speaking';
 
@@ -538,4 +538,12 @@ $string['maybereloadaudio']='(If audio does not play, try reloading the page.)';
 $string['reattempt'] = 'Try Again';
 $string['reattempttitle'] = 'Really Try Again?';
 $string['reattemptbody'] = 'If you continue your previous attempt will be replaced with this one. OK?';
+
+$string['secs_till_check']='Checking for results in: - ';
+$string['checking']=' ... checking ... ';
+$string['notgradedyet'] = 'Your submission has been received, but has not been graded yet. It might take a few minutes.';
+$string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';
+$string['moreattemptdetails'] = "More Attempt Details";
+$string['transcriptevaluation']= "Transcript Evaluation";
+$string['transcriptevaluationdetails']= "Underlined, or italic words show differences between your transcript and the automatic transcript.";
 

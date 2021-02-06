@@ -47,6 +47,35 @@ class diff{
     }
 
     /*
+     * Regexp replace with /u will return empty text if not unicodemb4
+     * we only really need unicodemb4 for japanese at this stage (2020/09/17)
+     * but that means we still need it. This impl is awful. There must be a better way ..
+     */
+    public static function isUnicodemb4($thetext) {
+        //$testtext = "test text: " . "\xf8\xa1\xa1\xa1\xa1"; //this will fail for sure
+
+        $thetext =  \core_text::strtolower($thetext);
+        //strip tags is bad for non UTF-8. It might even be the real problem we need to solve here
+        //this anecdotally might help: $thetext =utf8_decode($thetext);
+        //anyway the unicode problems appear after to combo of strtolower and strip_tags, so we call them first
+        $thetext = strip_tags($thetext);
+        $testtext = "test text: " . $thetext;
+
+        $test1 = preg_replace('/#\R+#/u', ' ', $testtext);
+        if(empty($test1)){return false;}
+        $test2 = preg_replace('/\r/u', ' ', $testtext);
+        if(empty($test2)){return false;}
+        $test3 = preg_replace('/\n/u', ' ', $testtext);
+        if(empty($test3)){return false;}
+        $test4 = preg_replace("/[[:punct:]]+/u", "", $testtext);
+        if(empty($test4)){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    /*
     * Clean word of things that might prevent a match
      * i) lowercase it
      * ii) remove html characters
@@ -54,40 +83,60 @@ class diff{
      * iv) remove punctuation
     *
     */
-    public static function cleanText($thetext){
+    public static function cleanText($thetext,$unicodemb4=true) {
+        //f we think its unicodemb4, first test and then get on with it
+        if($unicodemb4){
+            $unicodemb4=self::isUnicodemb4($thetext);
+        }
+
         //lowercaseify
-        $thetext=strtolower($thetext);
+        $thetext = \core_text::strtolower($thetext);
 
         //remove any html
         $thetext = strip_tags($thetext);
 
         //replace all line ends with spaces
-        $thetext = preg_replace('#\R+#', ' ', $thetext);
+        if($unicodemb4) {
+            $thetext = preg_replace('/#\R+#/u', ' ', $thetext);
+            $thetext = preg_replace('/\r/u', ' ', $thetext);
+            $thetext = preg_replace('/\n/u', ' ', $thetext);
+        }else{
+            $thetext = preg_replace('/#\R+#/', ' ', $thetext);
+            $thetext = preg_replace('/\r/', ' ', $thetext);
+            $thetext = preg_replace('/\n/', ' ', $thetext);
+        }
 
-        //remove punctuation
+        //remove punctuation. This is where we needed the unicode flag
         //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
         // $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
         //https://stackoverflow.com/questions/5689918/php-strip-punctuation
-        $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
+        if($unicodemb4) {
+            $thetext = preg_replace("/[[:punct:]]+/u", "", $thetext);
+        }else{
+            $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
+        }
 
         //remove bad chars
-        $b_open="“";
-        $b_close="”";
-        $b_sopen='‘';
-        $b_sclose='’';
-        $bads= array($b_open,$b_close,$b_sopen,$b_sclose);
-        foreach($bads as $bad){
-            $thetext=str_replace($bad,'',$thetext);
+        $b_open = "“";
+        $b_close = "”";
+        $b_sopen = '‘';
+        $b_sclose = '’';
+        $bads = array($b_open, $b_close, $b_sopen, $b_sclose);
+        foreach ($bads as $bad) {
+            $thetext = str_replace($bad, '', $thetext);
         }
 
         //remove double spaces
         //split on spaces into words
-        $textbits = explode(' ',$thetext);
+        $textbits = explode(' ', $thetext);
         //remove any empty elements
-        $textbits = array_filter($textbits, function($value) { return $value !== ''; });
-        $thetext = implode(' ',$textbits);
+        $textbits = array_filter($textbits, function($value) {
+            return $value !== '';
+        });
+        $thetext = implode(' ', $textbits);
         return $thetext;
     }
+
 
     /*
      * This function parses and replaces {{view|alternate}} strings from text passages
@@ -405,13 +454,17 @@ class diff{
     //for use with PHP usort and arrays of sequences
     //sort array so that long sequences come first.
     //if sequences are of equal length, the one whose transcript index is earlier comes first
-    public static function cmp($a, $b)
-    {
+    public static function cmp($a, $b) {
         if ($a->length == $b->length) {
-            if($a->tposition == $b->tposition){
-                return 0;
-            }else{
-                return ($a->tposition< $b->tposition) ? -1 : 1;
+            if ($a->tposition == $b->tposition) {
+                if($a->pposition == $b->pposition){
+                    return 0;
+                }else{
+                    return ($a->pposition < $b->pposition) ? -1 : 1;
+                }
+
+            } else {
+                return ($a->tposition < $b->tposition) ? -1 : 1;
             }
         }
         return ($a->length < $b->length) ? 1 : -1;
@@ -497,10 +550,15 @@ class diff{
 
                 //common is short matches after speaking ends
                 //particularly dangerous are wildcards and alternates
-                if(($altratio >= 0.5) && $enddistance > 0){
-                    $bust=true;
-                }elseif($sequence->length < $enddistance){
-                    $bust=true;
+                //The gist of this is that if the passage match leaps far ahead of the transcript position it looks like a bogus match
+                // on a "the" or "a" which are truncated "there" or "about." As the distance from pposition from transcript length increases
+                // the "leap" distance increases, so the chance of a false far match increases.
+                // However skipped sentences are possible, so we arbitrarily set a 2 word false match limit
+                //[alternatively we might see if the sequence is up until the last transcribed word (which is where it occurs most often]
+                if (($altratio >= 0.5) && $enddistance > 0) {
+                    $bust = true;
+                } else if ($sequence->length < $enddistance && $sequence->length<3) {
+                    $bust = true;
                 }
             }
 

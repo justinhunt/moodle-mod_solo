@@ -31,7 +31,8 @@ This file contains class and ID definitions.
         hiddenplayerbuttonactive: 'mod_solo_hidden_player_button_active',
         hiddenplayerbuttonpaused: 'mod_solo_hidden_player_button_paused',
         hiddenplayerbuttonplaying: 'mod_solo_hidden_player_button_playing',
-        transcriber_amazonstreaming: 4
+        transcriber_amazonstreaming: 4,
+        smallreportplaceholdertext: 'mod_solo_placeholdertext'
 
 
     };//end of return value

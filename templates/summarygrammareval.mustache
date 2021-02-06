@@ -1,12 +1,11 @@
-
-<div class='mod_solo_sr_left'>
-    <div class='mod_solo_sr_title'>{{#str}}grammareval, mod_solo{{/str}}</div>
-    <div class='mod_solo_ct_body'>
-        <div class='mod_solo_grammareval_label'>{{{grammarerrorslabel}}}</div>
-        {{#grammarerrors}}
-        <div class='mod_solo_grammarerror'>{{sentence}}</div>&nbsp;
-        <div class='mod_solo_grammaradvice'>{{message}}</div>
-        <hr>&nbsp;
-        {{/grammarerrors}}
+<div class='mod_solo_ct_body'>
+    <div class='mod_solo_grammareval_label'>
+        {{#hasgrammarerrors}}{{#str}}possiblegrammarerrors, mod_solo{{/str}}{{/hasgrammarerrors}}
+        {{^hasgrammarerrors}}{{#str}}nogrammarerrors, mod_solo{{/str}}{{/hasgrammarerrors}}
     </div>
+    {{#grammarerrors}}
+    <div class='mod_solo_grammarerror'>{{sentence}}</div>&nbsp;
+    <div class='mod_solo_grammaradvice'>{{message}}</div>
+    <hr>&nbsp;
+    {{/grammarerrors}}
 </div>

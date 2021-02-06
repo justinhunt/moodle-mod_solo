@@ -17,6 +17,8 @@ use external_multiple_structure;
 use external_single_structure;
 use external_value;
 use mod_solo\grades\gradesubmissions;
+use mod_solo\utils;
+use mod_solo\aitranscript;
 
 /**
  * External class.
@@ -317,5 +319,47 @@ class external extends external_api {
         return new external_value(PARAM_INT, 'grade id');
     }
 
+
+
+    public static function check_for_results_parameters() {
+        return new external_function_parameters([
+                'attemptid' => new external_value(PARAM_INT)
+        ]);
+    }
+
+    public static function check_for_results($attemptid) {
+        global $DB, $USER;
+        //defaults
+        $ret = ['ready'=>false];
+        $have_humaneval = false;
+        $have_aieval =false;
+
+        $params = self::validate_parameters(self::check_for_results_parameters(),
+                array('attemptid'=>$attemptid));
+
+        //fetch attempt information
+        $attempt = $DB->get_record(constants::M_ATTEMPTSTABLE, array('userid' => $USER->id, 'id' => $attemptid));
+        $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $attempt->solo), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance(constants::M_MODNAME, $moduleinstance->id, $moduleinstance->courseid, false, MUST_EXIST);
+
+        if($attempt) {
+            $hastranscripts = !empty($attempt->jsontranscript);
+            if ($hastranscripts) {
+                $have_aieval = true;
+            } else {
+                $have_aieval= utils::transcripts_are_ready_on_s3($attempt);
+            }
+        }
+
+        //if no results, thats that. return.
+        if($have_aieval || $have_humaneval){
+            $ret['ready']=true;
+        }
+        return json_encode($ret);
+    }
+
+    public static function check_for_results_returns() {
+        return new external_value(PARAM_RAW);
+    }
 
 }

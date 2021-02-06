@@ -1,2 +1,7 @@
+1.0.1 (Build xxxxx)
+- Improved differencing
+- Improved Unicode processing in diff
+- Language string updates
+
 1.0.0 (Build 2021011000)
 -Added simple grading method

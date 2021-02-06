@@ -40,6 +40,12 @@ $functions = array(
                 'type' => 'write',
                 'capabilities' => 'mod/solo:managegrades',
         ),
-
-
+        'mod_solo_check_for_results' => array(
+                'classname' => '\mod_solo\external',
+                'methodname' => 'check_for_results',
+                'description' => 'returns true or false on presence of transcript',
+                'ajax' => true,
+                'type' => 'read',
+                'capabilities' => 'mod/solo:view'
+        )
 );

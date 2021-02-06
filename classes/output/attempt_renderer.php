@@ -94,6 +94,12 @@ class attempt_renderer extends \plugin_renderer_base {
         return $this->show_summary($moduleinstance,$attempt,$aidata, $stats,$userheader);
     }
 
+    public function show_placeholdereval($attemptid){
+        $data = new \stdClass();
+        $data->attemptid = $attemptid;
+        return $this->output->render_from_template( constants::M_COMPONENT . '/summaryplaceholdereval', $data);
+    }
+
     function show_teachereval($rubricresults, $feedback, $evaluator){
         $data = new \stdClass();
         $data->rubricresults = $rubricresults;
@@ -139,7 +145,7 @@ class attempt_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    function show_summarypassageandstats($attempt,$aidata,$stats){
+    function show_summarypassageandstats($attempt,$aidata,$stats,$autotranscriptready){
         //mark up our passage for review
         //if we have ai we need all the js and markup, otherwise we just need the formated transcript
         $ret='';
@@ -155,8 +161,16 @@ class attempt_renderer extends \plugin_renderer_base {
             $tdata = array('a'=>$attempt);
             $markedpassage = $this->output->render_from_template( constants::M_COMPONENT . '/summarytranscript', $tdata);
         }
+        $tdata=array('a'=>$attempt, 's'=>$stats, 'audiofilename'=>$attempt->filename,
+                'markedpassage'=>$markedpassage,'autotranscriptready'=>$autotranscriptready);
 
-        $tdata=array('a'=>$attempt, 's'=>$stats, 'audiofilename'=>$attempt->filename, 'markedpassage'=>$markedpassage);
+        //spelling and grammar data
+        $tdata['spellingerrors'] = utils::fetch_spellingerrors($stats,$attempt->selftranscript);
+        $tdata['grammarerrors'] = utils::fetch_grammarerrors($stats,$attempt->selftranscript);
+        if($tdata['spellingerrors']){$tdata['hasspellingerrors']=true;}
+        if($tdata['grammarerrors']){$tdata['hasgrammarerrors']=true;}
+
+        //send data to template
         $ret .= $this->output->render_from_template( constants::M_COMPONENT . '/summaryresults', $tdata);
         return $ret;
     }

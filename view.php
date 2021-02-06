@@ -153,36 +153,25 @@ if($start_or_continue) {
                 $evaluator = get_string("autoeval", constants::M_COMPONENT);
                 $rubricresults= utils::display_studentgrade($context,$moduleinstance,$attempt,$gradinginfo,$starrating );
             }
-            echo $attempt_renderer->show_teachereval( $rubricresults,$feedback,$evaluator);
+            echo $attempt_renderer->show_teachereval($rubricresults,$feedback,$evaluator);
+            $autotranscriptready=true;
 
+        }else if($attempt){
+            echo $attempt_renderer->show_placeholdereval($attempt->id);
+            $autotranscriptready=false;
         }
-
-        echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats);
-
-
-        //spelling errors
-        $spellingerrors = utils::fetch_spellingerrors($stats,$attempt->selftranscript);
-        echo $attempt_renderer->show_spellingerrors( $spellingerrors);
-
-        //grammar errors
-        $grammarerrors = utils::fetch_grammarerrors($stats,$attempt->selftranscript);
-        echo $attempt_renderer->show_grammarerrors( $grammarerrors);
+        echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats,$autotranscriptready);
 
 
         //myreports
-        echo $attempt_renderer->show_myreports($moduleinstance,$cm);
+       // echo $attempt_renderer->show_myreports($moduleinstance,$cm);
 
         //close the summary results div
         echo '</div>';
-
-
     }
-
-
 
     //all attempts by user table [good for debugging]
     // echo $attempt_renderer->show_attempts_list($attempts,$tableid,$cm);
-
     $tdata=new \stdClass();
     if((!$attempt->manualgraded && $moduleinstance->multiattempts) || has_capability('mod/solo:manageattempts', $context)){
         $reattempturl = new \moodle_url(constants::M_URL . '/view.php',
