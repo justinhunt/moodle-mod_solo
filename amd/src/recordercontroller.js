@@ -53,6 +53,9 @@ define(['jquery', 'core/log','mod_solo/definitions','mod_solo/cloudpoodllloader'
 
         setup_recorder: function(){
             var dd = this;
+            var theform = $('.mod_solo_step2').find('form');
+            var uploadwarning = $('.mod_solo_uploadwarning');
+            var recordingcontainer = $('.mod_solo_recordingcontainer');
 
             //Set up the callback functions for the audio recorder
 
@@ -79,7 +82,7 @@ define(['jquery', 'core/log','mod_solo/definitions','mod_solo/cloudpoodllloader'
             //contains no meaningful data
             //See https://api.poodll.com
             var on_recording_end= function(eventdata){
-                //nothing to do here
+                uploadwarning.show();
             };
 
             //data sent here originates from the awaiting_processing event
@@ -94,7 +97,14 @@ define(['jquery', 'core/log','mod_solo/definitions','mod_solo/cloudpoodllloader'
                     var streamingresults = $('#' + dd.streamingresultsid);
                     streamingresults.val(JSON.stringify(dd.streamingresults));
                 }
+                recordingcontainer.hide();
+            };
 
+            //data sent here originates from the file_submitted event
+            //See https://api.poodll.com
+            var on_file_submitted= function(){
+                uploadwarning.hide();
+                theform.submit();
             };
 
             //init the recorder
@@ -102,7 +112,8 @@ define(['jquery', 'core/log','mod_solo/definitions','mod_solo/cloudpoodllloader'
                 on_recording_start,
                 on_recording_end,
                 on_media_processing,
-                on_speech);
+                on_speech,
+                on_file_submitted);
         },
 
 

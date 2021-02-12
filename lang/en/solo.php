@@ -550,4 +550,4 @@ $string['evaluatedmessage'] = 'Your latest attempt has been received and the eva
 $string['moreattemptdetails'] = "More Attempt Details";
 $string['transcriptevaluation']= "Transcript Evaluation";
 $string['transcriptevaluationdetails']= "Underlined, or italic words show differences between your transcript and the automatic transcript.";
-
+$string['uploading']=' ... uploading ... ';
