@@ -94,6 +94,9 @@ div.mod_solo_mbuttons {
 .mod_solo_summarychoices {
 	display: flex;
 	margin-bottom: 15px;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 1000px;
 }
 
 .mod_solo_summarychoices .summaryboxtitle {
@@ -1103,4 +1106,7 @@ audio#mod_solo_passageaudioplayer {
 .mod_solo_sr_details {
 	font-style: italic;
 	text-align: center;
+}
+.mod_solo_bigfont {
+	font-size: 1.8em;
 }

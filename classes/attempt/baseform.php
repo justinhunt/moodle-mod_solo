@@ -218,6 +218,15 @@ abstract class baseform extends \moodleform {
                 "<div id='" . constants::C_TARGETWORDSDISPLAY. "'>$targetwordcontent</div>");
     }
 
+    //add a field to display the  target spoken words
+    protected final function add_totalwordsgoal() {
+        global $OUTPUT;
+
+        $this->_form->addElement('static','totalwordsgoaldisplay',
+                get_string('gradewordgoal', constants::M_COMPONENT),
+                get_string('displaygradewordgoal', constants::M_COMPONENT,$this->moduleinstance->gradewordgoal));
+    }
+
     protected final function add_title($title) {
         $titlediv = \html_writer::div($title,'mod_solo_formtitle');
         $this->_form->addElement('static','title','', $titlediv);

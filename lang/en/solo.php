@@ -495,13 +495,15 @@ $string['stats_autogrammarscore']='Grammar';
 $string['stats_autospellscore']='Spelling';
 $string['stats_clarity']='Clarity';
 
+$string['tnav_grammar']='Grammar {$a}';
+$string['tnav_spelling']='Spelling {$a}';
+$string['tnav_clarity']='Clarity {$a}';
+
 $string['bigword'] = 'big word';
 $string['spellingmistake'] = 'spelling mistake';
 $string['grammarmistake'] = 'grammar mistake';
 $string['targetwordspoken'] = 'target word spoken';
 $string['sentence'] = 'sentence';
-$string['gradewordgoal'] = 'Words goal';
-$string['gradewordgoal_help'] = 'Sets the number of words the student should speak to get maximum points when using auto grading.';
 $string['aggroup'] = 'Auto grading';
 $string['aggroup_help'] = 'Set the formula which is used to auto grade the students speaking';
 
@@ -520,6 +522,8 @@ $string['skinupload'] = 'Upload';
 $string['totalunique'] = 'Unique word total';
 $string['totalwords'] = 'All word total';
 $string['gradewordgoal'] = 'Total Words Goal';
+$string['gradewordgoal_help'] = 'Sets the number of words the student should speak to get maximum points when using auto grading. See grading section of this form for more details.';
+$string['displaygradewordgoal'] = '{$a} words';
 
 $string['ag_overgradewordgoal'] = ' / Words goal ) x ';
 $string['ag_pointsper'] =' points per ';
@@ -539,7 +543,7 @@ $string['reattempt'] = 'Try Again';
 $string['reattempttitle'] = 'Really Try Again?';
 $string['reattemptbody'] = 'If you continue your previous attempt will be replaced with this one. OK?';
 
-$string['secs_till_check']='Checking for results in: - ';
+$string['secs_till_check']='Checking for results in: ';
 $string['checking']=' ... checking ... ';
 $string['notgradedyet'] = 'Your submission has been received, but has not been graded yet. It might take a few minutes.';
 $string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';

@@ -37,6 +37,9 @@ class audiorecordingform extends baseform
         //show our target words
         $this->add_targetwords_display($targetwords) ;
 
+        //add words goal
+        $this->add_totalwordsgoal();
+
         //we add the recording hidden and visible fields
         $this->add_recordingurl_field();
 

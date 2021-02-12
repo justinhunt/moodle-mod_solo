@@ -72,7 +72,7 @@ class mod_solo_mod_form extends moodleform_mod {
 
         //Enable multiple attempts (or not)
         $mform->addElement('advcheckbox', 'multiattempts', get_string('multiattempts', constants::M_COMPONENT), get_string('multiattempts_details', constants::M_COMPONENT));
-        $mform->setDefault('multipleattempts',true);
+        $mform->setDefault('multipleattempts',$config->multipleattempts);
 
         //allow post attempt edit
         $mform->addElement('advcheckbox', 'postattemptedit', get_string('postattemptedit', constants::M_COMPONENT), get_string('postattemptedit_details', constants::M_COMPONENT));
@@ -128,6 +128,12 @@ class mod_solo_mod_form extends moodleform_mod {
         $mform->addRule('targetwords', get_string('required'), 'required', null, 'client');
         $mform->addHelpButton('targetwords', 'targetwords', constants::M_MODNAME);
 
+        //Total words goal
+        $mform->addElement('text', 'gradewordgoal', get_string('gradewordgoal', constants::M_COMPONENT), array('size'=>20));
+        $mform->setType('gradewordgoal', PARAM_INT);
+        $mform->setDefault('gradewordgoal',60);
+        $mform->addHelpButton('gradewordgoal', 'gradewordgoal', constants::M_MODNAME);
+
 
         //add tips field
         $edoptions = solo_editor_no_files_options($this->context);
@@ -178,11 +184,6 @@ class mod_solo_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'enableautograde', get_string('enableautograde', constants::M_COMPONENT), get_string('enableautograde_details', constants::M_COMPONENT));
         $mform->setDefault('enableautograde',$config->enableautograde);
 
-        //Target word-count
-        $mform->addElement('text', 'gradewordgoal', get_string('gradewordgoal', constants::M_COMPONENT), array('size'=>20));
-        $mform->setType('gradewordgoal', PARAM_INT);
-        $mform->setDefault('gradewordgoal',60);
-        $mform->addHelpButton('gradewordgoal', 'gradewordgoal', constants::M_MODNAME);
 
         //auto grading options
         $aggroup=array();

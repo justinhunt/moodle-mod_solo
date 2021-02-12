@@ -40,6 +40,7 @@ define(['jquery', 'core/log','mod_solo/definitions','core/str','core/ajax','core
         //load all the controls so we do not have to do it later
         register_controls: function(){
             this.controls.placeholdertext = $('.' + def.smallreportplaceholdertext);
+            this.controls.placeholderspinner = $('.' + def.smallreportplaceholderspinner);
         },
 
         //attach the various event handlers we need
@@ -53,12 +54,14 @@ define(['jquery', 'core/log','mod_solo/definitions','core/str','core/ajax','core
             seconds=seconds-1;
             if(seconds>0){
                 setTimeout(that.check_for_results,1000,that,seconds);
-                that.controls.placeholdertext.text(that.secstillcheck + seconds);
+                var formattedSeconds = (" 0" + seconds).slice(-2);
+                that.controls.placeholdertext.text(that.secstillcheck + formattedSeconds );
                 return;
             }
 
             //do the check
             that.controls.placeholdertext.text(that.checking);
+            that.controls.placeholderspinner.show();
             Ajax.call([{
                 methodname: 'mod_solo_check_for_results',
                 args: {
@@ -79,6 +82,7 @@ define(['jquery', 'core/log','mod_solo/definitions','core/str','core/ajax','core
                                 that.controls.placeholdertext.text(that.secstillcheck + seconds);
                         }
                     }
+                    that.controls.placeholderspinner.hide();
                 },
                 fail: notification.exception
             }]);

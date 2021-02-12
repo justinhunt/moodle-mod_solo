@@ -34,6 +34,9 @@ class userselectionsform extends baseform
         //add words
         $this->add_targetwords_fields();
 
+        //add words goal
+        $this->add_totalwordsgoal();
+
         //Conversation length
         //$this->add_conversationlength_field();
     }

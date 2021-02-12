@@ -149,26 +149,37 @@ class attempt_renderer extends \plugin_renderer_base {
         //mark up our passage for review
         //if we have ai we need all the js and markup, otherwise we just need the formated transcript
         $ret='';
+        //spelling and grammar data
+        $tdata=array('a'=>$attempt, 's'=>$stats, 'audiofilename'=>$attempt->filename, 'autotranscriptready'=>$autotranscriptready);
+        $tdata['spellingerrors'] = utils::fetch_spellingerrors($stats,$attempt->selftranscript);
+        $tdata['grammarerrors'] = utils::fetch_grammarerrors($stats,$attempt->selftranscript);
+        if($tdata['spellingerrors']){$tdata['hasspellingerrors']=true;}
+        if($tdata['grammarerrors']){$tdata['hasgrammarerrors']=true;}
         if($aidata) {
             $simpleselftranscript='';
             if(!empty($attempt->selftranscript)){
                 $simpleselftranscript=$attempt->selftranscript;
             }
+
             $markedpassage = \mod_solo\aitranscriptutils::render_passage($simpleselftranscript);
             $js_opts_html = \mod_solo\aitranscriptutils::prepare_passage_amd($attempt, $aidata);
             $markedpassage .= $js_opts_html;
+
+            //add nav to marrked Passage
+            /*
+            $navdata=[];
+            $navdata['clarity_errors']=$aidata->errorcount ? '(' .$aidata->errorcount. ')':'';;
+            $navdata['spelling_errors']=$tdata['spellingerrors'] ? '(' .count($tdata['spellingerrors']). ')':'';
+            $navdata['grammar_errors']=$tdata['grammarerrors'] ? '(' .count($tdata['grammarerrors']). ')':'';
+            $resultsnav = $this->output->render_from_template( constants::M_COMPONENT . '/summarytranscriptnav', $navdata);
+            $markedpassage = $resultsnav . $markedpassage;
+            */
         }else{
-            $tdata = array('a'=>$attempt);
             $markedpassage = $this->output->render_from_template( constants::M_COMPONENT . '/summarytranscript', $tdata);
         }
-        $tdata=array('a'=>$attempt, 's'=>$stats, 'audiofilename'=>$attempt->filename,
-                'markedpassage'=>$markedpassage,'autotranscriptready'=>$autotranscriptready);
+        $tdata['markedpassage']=$markedpassage;
 
-        //spelling and grammar data
-        $tdata['spellingerrors'] = utils::fetch_spellingerrors($stats,$attempt->selftranscript);
-        $tdata['grammarerrors'] = utils::fetch_grammarerrors($stats,$attempt->selftranscript);
-        if($tdata['spellingerrors']){$tdata['hasspellingerrors']=true;}
-        if($tdata['grammarerrors']){$tdata['hasgrammarerrors']=true;}
+
 
         //send data to template
         $ret .= $this->output->render_from_template( constants::M_COMPONENT . '/summaryresults', $tdata);

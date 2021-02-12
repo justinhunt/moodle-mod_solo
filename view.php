@@ -155,12 +155,15 @@ if($start_or_continue) {
             }
             echo $attempt_renderer->show_teachereval($rubricresults,$feedback,$evaluator);
             $autotranscriptready=true;
+            echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats,$autotranscriptready);
 
         }else if($attempt){
             echo $attempt_renderer->show_placeholdereval($attempt->id);
             $autotranscriptready=false;
+            //we decided to make it real obvious if the reslt was not ready yet
+            //echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats,$autotranscriptready);
         }
-        echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats,$autotranscriptready);
+
 
 
         //myreports
