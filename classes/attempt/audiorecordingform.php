@@ -43,6 +43,9 @@ class audiorecordingform extends baseform
         //we add the recording hidden and visible fields
         $this->add_recordingurl_field();
 
+        //we add the wait till it is uploaded field
+        $this->add_upload_warning();
+
     }
     public function custom_definition_after_data() {
         $this->add_audio_recording(get_string('audiorecording',constants::M_COMPONENT));

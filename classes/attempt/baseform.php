@@ -227,6 +227,16 @@ abstract class baseform extends \moodleform {
                 get_string('displaygradewordgoal', constants::M_COMPONENT,$this->moduleinstance->gradewordgoal));
     }
 
+    //add a field to display the  upload warning
+    protected final function add_upload_warning() {
+
+        $this->_form->addElement('static','uploadwarning',
+                '',
+                '<div class="mod_solo_uploadwarning" style="display: none">' .
+                get_string('uploading', constants::M_COMPONENT) . '<br>' .
+                '<i class="fa fa-spinner fa-spin fa-3x"></i></div>');
+    }
+
     protected final function add_title($title) {
         $titlediv = \html_writer::div($title,'mod_solo_formtitle');
         $this->_form->addElement('static','title','', $titlediv);

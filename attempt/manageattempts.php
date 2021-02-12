@@ -283,5 +283,7 @@ $mode='attempts';
 
 echo $renderer->header($moduleinstance, $cm,$mode, null, get_string('edit', constants::M_COMPONENT));
 echo $attempt_renderer->add_edit_page_links($moduleinstance, $attempt,$type);
+echo html_writer::start_div(constants::M_COMPONENT .'_step' . $type);
 $mform->display();
+echo html_writer::end_div();
 echo $renderer->footer();
