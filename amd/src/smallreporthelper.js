@@ -55,7 +55,7 @@ define(['jquery', 'core/log','mod_solo/definitions','core/str','core/ajax','core
             if(seconds>0){
                 setTimeout(that.check_for_results,1000,that,seconds);
                 var formattedSeconds = (" 0" + seconds).slice(-2);
-                that.controls.placeholdertext.text(that.secstillcheck + formattedSeconds );
+                that.controls.placeholdertext.html(that.secstillcheck + '<br>' + formattedSeconds );
                 return;
             }
 

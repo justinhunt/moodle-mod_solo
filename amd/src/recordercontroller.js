@@ -104,6 +104,8 @@ define(['jquery', 'core/log','mod_solo/definitions','mod_solo/cloudpoodllloader'
             //See https://api.poodll.com
             var on_file_submitted= function(){
                 uploadwarning.hide();
+                /* disable cancel button because users can try to leave too soon */
+                $(".mod_solo_step2 .btn").attr('disabled', 'disabled');
                 theform.submit();
             };
 

@@ -42,6 +42,7 @@ $string['solo:attemptedit'] = 'Edit attempts';
 $string['solo:manageattempts'] = 'Can manage Poodll Solo attempts';
 $string['solo:manage'] = 'Can manage Poodll Solo instances';
 $string['solo:submit'] = 'Can submit Poodll Solo attempts';
+$string['solo:view'] = 'View Solo grades';
 $string['privacy:metadata'] = 'The Poodll Poodll Solo plugin does store personal data.';
 $string['privacy:metadata:solo'] = 'The Poodll Poodll Solo plugin does store personal data.';
 $string['privacy:metadata:attemptstable'] = 'The Poodll Poodll Solo attempts table.';
@@ -543,7 +544,7 @@ $string['reattempt'] = 'Try Again';
 $string['reattempttitle'] = 'Really Try Again?';
 $string['reattemptbody'] = 'If you continue your previous attempt will be replaced with this one. OK?';
 
-$string['secs_till_check']='Checking for results in: ';
+$string['secs_till_check']='checking for results in ... ';
 $string['checking']=' ... checking ... ';
 $string['notgradedyet'] = 'Your submission has been received, but has not been graded yet. It might take a few minutes.';
 $string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';
