@@ -552,3 +552,12 @@ $string['moreattemptdetails'] = "More Attempt Details";
 $string['transcriptevaluation']= "Transcript Evaluation";
 $string['transcriptevaluationdetails']= "Underlined, or italic words show differences between your transcript and the automatic transcript.";
 $string['uploading']=' ... uploading ... ';
+
+//media toggles
+$string['mediaoptions'] = 'Media Options';
+$string['addmedia'] = 'Add Media';
+$string['addiframe'] = 'Add iFrame';
+$string['addttsaudio'] = 'Add TTS Audio';
+
+$string['topictts'] ='Text to be read';
+$string['topicttsvoice'] ='Speaker\'s voice';

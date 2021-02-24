@@ -145,6 +145,24 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021011001, 'solo');
     }
 
+    // Add TTS topic  to solo table
+    if ($oldversion < 2021022200) {
+        $table = new xmldb_table('solo');
+
+        // Define fields itemtts and itemtts voice to be added to minilesson
+        $fields=[];
+        $fields[] = new xmldb_field('topicttsvoice', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED);
+        $fields[] = new xmldb_field('topictts', XMLDB_TYPE_TEXT, null, null, null, null);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, 2021022200, 'solo');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

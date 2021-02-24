@@ -1403,4 +1403,63 @@ class utils{
         return (json_last_error() == JSON_ERROR_NONE);
     }
 
+    public static function get_tts_voices($langcode='en-US',$showall=true) {
+        $alllang = array(
+                constants::M_LANG_ARAE => ['Zeina'],
+            //constants::M_LANG_ARSA => [],
+                constants::M_LANG_DEDE => ['Hans' => 'Hans', 'Marlene' => 'Marlene', 'Vicki' => 'Vicki'],
+            //constants::M_LANG_DECH => [],
+                constants::M_LANG_ENUS => ['Joey' => 'Joey', 'Justin' => 'Justin', 'Matthew' => 'Matthew', 'Ivy' => 'Ivy',
+                        'Joanna' => 'Joanna', 'Kendra' => 'Kendra', 'Kimberly' => 'Kimberly', 'Salli' => 'Salli'],
+                constants::M_LANG_ENGB => ['Brian' => 'Brian', 'Amy' => 'Amy', 'Emma' => 'Emma'],
+                constants::M_LANG_ENAU => ['Russell' => 'Russell', 'Nicole' => 'Nicole'],
+                constants::M_LANG_ENIN => ['Aditi' => 'Aditi', 'Raveena' => 'Raveena'],
+            // constants::M_LANG_ENIE => [],
+                constants::M_LANG_ENWL => ["Geraint" => "Geraint"],
+            // constants::M_LANG_ENAB => [],
+                constants::M_LANG_ESUS => ['Miguel' => 'Miguel', 'Penelope' => 'Penelope'],
+                constants::M_LANG_ESES => ['Enrique' => 'Enrique', 'Conchita' => 'Conchita', 'Lucia' => 'Lucia'],
+            //constants::M_LANG_FAIR => [],
+                constants::M_LANG_FRCA => ['Chantal' => 'Chantal'],
+                constants::M_LANG_FRFR => ['Mathieu' => 'Mathieu', 'Celine' => 'Celine', 'Léa' => 'Léa'],
+                constants::M_LANG_HIIN => ["Aditi" => "Aditi"],
+            //constants::M_LANG_HEIL => [],
+            //constants::M_LANG_IDID => [],
+                constants::M_LANG_ITIT => ['Carla' => 'Carla', 'Bianca' => 'Bianca', 'Giorgio' => 'Giorgio'],
+                constants::M_LANG_JAJP => ['Takumi' => 'Takumi', 'Mizuki' => 'Mizuki'],
+                constants::M_LANG_KOKR => ['Seoyan' => 'Seoyan'],
+            //constants::M_LANG_MSMY => [],
+                constants::M_LANG_NLNL => ["Ruben" => "Ruben", "Lotte" => "Lotte"],
+                constants::M_LANG_PTBR => ['Ricardo' => 'Ricardo', 'Vitoria' => 'Vitoria'],
+                constants::M_LANG_PTPT => ["Ines" => "Ines", 'Cristiano' => 'Cristiano'],
+                constants::M_LANG_RURU => ["Tatyana" => "Tatyana", "Maxim" => "Maxim"],
+            //constants::M_LANG_TAIN => [],
+            //constants::M_LANG_TEIN => [],
+                constants::M_LANG_TRTR => ['Filiz' => 'Filiz'],
+                constants::M_LANG_ZHCN => ['Zhiyu']
+        );
+        if (array_key_exists($langcode, $alllang) && !$showall) {
+            return $alllang[$langcode];
+        } else if ($showall) {
+            $usearray = [];
+
+            //add current language first
+            foreach ($alllang[$langcode] as $v => $thevoice) {
+                $usearray[$thevoice] = get_string(strtolower($langcode), constants::M_COMPONENT) . ': ' . $thevoice;
+            }
+            //then all the rest
+            foreach ($alllang as $lang => $voices) {
+                if ($lang == $langcode) {
+                    continue;
+                }
+                foreach ($voices as $v => $thevoice) {
+                    $usearray[$thevoice] = get_string(strtolower($lang), constants::M_COMPONENT) . ': ' . $thevoice;
+                }
+            }
+            return $usearray;
+        } else {
+            return $alllang[constants::M_LANG_ENUS];
+        }
+    }
+
 }

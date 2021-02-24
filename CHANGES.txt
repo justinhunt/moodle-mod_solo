@@ -1,3 +1,6 @@
+1.0.4 (Build 2021022200)
+-Add options for TTS prompt and better display of media prompt items on form
+
 1.0.3 (Build 2021021800)
 - Improved layout of results and added better stuff to prevent a user prematurely leaving the recording page.
 

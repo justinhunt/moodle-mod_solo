@@ -106,6 +106,18 @@ class mod_solo_mod_form extends moodleform_mod {
         $mform->addHelpButton('speakingtopic', 'speakingtopic', constants::M_MODNAME);
         $mform->addRule('speakingtopic', get_string('required'), 'required', null, 'client');
 
+        //display media options for speaking prompt
+        $m35 = $CFG->version >= 2018051700;
+        $togglearray=array();
+        $togglearray[] =& $mform->createElement('advcheckbox','addmedia',get_string('addmedia',constants::M_COMPONENT),'');
+        $togglearray[] =& $mform->createElement('advcheckbox','addiframe',get_string('addiframe',constants::M_COMPONENT),'');
+        $togglearray[] =& $mform->createElement('advcheckbox','addttsaudio',get_string('addttsaudio',constants::M_COMPONENT),'');
+        $mform->addGroup($togglearray, 'togglearray', get_string('mediaoptions', constants::M_COMPONENT), array(' '), false);
+
+        //We assume they want to use some media
+        $mform->setDefault('addmedia', 1);
+
+
         //Speaking topic upload
         $filemanageroptions = solo_filemanager_options($this->context);
         $mform->addElement('filemanager',
@@ -115,11 +127,35 @@ class mod_solo_mod_form extends moodleform_mod {
                 $filemanageroptions
         );
         $mform->addHelpButton('topicmedia', 'topicmedia', constants::M_MODNAME);
+        if($m35){
+            $mform->hideIf('topicmedia', 'addmedia', 'neq', 1);
+        }else {
+            $mform->disabledIf('topicmedia', 'addmedia', 'neq', 1);
+        }
 
         //Speaking topic iframe
         $mform->addElement('text', 'topiciframe', get_string('topiciframe', constants::M_COMPONENT), array('size'=>100));
         $mform->setType('topiciframe', PARAM_RAW);
         $mform->addHelpButton('topiciframe', 'topiciframe', constants::M_MODNAME);
+        if($m35){
+            $mform->hideIf('topiciframe','addiframe','neq', 1);
+        }else {
+            $mform->disabledIf( 'topiciframe','addiframe','neq', 1);
+        }
+
+        //Speaking topic TTS
+        $mform->addElement('textarea', 'topictts', get_string('topictts', constants::M_COMPONENT), array('wrap'=>'virtual','style'=>'width: 100%;'));
+        $mform->setType('topictts', PARAM_RAW);
+        $voiceoptions = utils::get_tts_voices();
+        $this->_form->addElement('select', 'topicttsvoice', get_string('topicttsvoice',constants::M_COMPONENT), $voiceoptions);
+        $mform->setDefault('topicttsvoice','Amy');
+        if($m35){
+            $mform->hideIf('topictts', 'addttsaudio', 'neq', 1);
+            $mform->hideIf('topicttsvoice', 'addttsaudio', 'neq', 1);
+        }else {
+            $mform->disabledIf('topictts', 'addttsaudio', 'neq', 1);
+            $mform->disabledIf('topicttsvoice', 'addttsaudio', 'neq', 1);
+        }
 
         //targetwords
         $mform->addElement('static','targetwordsexplanation','',get_string('targetwordsexplanation',constants::M_COMPONENT));
@@ -270,6 +306,31 @@ class mod_solo_mod_form extends moodleform_mod {
                 $form_data->{'bonuspoints' . $bonusno}  = $ag_options->{'bonuspoints' . $bonusno} ;
                 $form_data->{'bonus' . $bonusno} = $ag_options->{'bonus' . $bonusno};
             }
+        }
+
+        //make sure the media upload fields are in the correct state
+        if ($this->current->instance) {
+            $fs = get_file_storage();
+            $files = $fs->get_area_files($this->context->id, constants::M_COMPONENT,
+                    'topicmedia', $form_data->id);
+            if ($files) {
+                $form_data->addmedia = 1;
+            } else {
+                $form_data->addmedia = 0;
+            }
+            if (!empty($form_data->topictts)) {
+                $form_data->addttsaudio = 1;
+            } else {
+                $form_data->addttsaudio = 0;
+            }
+            if (!empty($form_data->topiciframe)) {
+                $form_data->addiframe = 1;
+            } else {
+                $form_data->addiframe = 0;
+            }
+        }else{
+		     //default for media is file upload
+            $form_data->addmedia = 1;
         }
 
 	}
