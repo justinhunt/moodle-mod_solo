@@ -36,6 +36,9 @@ use \mod_solo\constants;
  */
 class utils{
 
+    //  const CLOUDPOODLL = 'http://localhost/moodle';
+    const CLOUDPOODLL = 'https://cloud.poodll.com';
+
     //fetch the latest compeleted state
     public static function fetch_latest_finishedattempt($solo,$userid=false) {
         global $DB, $USER;
@@ -1459,6 +1462,43 @@ class utils{
             return $usearray;
         } else {
             return $alllang[constants::M_LANG_ENUS];
+        }
+    }
+
+    //fetch the MP3 URL of the text we want read aloud
+    public static function fetch_polly_url($token,$region,$speaktext,$texttype, $voice) {
+        global $USER;
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_fetch_polly_url';
+
+        //log.debug(params);
+        $params = array();
+        $params['wstoken'] = $token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['text'] = urlencode($speaktext);
+        $params['texttype'] = $texttype;
+        $params['voice'] = $voice;
+        $params['appid'] = constants::M_COMPONENT;
+        $params['owner'] = hash('md5',$USER->username);
+        $params['region'] = $region;
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then lets do the embed
+        } else if ($payloadobject->returnCode === 0) {
+            $pollyurl = $payloadobject->returnMessage;
+            return $pollyurl;
+        } else {
+            return false;
         }
     }
 

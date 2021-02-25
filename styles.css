@@ -995,6 +995,7 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 .mod_solo_activitycontent_image_cont,
 .mod_solo_activitycontent_video_cont,
 .mod_solo_activitycontent_audio_cont,
+.mod_solo_activitycontent_tts_cont,
 .mod_solo_activitycontent_iframe_cont {
 	width: 100%;
 	margin-top: 10px;

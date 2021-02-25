@@ -33,7 +33,9 @@ This file contains class and ID definitions.
         hiddenplayerbuttonplaying: 'mod_solo_hidden_player_button_playing',
         transcriber_amazonstreaming: 4,
         smallreportplaceholdertext: 'mod_solo_placeholdertext',
-        smallreportplaceholderspinner: 'mod_solo_placeholderspinner'
+        smallreportplaceholderspinner: 'mod_solo_placeholderspinner',
+        cloudpoodllurl: 'https://cloud.poodll.com',
+        //cloudpoodllurl: 'http://localhost/moodle',
 
     };//end of return value
 });

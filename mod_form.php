@@ -311,8 +311,9 @@ class mod_solo_mod_form extends moodleform_mod {
         //make sure the media upload fields are in the correct state
         if ($this->current->instance) {
             $fs = get_file_storage();
+            $itemid=0;
             $files = $fs->get_area_files($this->context->id, constants::M_COMPONENT,
-                    'topicmedia', $form_data->id);
+                    'topicmedia', $itemid);
             if ($files) {
                 $form_data->addmedia = 1;
             } else {

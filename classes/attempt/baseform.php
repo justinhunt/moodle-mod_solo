@@ -262,6 +262,11 @@ abstract class baseform extends \moodleform {
             $contentitem['itemiframe']=$this->moduleinstance->topiciframe;
         }
 
+        //Prepare TTS prompt
+        if(!empty(trim($this->moduleinstance->topictts))){
+            $contentitem['itemtts']=utils::fetch_polly_url($this->token,$this->moduleinstance->region,$this->moduleinstance->topictts,'text',$this->moduleinstance->topicttsvoice);
+        }
+
         //media items
         $itemid=0;
         $filearea='topicmedia';

@@ -121,6 +121,7 @@ switch($type) {
         $targetwords = $attempt ? $attempt->topictargetwords : '';
         $mform = new \mod_solo\attempt\userselectionsform(null,
                 array('moduleinstance' => $moduleinstance,
+                        'token' => $token,
                         'cm'=>$cm));
         break;
 

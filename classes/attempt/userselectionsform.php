@@ -17,6 +17,8 @@ class userselectionsform extends baseform
     public function custom_definition() {
         $this->moduleinstance = $this->_customdata['moduleinstance'];
         $this->cm = $this->_customdata['cm'];
+        //we need the token for polly
+        $this->token = $this->_customdata['token'];
 
 
         //we set the title and instructions
