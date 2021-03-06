@@ -70,41 +70,12 @@ class mod_solo_mod_form extends moodleform_mod {
         	$this->standard_intro_elements();
 		}
 
-        //Enable multiple attempts (or not)
-        $mform->addElement('advcheckbox', 'multiattempts', get_string('multiattempts', constants::M_COMPONENT), get_string('multiattempts_details', constants::M_COMPONENT));
-        $mform->setDefault('multipleattempts',$config->multipleattempts);
-
-        //allow post attempt edit
-        $mform->addElement('advcheckbox', 'postattemptedit', get_string('postattemptedit', constants::M_COMPONENT), get_string('postattemptedit_details', constants::M_COMPONENT));
-        $mform->setDefault('postattemptedit',false);
-
-
-
-        $options = utils::get_recorders_options();
-        $mform->addElement('select','recordertype',get_string('recordertype', constants::M_COMPONENT), $options,array("size"=>"5"));
-        $mform->setDefault('recordertype',constants::REC_AUDIO);
-
-
-        $options = utils::get_skin_options();
-        $mform->addElement('select','recorderskin',get_string('recorderskin', constants::M_COMPONENT), $options,array("size"=>"5"));
-        $mform->setDefault('recorderskin',constants::SKIN_ONCE);
-
-
-        //time limits
-        $options = utils::get_conversationlength_options();
-        //the size attribute doesn't work because the attributes are applied on the div container holding the select
-        $mform->addElement('select','convlength',get_string('convlength', constants::M_COMPONENT), $options,array("size"=>"5"));
-        $mform->setDefault('convlength',constants::DEF_CONVLENGTH);
-
-        //the size attribute doesn't work because the attributes are applied on the div container holding the select
-        $mform->addElement('select','maxconvlength',get_string('maxconvlength', constants::M_COMPONENT), $options,array("size"=>"5"));
-        $mform->setDefault('maxconvlength',constants::DEF_CONVLENGTH);
 
         // Speaking topic text
         $mform->addElement('textarea', 'speakingtopic', get_string('speakingtopic', constants::M_COMPONENT, '1'),  array('rows'=>'3', 'cols'=>'80'));
         $mform->setType('speakingtopic', PARAM_TEXT);
         $mform->addHelpButton('speakingtopic', 'speakingtopic', constants::M_MODNAME);
-        $mform->addRule('speakingtopic', get_string('required'), 'required', null, 'client');
+        //$mform->addRule('speakingtopic', get_string('required'), 'required', null, 'client');
 
         //display media options for speaking prompt
         $m35 = $CFG->version >= 2018051700;
@@ -157,11 +128,33 @@ class mod_solo_mod_form extends moodleform_mod {
             $mform->disabledIf('topicttsvoice', 'addttsaudio', 'neq', 1);
         }
 
+
+        $options = utils::get_recorders_options();
+        $mform->addElement('select','recordertype',get_string('recordertype', constants::M_COMPONENT), $options,array());
+        $mform->setDefault('recordertype',constants::REC_AUDIO);
+
+
+        $options = utils::get_skin_options();
+        $mform->addElement('select','recorderskin',get_string('recorderskin', constants::M_COMPONENT), $options,array());
+        $mform->setDefault('recorderskin',constants::SKIN_ONCE);
+
+
+        //time limits
+        $options = utils::get_conversationlength_options();
+        //the size attribute doesn't work because the attributes are applied on the div container holding the select
+        $mform->addElement('select','convlength',get_string('convlength', constants::M_COMPONENT), $options,array());
+        $mform->setDefault('convlength',constants::DEF_CONVLENGTH);
+
+        //the size attribute doesn't work because the attributes are applied on the div container holding the select
+        $mform->addElement('select','maxconvlength',get_string('maxconvlength', constants::M_COMPONENT), $options,array());
+        $mform->setDefault('maxconvlength',constants::DEF_CONVLENGTH);
+
+
         //targetwords
         $mform->addElement('static','targetwordsexplanation','',get_string('targetwordsexplanation',constants::M_COMPONENT));
-        $mform->addElement('textarea', 'targetwords', get_string('topictargetwords', constants::M_COMPONENT), 'wrap="virtual" rows="12" cols="50"');
+        $mform->addElement('textarea', 'targetwords', get_string('topictargetwords', constants::M_COMPONENT), 'wrap="virtual" rows="5" cols="50"');
         $mform->setType('targetwords', PARAM_TEXT);
-        $mform->addRule('targetwords', get_string('required'), 'required', null, 'client');
+        //$mform->addRule('targetwords', get_string('required'), 'required', null, 'client');
         $mform->addHelpButton('targetwords', 'targetwords', constants::M_MODNAME);
 
         //Total words goal
@@ -173,10 +166,18 @@ class mod_solo_mod_form extends moodleform_mod {
 
         //add tips field
         $edoptions = solo_editor_no_files_options($this->context);
-        $opts = array('rows'=>'5', 'columns'=>'80');
+        $opts = array('rows'=>'2', 'columns'=>'80');
         $mform->addElement('editor','tips_editor',get_string('tips', constants::M_COMPONENT),$opts,$edoptions);
         $mform->setDefault('tips_editor',array('text'=>$config->speakingtips, 'format'=>FORMAT_HTML));
         $mform->setType('tips_editor',PARAM_RAW);
+
+        //Enable multiple attempts (or not)
+        $mform->addElement('advcheckbox', 'multiattempts', get_string('multiattempts', constants::M_COMPONENT), get_string('multiattempts_details', constants::M_COMPONENT));
+        $mform->setDefault('multipleattempts',$config->multipleattempts);
+
+        //allow post attempt edit
+        $mform->addElement('advcheckbox', 'postattemptedit', get_string('postattemptedit', constants::M_COMPONENT), get_string('postattemptedit_details', constants::M_COMPONENT));
+        $mform->setDefault('postattemptedit',false);
 
 
         //Enable Manual Transcription [for now lets foprce this ]
@@ -187,8 +188,11 @@ class mod_solo_mod_form extends moodleform_mod {
 
 
         //Enable AI
-        $mform->addElement('advcheckbox', 'enableai', get_string('enableai', constants::M_COMPONENT), get_string('enableai_details', constants::M_COMPONENT));
-        $mform->setDefault('enableai',$config->enableai);
+        //Enable Manual Transcription [for now lets foprce this ]
+        $mform->addElement('hidden', 'enableai', 1);
+        $mform->setType('enableai',PARAM_BOOL);
+       // $mform->addElement('advcheckbox', 'enableai', get_string('enableai', constants::M_COMPONENT), get_string('enableai_details', constants::M_COMPONENT));
+       // $mform->setDefault('enableai',$config->enableai);
 
         //tts options
         $langoptions = \mod_solo\utils::get_lang_options();

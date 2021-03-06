@@ -94,7 +94,7 @@ $string['notgradedyet'] = 'Your submission has been received, but has not been g
 $string['enabletts'] = 'Enable TTS(experimental)';
 $string['enabletts_details'] = 'TTS is currently not implemented';
 //we hijacked this setting for both TTS STT .... bad ... but they are always the same aren't they?
-$string['ttslanguage'] = 'Passage Language';
+$string['ttslanguage'] = 'Target Language';
 $string['deleteattemptconfirm'] = "Are you sure that you want to delete this attempt?";
 $string['deletenow']='';
 $string['attemptsperpage']='Attempts per page';
