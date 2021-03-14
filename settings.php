@@ -85,4 +85,9 @@ if ($ADMIN->fulltree) {
 	 $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/attemptsperpage',
         get_string('attemptsperpage', constants::M_COMPONENT), get_string('attemptsperpage_details', constants::M_COMPONENT), 10, PARAM_INT));
 
+
+    $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enablesetuptab',
+            get_string('enablesetuptab', constants::M_COMPONENT), get_string('enablesetuptab_details',constants::M_COMPONENT), 0));
+
+
 }

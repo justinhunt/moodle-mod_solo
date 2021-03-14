@@ -561,3 +561,11 @@ $string['addttsaudio'] = 'Add TTS Audio';
 
 $string['topictts'] ='Text to be read';
 $string['topicttsvoice'] ='Speaker\'s voice';
+
+$string['speakingtargetsheader'] ='Speaking Targets';
+$string['languageandrecordingheader'] ='Language and Recording';
+$string['attemptsandautogradingheader'] ='Attempts and AutoGrading';
+$string['enablesetuptab']="Enable setup tab";
+$string['enablesetuptab_details']="Show a tab containing the activity instance settings to admins. Not super useful in most cases.";
+$string['setup']="Setup";
+

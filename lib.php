@@ -191,7 +191,7 @@ function solo_add_instance(stdClass $moduleinstance, mod_solo_mod_form $mform = 
 }
 
 
-function solo_process_editors(stdClass $moduleinstance, mod_solo_mod_form $mform = null) {
+function solo_process_editors(stdClass $moduleinstance, $mform = null) {
 	global $DB;
     $cmid = $moduleinstance->coursemodule;
     $context = context_module::instance($cmid);
@@ -221,7 +221,7 @@ function solo_process_autogradeoptions(stdClass $moduleinstance, $mform) {
 
 }
 
-function solo_process_filemanagers(stdClass $moduleinstance, mod_solo_mod_form $mform = null) {
+function solo_process_filemanagers(stdClass $moduleinstance, $mform = null) {
     global $DB;
     $cmid = $moduleinstance->coursemodule;
     $context = context_module::instance($cmid);

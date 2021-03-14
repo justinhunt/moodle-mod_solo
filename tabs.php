@@ -45,10 +45,16 @@ if (!isset($course)) {
     $course = $DB->get_record('course', array('id' => $moduleinstance->course));
 }
 $userid = optional_param('userid', 0, PARAM_INT);
+$config = get_config(constants::M_COMPONENT);
 
 $tabs = $row = $inactive = $activated = array();
 
 $row[] = new tabobject('attempts', "$CFG->wwwroot/mod/solo/view.php?id=$cm->id", get_string('attempts', constants::M_COMPONENT), get_string('manageattempts', constants::M_COMPONENT));
+
+if(has_capability('mod/solo:manage',$context) && $config->enablesetuptab) {
+    $row[] = new tabobject('setup', "$CFG->wwwroot/mod/solo/setup.php?id=$cm->id",
+            get_string('setup', constants::M_COMPONENT), get_string('setup', constants::M_COMPONENT));
+}
 
 if(has_capability('mod/solo:grades',$context)) {
     $row[] = new tabobject('grades', "$CFG->wwwroot/mod/solo/grades.php?id=$cm->id",
