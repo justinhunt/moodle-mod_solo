@@ -1,3 +1,5 @@
+-added string for capability 'grade'
+
 1.0.5 (Build 2021030600)
 -Improved layout of form and added an optional setup tab
 
