@@ -68,6 +68,20 @@ $attempt_renderer = $PAGE->get_renderer(constants::M_COMPONENT,'attempt');
 // We need view permission to be here
 require_capability('mod/solo:view', $context);
 
+//Get an admin settings
+$config = get_config(constants::M_COMPONENT);
+
+if($config->enablesetuptab && empty($moduleinstance->speakingtopic)){
+    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
+    if (has_capability('mod/solo:manage', $context)) {
+        echo $renderer->show_no_content($cm,true);
+    }else{
+        echo $renderer->show_no_content($cm,false);
+    }
+    echo $renderer->footer();
+    return;
+}
+
 //Do we do continue an attempt or start a new one
 $start_or_continue=false;
 if(count($attempts)==0){

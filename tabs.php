@@ -51,11 +51,6 @@ $tabs = $row = $inactive = $activated = array();
 
 $row[] = new tabobject('attempts', "$CFG->wwwroot/mod/solo/view.php?id=$cm->id", get_string('attempts', constants::M_COMPONENT), get_string('manageattempts', constants::M_COMPONENT));
 
-if(has_capability('mod/solo:manage',$context) && $config->enablesetuptab) {
-    $row[] = new tabobject('setup', "$CFG->wwwroot/mod/solo/setup.php?id=$cm->id",
-            get_string('setup', constants::M_COMPONENT), get_string('setup', constants::M_COMPONENT));
-}
-
 if(has_capability('mod/solo:grades',$context)) {
     $row[] = new tabobject('grades', "$CFG->wwwroot/mod/solo/grades.php?id=$cm->id",
         get_string('grades', constants::M_COMPONENT),
@@ -72,6 +67,12 @@ if(has_capability('mod/solo:grades',$context) && stristr($this->page->url, 'grad
         get_string('gradesubmissions', constants::M_COMPONENT),
         get_string('managegrades', constants::M_COMPONENT));
 }
+
+if(has_capability('mod/solo:manage',$context) && $config->enablesetuptab) {
+    $row[] = new tabobject('setup', "$CFG->wwwroot/mod/solo/setup.php?id=$cm->id",
+            get_string('setup', constants::M_COMPONENT), get_string('setup', constants::M_COMPONENT));
+}
+
 /*
  * Uncomment this to show a secret extra tab which makes it easy to create lots of demo data for testing
 if(has_capability('mod/solo:viewreports',$context)) {

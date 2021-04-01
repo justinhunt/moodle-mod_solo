@@ -92,7 +92,7 @@ $capabilities = array(
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
                 ),
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
+                'clonepermissionsfrom' => 'moodle/course:markcomplete'
         ),
 
     'mod/solo:grades' => array(

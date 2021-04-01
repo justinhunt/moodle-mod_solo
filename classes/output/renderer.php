@@ -58,12 +58,7 @@ class renderer extends \plugin_renderer_base {
         return $output;
     }
 
-    /**
-     * Return HTML to display limited header
-     */
-    public function notabsheader(){
-        return $this->output->header();
-    }
+
 
     /**
      * Show the introduction text is as set in the activity description
@@ -76,6 +71,22 @@ class renderer extends \plugin_renderer_base {
             $ret .= $this->output->box_end();
         }
         return $ret;
+    }
+
+    public function show_no_content($cm, $showsetup){
+        $displaytext = $this->output->box_start();
+        $displaytext .= $this->output->heading(get_string('nosetup', constants::M_COMPONENT), 3, 'main');
+        if ($showsetup) {
+            $displaytext .= \html_writer::div(get_string('letsaddsetup', constants::M_COMPONENT), '', array());
+            $displaytext .= $this->output->single_button(new \moodle_url(constants::M_URL . '/setup.php',
+                    array('id' => $cm->id)), get_string('addsetup', constants::M_COMPONENT));
+        }else{
+            $displaytext .= \html_writer::div(get_string('waitforsetup', constants::M_COMPONENT), '', array());
+        }
+        $displaytext .= $this->output->box_end();
+        $ret= \html_writer::div($displaytext,constants::M_CLASS . '_nosetup_msg',array('id'=>constants::M_CLASS . '_nosetup_msg'));
+        return $ret;
+
     }
 
 

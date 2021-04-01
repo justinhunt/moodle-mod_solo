@@ -569,3 +569,7 @@ $string['enablesetuptab']="Enable setup tab";
 $string['enablesetuptab_details']="Show a tab containing the activity instance settings to admins. Not super useful in most cases.";
 $string['setup']="Setup";
 
+$string['nosetup']="Activity is Not Ready";
+$string['addsetup']="Setup Activity";
+$string['waitforsetup']="There is no topic set yet for this activity. You will not be able to do the activity until your teacher adds one";
+$string['letsaddsetup']="There is no topic set yet for this activity. Lets add one.";
