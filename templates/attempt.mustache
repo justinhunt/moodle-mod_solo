@@ -1,0 +1,69 @@
+<div class="jumbotron d-flex align-items-center pt-0" style="background-color: inherit; ">
+    <div class="container btn-group-justified border pt-3" role="group" aria-label="...">
+        <div class="row">
+            <div class="col-sm btn-group" role="group">
+                <button class="btn btn-primary btn-block">1: Prepare</button>
+            </div>
+            <div class="col-sm btn-group" role="group">
+                <button class="btn btn-block">2: Record</button>
+            </div>
+            <div class="col-sm btn-group" role="group">
+                <button class="btn btn-block">3: Transcribe</button>
+            </div>
+        </div>
+        <br/>
+        <div class="card">
+            <div class="card-body mx-auto">
+                Tell the story of cookie monster and count.
+            </div>
+        </div>
+
+        <br/>
+        <div class="container-sm">
+            <div class="row">
+                <div class="col-sm border text-center">
+                    <i class="fa fa-hashtag" aria-hidden="true"></i> 40 Words
+                </div>
+                <div class="col-sm border text-center">
+                    <i class="fa fa-clock-o" aria-hidden="true"></i> 2 Minutes
+                </div>
+            </div>
+            <div class="row align-middle text-center">
+                <div class="col pt-3">
+                    <span class="btn btn-outline-secondary">Cookie Monster</span>
+                    <span class="btn btn-outline-secondary">The Count</span>
+                    <span class="btn btn-outline-secondary">apples</span>
+                    <span class="btn btn-outline-secondary">apologized</span>
+                    <span class="btn btn-outline-secondary">ate</span>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <p class="text-muted text-center">
+            Start the recorder and begin speaking when ready.
+        </p>
+    <div class="mod_solo_activitycontent text-center">
+        <div class="mod_solo_activitycontent_text">{{{itemtext}}}</div>
+        {{#itemimage}}
+            <div class="mod_solo_activitycontent_image_cont"><img src="{{{itemimage}}}"
+                                                                  class="mod_solo_activitycontent_image"/>
+            </div>{{/itemimage}}
+        {{#itemaudio}}
+            <div class="mod_solo_activitycontent_audio_cont">
+                <audio controls src="{{{itemaudio}}}" class="mod_solo_activitycontent_audio" playsInline="true"></audio>
+            </div>{{/itemaudio}}
+        <div class="mod_solo_activitycontent_video_cont">
+            <video controls src="{{{itemvideo}}}" class="mod_solo_activitycontent_video" playsInline="true"></video>
+        </div>
+        {{#itemtts}}
+            <div class="mod_solo_activitycontent_tts_cont">
+                <audio controls src="{{{itemtts}}}" class="mod_solo_activitycontent_audio" crossorigin="anoymous"
+                       playsInline="true"></audio>
+            </div></div>{{/itemtts}}
+        {{#itemiframe}}
+            <div class="mod_solo_activitycontent_iframe_cont">
+                <div class="mod_solo_activitycontent_iframe_responsive">{{{itemiframe}}}</div>
+            </div>{{/itemiframe}}
+    </div>
+</div>
+</div>

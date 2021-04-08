@@ -171,7 +171,6 @@ if ($data = $mform->get_data()) {
         }
     }
 
-
     //type specific settings
     switch($type) {
         case constants::STEP_USERSELECTIONS:
@@ -283,8 +282,5 @@ $PAGE->navbar->add(get_string('editingattempt', constants::M_COMPONENT, get_stri
 $mode='attempts';
 
 echo $renderer->header($moduleinstance, $cm,$mode, null, get_string('edit', constants::M_COMPONENT));
-echo $attempt_renderer->add_edit_page_links($moduleinstance, $attempt,$type);
-echo html_writer::start_div(constants::M_COMPONENT .'_step' . $type);
-$mform->display();
-echo html_writer::end_div();
+echo $OUTPUT->render_from_template('solo/attempt',[]);
 echo $renderer->footer();
