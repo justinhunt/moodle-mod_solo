@@ -257,18 +257,11 @@ class utils{
     //fetch lang server url, services incl. 'transcribe' , 'lm', 'lt', 'spellcheck'
     public static function fetch_lang_server_url($region,$service='transcribe'){
         switch($region) {
-            case 'tokyo':
-                $ret = 'https://tokyo.ls.poodll.com/';
-                break;
-            case 'sydney':
-                $ret = 'https://sydney.ls.poodll.com/';
-                break;
-            case 'dublin':
-                $ret = 'https://dublin.ls.poodll.com/';
-                break;
             case 'useast1':
-            default:
                 $ret = 'https://useast.ls.poodll.com/';
+                break;
+            default:
+                $ret = 'https://' . $region . '.ls.poodll.com/';
         }
         return $ret . $service;
     }
@@ -1113,7 +1106,9 @@ class utils{
           "london" => get_string("london",constants::M_COMPONENT),
           "saopaulo" => get_string("saopaulo",constants::M_COMPONENT),
           "singapore" => get_string("singapore",constants::M_COMPONENT),
-          "mumbai" => get_string("mumbai",constants::M_COMPONENT)
+          "mumbai" => get_string("mumbai",constants::M_COMPONENT),
+           "capetown" => get_string("capetown",constants::M_COMPONENT),
+          "bahrain" => get_string("bahrain",constants::M_COMPONENT)
       );
   }
 

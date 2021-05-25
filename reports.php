@@ -36,6 +36,7 @@ $format = optional_param('format', 'tabular', PARAM_TEXT); //export format csv o
 $showreport = optional_param('report', 'menu', PARAM_TEXT); // report type
 $userid = optional_param('userid', 0, PARAM_INT); // report type
 $attemptid = optional_param('attemptid', 0, PARAM_INT); // report type
+$groupid = optional_param('group', 0, PARAM_INT); // group id
 
 //paging details
 $paging = new stdClass();
@@ -57,7 +58,7 @@ if ($id) {
 }
 
 $PAGE->set_url(constants::M_URL . '/reports.php',
-	array('id' => $cm->id,'report'=>$showreport,'format'=>$format,'userid'=>$userid,'attemptid'=>$attemptid));
+	array('id' => $cm->id,'report'=>$showreport,'format'=>$format,'userid'=>$userid,'attemptid'=>$attemptid, 'group'=>$groupid));
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -132,6 +133,7 @@ switch ($showreport){
 		$formdata = new stdClass();
 		$formdata->soloid = $moduleinstance->id;
         $formdata->activityname = $moduleinstance->name;
+        $formdata->groupid = $groupid;
 		break;
 
     case 'detailedattempts':
@@ -139,7 +141,7 @@ switch ($showreport){
         $formdata = new stdClass();
         $formdata->soloid = $moduleinstance->id;
         $formdata->activityname = $moduleinstance->name;
-        //$formdata->modulecontextid = $modulecontext->id;
+        $formdata->groupid = $groupid;
         break;
 
     case 'classprogress':
@@ -221,6 +223,22 @@ switch ($showreport){
 5) call $reportrenderer->render_section_html($sectiontitle, $report->name, $report->get_head, $rows, $report->fields);
 */
 
+
+$groupmenu = '';
+if(isset($formdata->groupid)){
+    // fetch groupmode/menu/id for this activity
+    if ($groupmode = groups_get_activity_groupmode($cm)) {
+        $groupmenu = groups_print_activity_menu($cm, $PAGE->url, true);
+        $groupmenu .= ' ';
+        $formdata->groupid = groups_get_activity_group($cm);
+    }else{
+        $formdata->groupid  = 0;
+    }
+}else{
+    $formdata->groupid  = 0;
+}
+
+
 $report->process_raw_data($formdata);
 $reportheading = $report->fetch_formatted_heading();
 
@@ -251,6 +269,7 @@ switch($format){
         }else{
             echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', constants::M_COMPONENT));
             echo $extraheader;
+            echo $groupmenu;
             echo $reportrenderer->heading($reportheading, 4);
             echo $reportrenderer->render_empty_section_html($reportheading, 4);
             $showexport =false;
@@ -263,6 +282,7 @@ switch($format){
 
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', constants::M_COMPONENT));
         echo $extraheader;
+        echo $groupmenu;
         echo $reportrenderer->heading($reportheading, 4);
 
         //first check if we actually have some data, if not we just show an "empty" message
@@ -308,6 +328,7 @@ switch($format){
             $PAGE->requires->css( new \moodle_url('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css'));
             echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', constants::M_COMPONENT));
             echo $extraheader;
+            echo $groupmenu;
             echo $reportrenderer->render_hiddenaudioplayer();
             echo $reportrenderer->render_section_html($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows,
                     $report->fetch_fields());
@@ -317,6 +338,7 @@ switch($format){
             $pagingbar = $reportrenderer->show_paging_bar($allrowscount, $paging, $PAGE->url);
             echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', constants::M_COMPONENT));
             echo $extraheader;
+            echo $groupmenu;
             echo $reportrenderer->render_hiddenaudioplayer();
             echo $pagingbar;
             echo $reportrenderer->render_section_html($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows,

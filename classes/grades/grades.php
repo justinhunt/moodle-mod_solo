@@ -23,7 +23,7 @@ class grades {
      */
     public function getGrades(int $courseid, int $coursemoduleid, int $moduleinstance) : array {
         global $DB;
-        $results=false;
+        $results=[];
         $sql = "select pa.id as attemptid,
                     u.lastname,
                     u.firstname,
