@@ -36,7 +36,6 @@ $format = optional_param('format', 'tabular', PARAM_TEXT); //export format csv o
 $showreport = optional_param('report', 'menu', PARAM_TEXT); // report type
 $userid = optional_param('userid', 0, PARAM_INT); // report type
 $attemptid = optional_param('attemptid', 0, PARAM_INT); // report type
-$groupid = optional_param('group', 0, PARAM_INT); // group id
 
 //paging details
 $paging = new stdClass();
@@ -58,7 +57,7 @@ if ($id) {
 }
 
 $PAGE->set_url(constants::M_URL . '/reports.php',
-	array('id' => $cm->id,'report'=>$showreport,'format'=>$format,'userid'=>$userid,'attemptid'=>$attemptid, 'group'=>$groupid));
+	array('id' => $cm->id,'report'=>$showreport,'format'=>$format,'userid'=>$userid,'attemptid'=>$attemptid));
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -133,7 +132,7 @@ switch ($showreport){
 		$formdata = new stdClass();
 		$formdata->soloid = $moduleinstance->id;
         $formdata->activityname = $moduleinstance->name;
-        $formdata->groupid = $groupid;
+        $formdata->groupmenu = true;
 		break;
 
     case 'detailedattempts':
@@ -141,7 +140,7 @@ switch ($showreport){
         $formdata = new stdClass();
         $formdata->soloid = $moduleinstance->id;
         $formdata->activityname = $moduleinstance->name;
-        $formdata->groupid = $groupid;
+        $formdata->groupmenu = true;
         break;
 
     case 'classprogress':
@@ -224,8 +223,9 @@ switch ($showreport){
 */
 
 
+// fetch groupmode/menu/id for this activity
 $groupmenu = '';
-if(isset($formdata->groupid)){
+if(isset($formdata->groupmenu)){
     // fetch groupmode/menu/id for this activity
     if ($groupmode = groups_get_activity_groupmode($cm)) {
         $groupmenu = groups_print_activity_menu($cm, $PAGE->url, true);
@@ -237,7 +237,6 @@ if(isset($formdata->groupid)){
 }else{
     $formdata->groupid  = 0;
 }
-
 
 $report->process_raw_data($formdata);
 $reportheading = $report->fetch_formatted_heading();
