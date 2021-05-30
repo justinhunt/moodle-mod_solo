@@ -1,3 +1,6 @@
+1.0.8 (Build 2021053100)
+- Internal flag for iframe use
+
 1.0.7 (Build 2021053500)
 - Added ability to view reports by group
 

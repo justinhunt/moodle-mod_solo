@@ -167,7 +167,7 @@ class attempts extends basereport
         if($formdata->groupid>0){
 
                 list($groupswhere, $allparams) = $DB->get_in_or_equal($formdata->groupid);
-            
+
                 $sql = 'SELECT at.id,at.grade, st.words,at.userid,at.filename, st.turns, st.avturn, st.longestturn, st.targetwords,
              st.totaltargetwords,st.autospellscore,st.autogrammarscore,st.aiaccuracy, at.timemodified ';
                 $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at INNER JOIN {' . constants::M_STATSTABLE .
