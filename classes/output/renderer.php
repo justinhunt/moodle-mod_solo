@@ -51,7 +51,9 @@ class renderer extends \plugin_renderer_base {
                 ob_end_clean();
             }
         } else {
-            $output .= $this->output->heading($activityname);
+            if(!$moduleinstance->foriframe) {
+                $output .= $this->output->heading($activityname);
+            }
         }
 
 
