@@ -91,8 +91,12 @@ $event->trigger();
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
-$PAGE->set_pagelayout('course');
-$PAGE->requires->jquery();
+
+if($config->enablesetuptab){
+    $PAGE->set_pagelayout('popup');
+}else{
+    $PAGE->set_pagelayout('course');
+}
 
 	
 

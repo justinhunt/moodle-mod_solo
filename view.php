@@ -70,6 +70,11 @@ require_capability('mod/solo:view', $context);
 
 //Get an admin settings
 $config = get_config(constants::M_COMPONENT);
+if($config->enablesetuptab){
+    $PAGE->set_pagelayout('popup');
+}else{
+    $PAGE->set_pagelayout('course');
+}
 
 if($config->enablesetuptab && empty($moduleinstance->speakingtopic)){
     echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
