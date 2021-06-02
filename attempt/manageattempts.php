@@ -54,7 +54,13 @@ $PAGE->set_url('/mod/solo/attempt/manageattempts.php', array('attemptid'=>$attem
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
-$PAGE->set_pagelayout('course');
+//Get admin settings
+$config = get_config(constants::M_COMPONENT);
+if($config->enablesetuptab){
+    $PAGE->set_pagelayout('popup');
+}else{
+    $PAGE->set_pagelayout('course');
+}
 $PAGE->force_settings_menu(true);
 
 //Set up the attempt type specific parts of the form data
