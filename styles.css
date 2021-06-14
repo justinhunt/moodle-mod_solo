@@ -1117,3 +1117,9 @@ audio#mod_solo_passageaudioplayer {
 .mod_solo_step2 .btn.btn-primary {
 	display: none;
 }
+.solo_grading_submissions_container {
+	max-width: 1200px;
+}
+.mod_solo_grading_passagecont .chattranscript {
+	background-color: lightblue;
+}

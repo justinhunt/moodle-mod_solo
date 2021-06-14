@@ -1,3 +1,4 @@
+<div class="solo_grading_submissions_container">
 <div class="solo_grading_nav">
     <a class="btn btn-secondary solo_grading_back_btn" href="#" alt="back"><i class="fa fa-arrow-left"></i></a>
     <a class="btn btn-secondary solo_grading_forward_btn" href="#" alt="forward"><i class="fa fa-arrow-right"></i></a>
@@ -24,11 +25,6 @@
                         <div class="row">
                             <div class="col">
                                 <h5 class="card-title">{{# str }} gradestranscript, mod_solo {{/ str }}</h5>
-                                <div class="alert alert-secondary justify-content-center align-middle" role="alert" style="text-align: center;">
-                                    <div class="mod_solo_nativeaudioplayer_cont">
-                                        <audio class="chatplayer" controls=""></audio>
-                                    </div>
-                                </div>
                                 <div class="mod_solo_overflow_auto">
                                     <div class="mod_solo_grading_passagecont mod_solo_summarytranscriptplaceholder mod_solo_overflow_auto min-vh-400" style="height: 400px;">
                                         <span class="chattranscript">Loading...</span>
@@ -36,6 +32,13 @@
                                 </div>
                             </div>
                             <div class="col">
+                                <div class="row">
+                                    <div class="alert alert-secondary justify-content-center align-middle" role="alert" style="text-align: center;">
+                                        <div class="mod_solo_nativeaudioplayer_cont">
+                                            <audio class="chatplayer" controls=""></audio>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col">
                                         <span class="badge badge-light">Sentences: <span class="chatturns">0</span></span>
@@ -99,6 +102,7 @@
     <a class="btn btn-secondary solo_grading_back_btn" href="#" alt="back"><i class="fa fa-arrow-left"></i></a>
     <a class="btn btn-secondary solo_grading_forward_btn" href="#" alt="forward"><i class="fa fa-arrow-right"></i></a>
 </div>
+</div><!-- end of solosubmissions grading container-->
 {{^element.frozen}}
 {{#js}}
     $('[data-action=creategrademodal]').attr('disabled', 'disabled');
