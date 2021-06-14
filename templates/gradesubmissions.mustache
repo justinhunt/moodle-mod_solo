@@ -246,7 +246,8 @@
 
                         var a ={};
                         var st = response.response[0].selftranscript;
-                        a.selftranscriptparts=st.match( /[^\.!\?]+[\.!\?]+/g );
+                        //https://stackoverflow.com/questions/11761563 //sentence splitter
+                        a.selftranscriptparts=st.match(/([^\.!\?]+[\.!\?]+)|([^\.!\?]+$)/g);
                         //edge case alert: if no sentence breaker we will get null, so load it up in that case
                         if(a.selftranscriptparts==null){a.selftranscriptparts=[st];}
                         templates.render('mod_solo/summarytranscript',{a: a}).then(
