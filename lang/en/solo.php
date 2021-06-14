@@ -578,3 +578,4 @@ $string['letsaddsetup']="There is no topic set yet for this activity. Lets add o
 $string['noattemptfound']= "That attempt could be found";
 $string['viewattempt']= "View";
 $string['attemptfor']= 'Attempt: {$a}';
+$string['audioandstats']="Audio and Stats";

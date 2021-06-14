@@ -1124,4 +1124,5 @@ audio#mod_solo_passageaudioplayer {
 .solo_grading_submissions_container .mod_solo_nativeaudioplayer_cont {
 	width: 100%;
 	text-align: center;
+	margin-bottom: 10px;
 }
