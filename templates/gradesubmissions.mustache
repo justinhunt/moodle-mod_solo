@@ -214,7 +214,7 @@
             }else{
                 studentName = "";
             }
-            $(element).find('.chatplayer').removeAttr('src');
+            $(element).find('.chatplayer').attr('src','');
             $(element).find('.chattranscript').html("No data.");
             $(element).find('.chatturns').html(0);
             $(element).find('.chatwords').html(0);
@@ -245,16 +245,16 @@
                         $(element).find('input[type=button]').removeAttr("disabled");
                         $(element).find('.chatplayer').attr('src', response.response[0].filename);
 
-    var a ={};
-    var st = response.response[0].selftranscript;
-    a.selftranscriptparts=st.match( /[^\.!\?]+[\.!\?]+/g );
-    //edge case alert: if no sentence breaker we will get null, so load it up in that case
-    if(a.selftranscriptparts==null){a.selftranscriptparts=[st];}
-    templates.render('mod_solo/summarytranscript',{a: a}).then(
-         function(html,js){
-            $(element).find('.chattranscript').html(html);
-          }
-    );
+                        var a ={};
+                        var st = response.response[0].selftranscript;
+                        a.selftranscriptparts=st.match( /[^\.!\?]+[\.!\?]+/g );
+                        //edge case alert: if no sentence breaker we will get null, so load it up in that case
+                        if(a.selftranscriptparts==null){a.selftranscriptparts=[st];}
+                        templates.render('mod_solo/summarytranscript',{a: a}).then(
+                             function(html,js){
+                                $(element).find('.chattranscript').html(html);
+                              }
+                        );
 
                       // $(element).find('.chattranscript').html(response.response[0].transcript);
                         $(element).find('.chatturns').html(response.response[0].turns);
