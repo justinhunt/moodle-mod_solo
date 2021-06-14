@@ -1120,6 +1120,7 @@ audio#mod_solo_passageaudioplayer {
 .solo_grading_submissions_container {
 	max-width: 1200px;
 }
-.mod_solo_grading_passagecont .chattranscript {
-	background-color: lightblue;
+
+.solo_grading_submissions_container .mod_solo_nativeaudioplayer_cont {
+	width: 100%;
 }
