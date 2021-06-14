@@ -21,7 +21,7 @@ class grades {
      * @return array
      * @throws dml_exception
      */
-    public function getGrades(int $courseid, int $coursemoduleid, int $moduleinstance, int $groupid) : array {
+    public function getGrades($courseid, $coursemoduleid, $moduleinstance, $groupid) {
         global $DB;
         $results=[];
         if($groupid>0){

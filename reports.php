@@ -186,7 +186,12 @@ switch ($showreport){
                 $stats = utils::fetch_stats($attempt,$moduleinstance);
                 $aidata = $DB->get_record(constants::M_AITABLE, array('attemptid' => $attemptid));
                 $attempt_renderer = $PAGE->get_renderer(constants::M_COMPONENT,'attempt');
+                $attemptuser=$DB->get_record('user',array('id'=>$attempt->userid));
+                echo $renderer->heading(get_string('attemptfor',constants::M_COMPONENT,fullname($attemptuser)),3);
                 echo $attempt_renderer->show_userattemptsummary($moduleinstance, $attempt, $aidata, $stats);
+
+                //open the summary results div
+                echo html_writer::start_div('mod_solo_summaryresults');
 
                 //grade info
                 //necessary for M3.3
@@ -201,8 +206,12 @@ switch ($showreport){
                         $evaluator = get_string("autoeval", constants::M_COMPONENT);
                     }
                     echo $attempt_renderer->show_teachereval( $rubricresults,$feedback, $evaluator);
+                    $autotranscriptready=true;
+                    echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats,$autotranscriptready);
 
                 }
+                //close the summary results div
+                echo '</div>';
 
                 $link = new \moodle_url(constants::M_URL . '/reports.php', array('report' => 'menu', 'id' => $cm->id, 'n' => $moduleinstance->id));
                 echo  \html_writer::link($link, get_string('returntoreports', constants::M_COMPONENT));

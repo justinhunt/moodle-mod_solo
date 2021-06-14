@@ -22,7 +22,7 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getGradeData(int $courseid, int $studentid, int $moduleinstance): array {
+    public function getGradeData($courseid, $studentid,  $moduleinstance){
         global $DB;
 
         $sql = "select pa.id, u.lastname, u.firstname, p.name, p.transcriber, pat.words, pat.avturn, pat.longestturn, pat.targetwords, 
@@ -52,7 +52,7 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getSubmissionData(int $userid, int $cmid): array {
+    public function getSubmissionData($userid, $cmid) {
         global $DB;
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
         $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
@@ -107,16 +107,28 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getStudentsToGrade($moduleinstance) {
+    public function getStudentsToGrade($moduleinstance,$groupid) {
         global $DB;
 
         //fetch all finished attempts
-        $sql = "select pa.id as id, userid
-                    from {solo_attempts} pa
-                    where pa.solo = ? AND pa.completedsteps = " . constants::STEP_SELFTRANSCRIBE .
-                    " order by pa.id DESC";
+        if($groupid>0) {
+            list($groupswhere, $groupparams) = $DB->get_in_or_equal($groupid);
+            $sql = "SELECT pa.id AS id, pa.userid as userid
+                    FROM {solo_attempts} pa                    
+                     INNER JOIN {groups_members} gm ON pa.userid=gm.userid
+                     WHERE pa.solo = ? AND pa.completedsteps = " . constants::STEP_SELFTRANSCRIBE .
+                     " AND gm.groupid $groupswhere 
+                      ORDER BY pa.id DESC";
+            $results = $DB->get_records_sql($sql, array_merge([$moduleinstance->id],$groupparams));
+        }else{
+            $sql = "SELECT pa.id AS id, pa.userid AS userid
+                    FROM {solo_attempts} pa
+                    WHERE pa.solo = ? AND pa.completedsteps = " . constants::STEP_SELFTRANSCRIBE .
+                    " ORDER BY pa.id DESC";
+            $results = $DB->get_records_sql($sql, [$moduleinstance->id]);
+        }
 
-        $results = $DB->get_records_sql($sql, [$moduleinstance->id]);
+
 
         //if we do not have results just return
         if(!$results){return $results;}
@@ -144,13 +156,13 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getPageOfStudents($students, $studentid=0) {
+    public function getPageOfStudents($students, $studentid=0,$perpage=1) {
         $currentpagemembers=[];
         $pages=[];
         $studentpage=-1;
         //build array of 3 student pages
         foreach($students as $student){
-            if(count($currentpagemembers)>2){
+            if(count($currentpagemembers)>=$perpage){
                 $pages[]=$currentpagemembers;
                 $currentpagemembers=[];
             }

@@ -575,3 +575,6 @@ $string['nosetup']="Activity is Not Ready";
 $string['addsetup']="Setup Activity";
 $string['waitforsetup']="There is no topic set yet for this activity. You will not be able to do the activity until your teacher adds one";
 $string['letsaddsetup']="There is no topic set yet for this activity. Lets add one.";
+$string['noattemptfound']= "That attempt could be found";
+$string['viewattempt']= "View";
+$string['attemptfor']= 'Attempt: {$a}';
