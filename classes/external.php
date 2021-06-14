@@ -189,7 +189,7 @@ class external extends external_api {
                 }
             }
             $feedbackobject = new \stdClass();
-            $feedbackobject->id = $attempt->attemptid;
+            $feedbackobject->id = $attempt->id;
             $feedbackobject->feedback = $validateddata->feedback;
             $feedbackobject->manualgraded = 1;
             $feedbackobject->grade = $thegrade;
@@ -284,7 +284,7 @@ class external extends external_api {
 
         if ($validateddata) {
             $feedbackobject = new \stdClass();
-            $feedbackobject->id = $attempt->attemptid;
+            $feedbackobject->id = $attempt->id;
             $feedbackobject->feedback = $validateddata->feedback;
             $feedbackobject->manualgraded = 1;
             $feedbackobject->grade = $validateddata->grade;
