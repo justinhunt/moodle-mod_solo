@@ -39,37 +39,6 @@ class utils{
     //  const CLOUDPOODLL = 'http://localhost/moodle';
     const CLOUDPOODLL = 'https://cloud.poodll.com';
 
-    //fetch the latest compeleted state
-    public static function fetch_latest_finishedattempt($solo,$userid=false) {
-        global $DB, $USER;
-        if(!$userid){
-            $userid = $USER->id;
-        }
-        $attempts = $DB->get_records(constants::M_ATTEMPTSTABLE,
-                array('solo'=>$solo->id,'userid'=>$userid,'completedsteps'=>constants::STEP_SELFTRANSCRIBE),'timemodified DESC','*',0,1);
-        if($attempts){
-            $attempt=  array_shift($attempts);
-        }else {
-            $attempt = false;
-        }
-        return $attempt;
-    }
-
-    //Fetch latest attempt regardless of its completed state
-    public static function fetch_latest_attempt($solo,$userid=false) {
-        global $DB, $USER;
-        if(!$userid){
-            $userid = $USER->id;
-        }
-        $attempts = $DB->get_records(constants::M_ATTEMPTSTABLE,
-                array('solo'=>$solo->id,'userid'=>$userid),'timemodified DESC','*',0,1);
-        if($attempts){
-            $attempt=  array_shift($attempts);
-        }else {
-            $attempt = false;
-        }
-        return $attempt;
-    }
 
 
     //are we willing and able to transcribe submissions?

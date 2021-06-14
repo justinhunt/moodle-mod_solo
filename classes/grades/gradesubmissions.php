@@ -28,7 +28,7 @@ class gradesubmissions {
         $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
 
 
-        $sql = "select pa.id as attemptid,
+        $sql = "SELECT pa.id AS attemptid,
                     u.lastname,
                     u.firstname,
                     p.name,
@@ -53,17 +53,18 @@ class gradesubmissions {
                     pa.grade,
                     pa.feedback,
                     pa.userid
-                from {solo} as p
-                    inner join {solo_attempts} pa on p.id = pa.solo
-                    inner join {course_modules} as cm on cm.course = p.course and cm.id = ?
-                    inner join {user} as u on pa.userid = u.id
-                    inner join {solo_attemptstats} as pat on pat.attemptid = pa.id and pat.userid = u.id
-                    left outer join {solo_ai_result} as par on par.attemptid = pa.id and par.courseid = p.course
-                where pa.userid = ?
+                FROM {solo} AS p
+                    INNER JOIN {solo_attempts} pa ON p.id = pa.solo
+                    INNER JOIN {course_modules} AS cm ON cm.course = p.course AND cm.id = ?
+                    INNER JOIN {user} AS u ON pa.userid = u.id
+                    INNER JOIN {solo_attemptstats} AS pat ON pat.attemptid = pa.id AND pat.userid = u.id
+                    left outer join {solo_ai_result} AS par ON par.attemptid = pa.id AND par.courseid = p.course
+                WHERE pa.userid = ?
                     AND pa.solo = ?
+                    AND pa.completedsteps = ?
                 order by pa.id DESC";
 
-        $alldata = $DB->get_records_sql($sql, [$cmid, $userid, $moduleinstance->id]);
+        $alldata = $DB->get_records_sql($sql, [$cmid, $userid, $moduleinstance->id, constants::STEP_SELFTRANSCRIBE]);
         if($alldata){
             return [reset($alldata)];
         }else{

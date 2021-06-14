@@ -845,10 +845,11 @@ function solo_get_completion_state($course,$cm,$userid,$type) {
 
     // Get  module details
     $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
+    $attempthelper = new \mod_solo\attempthelper($cm);
 
     // If completion option is enabled, evaluate it and return true/false
     if($moduleinstance->completionallsteps) {
-        $latestattempt = utils::fetch_latest_attempt($moduleinstance);
+        $latestattempt = $attempthelper->fetch_latest_attempt();
         if ($latestattempt && $latestattempt->completedsteps == constants::STEP_SELFTRANSCRIBE){
             return true;
         }else{
