@@ -1,3 +1,6 @@
+1.0.10 (Build 2021081600)
+- fixed issue with array_key_exists on php 8
+
 1.0.9 (Build 2021061400)
 - Fixed issue with Group grading
 - Added view attempt button to grades page
