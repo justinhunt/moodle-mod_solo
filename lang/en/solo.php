@@ -597,3 +597,4 @@ $string['activityisclosed']="This activity is closed.";
 $string['open']="Open: ";
 $string['until']="Until: ";
 $string['activityopenscloses']="Activity open/close dates";
+$string['solo:preview'] = 'Can preview Wordcards activities';

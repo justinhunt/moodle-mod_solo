@@ -193,7 +193,7 @@ function xmldb_solo_upgrade($oldversion) {
             }
         }
 
-        upgrade_mod_savepoint(true, 2022020100, 'readaloud');
+        upgrade_mod_savepoint(true, 2022020100, 'solo');
     }
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
