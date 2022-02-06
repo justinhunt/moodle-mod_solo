@@ -1636,6 +1636,9 @@ class utils{
         $mform->setDefault('gradewordgoal',60);
         $mform->addHelpButton('gradewordgoal', 'gradewordgoal', constants::M_MODNAME);
 
+        //Model Answer
+        self::prepare_content_toggle('model',$mform,$context);
+
         // Language and Recording
         $mform->addElement('header', 'languageandrecordingheader', get_string('languageandrecordingheader', constants::M_COMPONENT));
 

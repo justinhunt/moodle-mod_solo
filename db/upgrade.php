@@ -178,6 +178,31 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021053100, 'solo');
     }
 
+    // Add foriframe option to solo table
+    if ($oldversion < 2022020500) {
+        $table = new xmldb_table('solo');
+
+        // Define YT clip fields to be added to minilesson
+        $fields=[];
+        $fields[]= new xmldb_field('topicmytid', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[]= new xmldb_field('topicytstart', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[]= new xmldb_field('topicytend', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[]= new xmldb_field('modelttsvoice', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED);
+        $fields[]= new xmldb_field('modeltts', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[]= new xmldb_field('modeliframe', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[]= new xmldb_field('modelytid', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[]= new xmldb_field('modelytstart', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[]= new xmldb_field('modelytend', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, 2022020500, 'solo');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

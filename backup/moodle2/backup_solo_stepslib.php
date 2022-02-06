@@ -52,6 +52,7 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
         $oneactivity = new backup_nested_element(constants::M_MODNAME, array('id'), array(
             'course','name','intro','introformat','grade','gradeoptions','manualgraded','mingrade',
                 'convlength','maxconvlength','speakingtopic','topictts','topicttsvoice','topiciframe','targetwords','tips','tipsformat',
+            'topicytid','topicytstart','topicytend','modeltts','modelttsvoice','modeliframe','modelytid','modelytstart','modelytend',
             'ttslanguage','recorderskin','recordertype','enableai','enabletranscribe','expiredays','region','transcriber','multiattempts',
                 'enabletranscription','enablesharing','enableautograde','gradewordgoal','autogradeoptions','completionallsteps',
                 'postattemptedit','foriframe','timecreated','timemodified'
