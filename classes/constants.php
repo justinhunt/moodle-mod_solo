@@ -66,8 +66,9 @@ const STEP_NONE=0;
 const STEP_USERSELECTIONS= 1;
 const STEP_AUDIORECORDING= 2;
 const STEP_SELFTRANSCRIBE= 3;
+const STEP_MODEL= 4;
 //later we need to make this variable
-const STEP_FINAL= 3;
+const STEP_FINAL= 4;
 
 const T_AUDIORECORDING= "audiorecording";
 const T_USERSELECTIONS= "userselections";

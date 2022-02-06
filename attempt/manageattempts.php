@@ -140,6 +140,12 @@ switch($type) {
                 array('moduleinstance' => $moduleinstance, 'filename' => $audiofilename));
         break;
 
+    case constants::STEP_MODEL:
+        //bogus hack ... yuk.. have shower
+        //TO DO fix this up
+        $mform = new \mod_solo\attempt\selftranscribeform(null,
+            array('moduleinstance' => $moduleinstance, 'filename' => ''));
+        break;
 
     case constants::STEP_NONE:
     default:
@@ -281,6 +287,7 @@ switch($type){
     case constants::STEP_AUDIORECORDING:
     case constants::STEP_USERSELECTIONS:
     case constants::STEP_SELFTRANSCRIBE:
+    case constants::STEP_MODEL:
     default:
 }
 $mform->set_data($data);
@@ -319,6 +326,13 @@ switch($type) {
         //Prepare TTS prompt
         if(!empty(trim($moduleinstance->topictts))){
             $contentitem['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$moduleinstance->topictts,'text',$moduleinstance->topicttsvoice);
+        }
+        
+        //Prepare YT Clip
+        if(!empty(trim($moduleinstance->topicytid))){
+            $contentitem['itemytvideoid']=$moduleinstance->topicytid;
+            $contentitem['itemytvideostart']=$moduleinstance->topicytstart;
+            $contentitem['itemytvideoend']=$moduleinstance->topicytend;
         }
 
         //media items
@@ -387,6 +401,67 @@ switch($type) {
         }
         echo $renderer->render_from_template(constants::M_COMPONENT . '/stepselftranscribe', $stepcontent);
         break;
+        
+    case constants::STEP_MODEL:
+
+        //Prepare IFrame
+        if(!empty(trim($moduleinstance->modeliframe))){
+            $contentitem['itemiframe']=$moduleinstance->modeliframe;
+        }
+
+        //Prepare TTS prompt
+        if(!empty(trim($moduleinstance->modeltts))){
+            $contentitem['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$moduleinstance->modeltts,'text',$moduleinstance->modelttsvoice);
+        }
+
+        //Prepare YT Clip
+        if(!empty(trim($moduleinstance->modelytid))){
+            $contentitem['itemytvideoid']=$moduleinstance->modelytid;
+            $contentitem['itemytvideostart']=$moduleinstance->modelytstart;
+            $contentitem['itemytvideoend']=$moduleinstance->modelytend;
+        }
+
+        //media items
+        $itemid=0;
+        $filearea='modelmedia';
+        $mediaurls = utils::fetch_media_urls($context->id,$filearea,$itemid);
+        if($mediaurls && count($mediaurls)>0){
+            foreach($mediaurls as $mediaurl){
+                $file_parts = pathinfo(strtolower($mediaurl));
+                switch($file_parts['extension'])
+                {
+                    case "jpg":
+                    case "png":
+                    case "gif":
+                    case "bmp":
+                    case "svg":
+                        $contentitem['itemimage'] = $mediaurl;
+                        break;
+
+                    case "mp4":
+                    case "mov":
+                    case "webm":
+                    case "ogv":
+                        $contentitem['itemvideo'] = $mediaurl;
+                        break;
+
+                    case "mp3":
+                    case "ogg":
+                    case "wav":
+                        $contentitem['itemaudio'] = $mediaurl;
+                        break;
+
+                    default:
+                        //do nothing
+                }//end of extension switch
+            }//end of for each
+        }//end of if mediaurls
+        //there is only one contentitem in the array , it just seems the neatest way to pass a big chunk of data to a partial
+        $stepcontent->contentitems = [$contentitem];
+        echo $renderer->render_from_template(constants::M_COMPONENT . '/stepmodel', $stepcontent);
+        break;
+
+
     default:
         $mform->display();
 

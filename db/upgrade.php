@@ -184,7 +184,7 @@ function xmldb_solo_upgrade($oldversion) {
 
         // Define YT clip fields to be added to minilesson
         $fields=[];
-        $fields[]= new xmldb_field('topicmytid', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[]= new xmldb_field('topicytid', XMLDB_TYPE_TEXT, null, null, null, null);
         $fields[]= new xmldb_field('topicytstart', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
         $fields[]= new xmldb_field('topicytend', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
         $fields[]= new xmldb_field('modelttsvoice', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED);

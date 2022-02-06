@@ -349,7 +349,8 @@ $string['step_typetitle']='Enter Text';
 $string['step_typeinstructions']='Use the recorder below to record yourself. Try to use the target words. Good luck.';
 $string['step_selftranscribetitle']='Transcribe';
 $string['step_selftranscribeinstructions']='Listen to your recording and enter what you said in the editor below. Do not change what you said, when you type it.';
-
+$string['step_modeltitle']='Model Answer';
+$string['step_modelinstructions']='Check the model answer below.';
 
 $string['savesubtitles'] = 'Save Speech';
 $string['removesubtitles'] = 'Remove Speech';
@@ -565,6 +566,7 @@ $string['mediaoptions'] = 'Media Options';
 $string['addmedia'] = 'Add Media';
 $string['addiframe'] = 'Add iFrame';
 $string['addttsaudio'] = 'Add TTS Audio';
+$string['addytclip'] = 'Add YouTube';
 
 $string['speakingtargetsheader'] ='Speaking Targets';
 $string['languageandrecordingheader'] ='Language and Recording';
@@ -589,8 +591,14 @@ $string['content_media'] ='Image, audio or video content';
 $string['content_iframe'] ='Embed iframe code';
 $string['content_tts'] ='Text to be read';
 $string['content_ttsvoice'] ='Speaker\'s voice';
+$string['content_ytid'] = "Youtube Video ID";
+$string['content_ytstart'] = "Start Secs";
+$string['content_ytend'] = "End Secs";
+$string['ytclipdetails'] = "Youtube Clip";
 $string['freetrial'] = "Get Cloud Poodll API Credentials and a Free Trial";
 $string['freetrial_desc'] = "A dialog should appear that allows you to register for a free trial with Poodll. After registering you should login to the members dashboard to get your API user and secret. And to register your site URL.";
 $string['memberdashboard'] = "Member Dashboard";
 $string['memberdashboard_desc'] = "";
 $string['fillcredentials']="Set API user and secret with existing credentials";
+
+

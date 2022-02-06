@@ -1768,6 +1768,7 @@ class utils{
         $togglearray[] =& $mform->createElement('advcheckbox',$cp . 'addmedia',get_string('addmedia',constants::M_COMPONENT),'');
         $togglearray[] =& $mform->createElement('advcheckbox',$cp . 'addiframe',get_string('addiframe',constants::M_COMPONENT),'');
         $togglearray[] =& $mform->createElement('advcheckbox',$cp . 'addttsaudio',get_string('addttsaudio',constants::M_COMPONENT),'');
+        $togglearray[] =& $mform->createElement('advcheckbox',$cp . 'addytclip',get_string('addytclip',constants::M_COMPONENT),'');
         $mform->addGroup($togglearray, $cp . 'togglearray', get_string('mediaoptions', constants::M_COMPONENT), array(' '), false);
 
         //We assume they want to use some media
@@ -1812,6 +1813,25 @@ class utils{
         }else {
             $mform->disabledIf($cp . 'tts', $cp . 'addttsaudio', 'neq', 1);
             $mform->disabledIf($cp . 'ttsvoice', $cp . 'addttsaudio', 'neq', 1);
+        }
+
+        //Question YouTube Clip
+        $ytarray=array();
+        $ytarray[] =& $mform->createElement('text', $cp . 'ytid', get_string('content_ytid', constants::M_COMPONENT),  array('size'=>15, 'placeholder'=>"Video ID"));
+        $ytarray[] =& $mform->createElement('text', $cp . 'ytstart', get_string('content_ytstart', constants::M_COMPONENT),  array('size'=>3,'placeholder'=>"Start"));
+        $ytarray[] =& $mform->createElement('html','s - ');
+        $ytarray[] =& $mform->createElement('text', $cp . 'ytend', get_string('content_ytend', constants::M_COMPONENT),  array('size'=>3,'placeholder'=>"End"));
+        $ytarray[] =& $mform->createElement('html','s');
+
+        $mform->addGroup($ytarray, $cp .'ytarray' , get_string('ytclipdetails', constants::M_COMPONENT), array(' '), false);
+        $mform->setType($cp . 'ytid', PARAM_RAW);
+        $mform->setType($cp . 'ytstart', PARAM_INT);
+        $mform->setType($cp . 'ytend', PARAM_INT);
+
+        if($m35){
+            $mform->hideIf($cp .'ytarray', $cp . 'addytclip', 'neq', 1);
+        }else {
+            $mform->disabledIf($cp .'ytarray',$cp . 'addytclip', 'neq', 1);
         }
     }
 
