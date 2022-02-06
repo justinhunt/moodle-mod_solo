@@ -1508,6 +1508,7 @@ class utils{
         $rec->region=$moduleinstance->region;
         $rec->fallback='warning';
         $rec->token=$token;
+        $rec->iframeclass="solo_audiorec_iframe";
 
         //here we set up any info we need to pass into javascript
         //importantly we tell it the div id of the recorder

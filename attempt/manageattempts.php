@@ -300,7 +300,7 @@ $stepcontent->cmid = $cm->id;
 $stepcontent->nexturl = $redirecturl;
 
 //specific step data and then render
-switch($type . 'FALSEEEE') {
+switch($type) {
 
     case constants::STEP_USERSELECTIONS:
 
