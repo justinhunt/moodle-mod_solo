@@ -4,16 +4,9 @@
 
 {{! we set the title and instructions}}
 <div class="container">
-    <div class="row">
-        <div class="col-sm">
-            <div class="row solo_steptitle">
-                {{#str}}step_modeltitle, mod_solo{{/str}}
-            </div>
-        </div>
-    </div>
 
     <div class="row">
-        <div class="col-sm">
+        <div class="col-sm-12 mx-auto">
             <div class="solo_stepinstructions">
                 {{#str}}step_modelinstructions, mod_solo{{/str}}
             </div>
@@ -31,8 +24,8 @@
     </div>
 
     <div class="row">
-        <div class="col-sm">
-            <button id="{{uniqid}}_button" type="button">Submit</button>
+        <div class="col-sm-6 mx-auto mod_solo_stepsubmit">
+            <button class="btn btn-primary btn-lg" id="{{uniqid}}_button" type="button">Submit</button>
         </div>
     </div>
 
@@ -49,7 +42,7 @@
                     data.activitytype = 4; // {{type}}
                     var cmid={{cmid}};
                     var id={{id}};
-                    var step=3;
+                    var step=4;
                     var action = 'submitstep';
 
                    var ret = Ajax.call([{

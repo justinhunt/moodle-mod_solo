@@ -70,9 +70,8 @@ const STEP_MODEL= 4;
 //later we need to make this variable
 const STEP_FINAL= 4;
 
-const T_AUDIORECORDING= "audiorecording";
-const T_USERSELECTIONS= "userselections";
-const T_SELFTRANSCRIBE= "selftranscribe";
+const CLASS_AUDIOREC_IFRAME ='solo_audiorec_iframe';
+const CLASS_VIDEOREC_IFRAME ='solo_videorec_iframe';
 
 const TEXTDESCR = 'itemtext';
 const TEXTDESCR_FILEAREA = 'itemarea';

@@ -4,20 +4,17 @@
 
 {{! we set the title and instructions}}
 <div class="container">
+
     <div class="row">
-        <div class="col-sm">
-            <div class="row solo_steptitle">
-                {{#str}}step_preparetitle, mod_solo{{/str}}
+        <div class="col-sm-12 mx-auto">
+            <div class="solo_stepinstructions">
+                {{#str}}step_prepareinstructions, mod_solo{{/str}}
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-sm">
-            <div class="solo_stepinstructions">
-                {{#str}}step_prepareinstructions, mod_solo{{/str}}
-            </div>
-        </div>
+        {{>mod_solo/snippetgoals}}
     </div>
 
     <div class="row">
@@ -36,11 +33,7 @@
     </div>
 
     <div class="row">
-        {{>mod_solo/snippetgoals}}
-    </div>
-
-    <div class="row">
-        <div class="col-sm">
+        <div class="col-sm-10 mx-auto">
             <div class="mod_solo_activitycontent_container">
                 {{#contentitems}}
                     {{>mod_solo/activitycontent}}
@@ -52,8 +45,8 @@
 
 
     <div class="row">
-        <div class="col-sm">
-            <button id="{{uniqid}}_button" type="button">Submit</button>
+        <div class="col-sm-6 mx-auto mod_solo_stepsubmit">
+            <button class="btn btn-primary btn-lg" id="{{uniqid}}_button" type="button">{{#str}}next{{/str}}</button>
         </div>
     </div>
 

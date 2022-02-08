@@ -1003,14 +1003,18 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 .mod_solo_activitycontent_ytclip_cont {
 	width: 100%;
 	margin-top: 10px;
-	/* text-align: center; */
+	 margin: auto;
+	 text-align: center;
 }
 
-.mod_solo_activitycontent_text {
+.mod_solo_audiorec_heading, .mod_solo_videorec_heading {
 	width: 100%;
 	max-width: 400px;
-	/* margin: auto; */
-	/* text-align: center; */
+	padding: 10px;
+	margin-top: 20px;
+	border: 1px grey solid;
+	border-radius: 4px;
+	text-align: center;
 }
 
 .mod_solo_activitycontent_iframe_cont,
@@ -1018,26 +1022,26 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 	margin-top: 10px;
 	/* margin-left: auto; */
 	/* margin-right: auto; */
-	text-align: center;
 	width: 100%;
 	height: 100%;
-	max-width: 400px;
-	max-height: 225px;
+	max-width: 600px;
+	max-height: 337px;
+
 }
 
 .mod_solo_activitycontent_audio {
 	width: 100%;
-	max-width: 400px;
+	max-width: 600px;
 	margin: auto;
 }
 .mod_solo_activitycontent_video {
 	width: 100%;
-	max-width: 400px;
+	max-width: 600px;
 	margin: auto;
 }
 .mod_solo_activitycontent_image {
 	width: 100%;
-	max-width: 400px;
+	max-width: 600px;
 	margin: auto;
 }
 
@@ -1058,8 +1062,8 @@ top:0;
 height:100%;
 width:100%;
 position: absolute;
-max-width: 400px;
-max-height: 225px;
+max-width: 600px;
+max-height: 337px;
 }
 
 .mod_solo_summary_teachereval {
@@ -1080,7 +1084,7 @@ max-height: 225px;
 
 audio#mod_solo_passageaudioplayer {
 	width: 100%;
-	max-width: 400px;
+	max-width: 600px;
 }
 .mod_solo_rubric_results,
 .mod_solo_teacherfeedback {
@@ -1118,10 +1122,7 @@ audio#mod_solo_passageaudioplayer {
 .mod_solo_bigfont {
 	font-size: 1.8em;
 }
-/* hide save button because users can try to leave too soon */
-.mod_solo_step2 .btn.btn-primary {
-	display: none;
-}
+
 .solo_grading_submissions_container {
 	max-width: 1200px;
 }
@@ -1225,4 +1226,13 @@ audio#mod_solo_passageaudioplayer {
 /* this is not set on some themes and can collapse our responsive stuff */
 .form-control-static {
 	width: 100%;
+}
+
+.solo_stepinstructions,
+.mod_solo_stepsubmit {
+	text-align: center;
+	padding: 8px
+}
+.mod_solo_speakingtopic_readonly {
+	text-align: center;
 }

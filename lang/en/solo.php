@@ -335,11 +335,13 @@ $string['attempt_partone'] = '1: Prepare';
 $string['attempt_partone_title'] = '1: Prepare to Speak';
 $string['attempt_parttwo'] = '2: Record';
 $string['attempt_partthree'] = '3: Transcribe';
-$string['attempt_partfour'] = '4: Review';
+$string['attempt_partfour'] = '4: Model Answer';
+$string['attempt_partfive'] = '5: Review';
 $string['attempt_partone_instructions'] = 'Choose your partners, topic, target words and target speaking time from the options below. When you are ready, move to the next page and begin speaking';
 $string['attempt_parttwo_instructions'] = 'Use the recorder below to record yourself. Try to use the target words. Good luck.';
 $string['attempt_partthree_instructions'] = 'Listen to your recording and enter what you said in the editor below. Do not change what you said, when you type it.';
-$string['attempt_partfour_instructions'] = 'Compare the transcript you entered, to the automatically generated transcript. Are there many differences? Could you improve your speaking? Enter your self review in the text fields below.';
+$string['attempt_partfour_instructions'] = 'Check the model answer. Do you think it is a good answer?';
+$string['attempt_partfive_instructions'] = 'Compare the transcript you entered, to the automatically generated transcript. Are there many differences? Could you improve your speaking? Enter your self review in the text fields below.';
 
 $string['step_preparetitle']='Prepare';
 $string['step_prepareinstructions']='Check the speaking topic, target words and target speaking time from the options below. When you are ready, move to the next page and begin speaking';
@@ -600,5 +602,8 @@ $string['freetrial_desc'] = "A dialog should appear that allows you to register 
 $string['memberdashboard'] = "Member Dashboard";
 $string['memberdashboard_desc'] = "";
 $string['fillcredentials']="Set API user and secret with existing credentials";
-
-
+$string['modelanswer'] = "Model Answer";
+$string['modelanswerheader'] = "Model Answer";
+$string['modelanswerinstructions'] = "If you wish to display a model answer to students after they have entered their transcription, set that here.";
+$string['audiorec_heading'] = "Audio Recorder";
+$string['videorec_heading'] = "Video Recorder";

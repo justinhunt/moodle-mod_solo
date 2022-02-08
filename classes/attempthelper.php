@@ -211,6 +211,7 @@ class attempthelper
                         }
                     }
                     break;
+                case constants::STEP_MODEL:
                 default:
             }
 

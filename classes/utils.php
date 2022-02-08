@@ -1080,6 +1080,34 @@ class utils{
         return $rec_options;
     }
 
+    public static function has_modelanswer($moduleinstance, $context){
+        if(!empty(trim($moduleinstance->modelytid))) {return true;}
+        if(!empty(trim($moduleinstance->modeliframe))) {return true;}
+        if(!empty(trim($moduleinstance->modeltts))) {return true;}
+        $itemid=0;
+        $filearea='modelmedia';
+        $mediaurls = utils::fetch_media_urls($context->id,$filearea,$itemid);
+        if($mediaurls && count($mediaurls)>0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function get_steplabel($step){
+        switch($step){
+            case constants::STEP_USERSELECTIONS:
+                return get_string('userselections', constants::M_COMPONENT);
+            case constants::STEP_AUDIORECORDING:
+                return get_string('audiorecording', constants::M_COMPONENT);
+            case constants::STEP_SELFTRANSCRIBE:
+                return get_string('selftranscribe', constants::M_COMPONENT);
+            case constants::STEP_MODEL:
+                return get_string('modelanswer', constants::M_COMPONENT);
+            default:
+                return '';
+        }
+    }
+
     public static function get_grade_element_options(){
         $options = [];
         for($x=0;$x<101;$x++){
@@ -1465,7 +1493,7 @@ class utils{
      * PARAM $media one of audio, video
      * PARAM $recordertype something like "upload" or "fresh" or "bmr"
      */
-    public static function fetch_recorder_data($cm, $moduleinstance, $media, $token,$width,$height){
+    public static function fetch_recorder_data($cm, $moduleinstance, $media, $token){
         global $CFG, $USER;
         $rec = new \stdClass();
 
@@ -1488,6 +1516,55 @@ class utils{
             $rec->subtitle=$rec->transcribe;
             $rec->speechevents="0";
         }
+        
+        //get width and height
+        //set width and height
+        switch($rec->recordertype) {
+            case constants::REC_AUDIO:
+                //fresh
+                if($rec->recorderskin==constants::SKIN_FRESH){
+                    $rec->width = "400";
+                    $rec->height = "300";
+
+
+                }elseif($rec->recorderskin==constants::SKIN_PLAIN){
+                    $rec->width = "360";
+                    $rec->height = "190";
+
+                }elseif($rec->recorderskin==constants::SKIN_UPLOAD){
+                    $rec->width = "360";
+                    $rec->height = "150";
+
+                    //bmr 123 once standard
+                }else {
+                    $rec->width = "360";
+                    $rec->height = "240";
+                }
+                $rec->iframeclass= constants::CLASS_AUDIOREC_IFRAME;
+                break;
+            case constants::REC_VIDEO:
+            default:
+                //bmr 123 once
+                if($rec->recorderskin==constants::SKIN_BMR) {
+                    $rec->width = "360";
+                    $rec->height = "450";
+                }elseif($rec->recorderskin==constants::SKIN_123){
+                    $rec->width = "450";//"360";
+                    $rec->height = "550";//"410";
+                }elseif($rec->recorderskin==constants::SKIN_ONCE ){
+                    $rec->width = "350";
+                    $rec->height = "290";
+                }elseif($rec->recorderskin==constants::SKIN_UPLOAD){
+                    $rec->width = "350";
+                    $rec->height = "310";
+                    //standard
+                }else {
+                    $rec->width = "360";
+                    $rec->height = "410";
+                }
+                $rec->iframeclass= constants::CLASS_VIDEOREC_IFRAME;
+        }
+
 
         //we encode any hints
         $hints = new \stdClass();
@@ -1499,8 +1576,6 @@ class utils{
         $rec->localloader= constants::M_URL . '/poodllloader.html';
         $rec->media=$media;
         $rec->appid=constants::M_COMPONENT;
-        $rec->width=$width;
-        $rec->height=$height;
         $rec->updatecontrol=constants::M_WIDGETID . constants::RECORDINGURLFIELD;
         $rec->transcode="1";
         $rec->language=$moduleinstance->ttslanguage;
@@ -1508,7 +1583,6 @@ class utils{
         $rec->region=$moduleinstance->region;
         $rec->fallback='warning';
         $rec->token=$token;
-        $rec->iframeclass="solo_audiorec_iframe";
 
         //here we set up any info we need to pass into javascript
         //importantly we tell it the div id of the recorder
@@ -1637,6 +1711,9 @@ class utils{
         $mform->addHelpButton('gradewordgoal', 'gradewordgoal', constants::M_MODNAME);
 
         //Model Answer
+        $mform->addElement('header', 'modelanswerheader', get_string('modelanswerheader', constants::M_COMPONENT));
+        //$mform->addElement('html',"<div>" . get_string('modelanswerinstructions', constants::M_COMPONENT) . "</div>");
+        $mform->addElement('static','modelanswerinstructions','', "<div>" . get_string('modelanswerinstructions', constants::M_COMPONENT) . "</div>");
         self::prepare_content_toggle('model',$mform,$context);
 
         // Language and Recording
@@ -1870,22 +1947,31 @@ class utils{
 
         $fs = get_file_storage();
         $itemid=0;
-        $files = $fs->get_area_files($modulecontext->id, constants::M_COMPONENT,
-                'topicmedia', $itemid);
-        if ($files) {
-            $moduleinstance->addmedia = 1;
-        } else {
-            $moduleinstance->addmedia = 0;
-        }
-        if (!empty($moduleinstance->topictts)) {
-            $moduleinstance->addttsaudio = 1;
-        } else {
-            $moduleinstance->addttsaudio = 0;
-        }
-        if (!empty($moduleinstance->topiciframe)) {
-            $moduleinstance->addiframe = 1;
-        } else {
-            $moduleinstance->addiframe = 0;
+        $mediasets = ['topic','model'];
+        foreach($mediasets as $prefix){
+
+            $files = $fs->get_area_files($modulecontext->id, constants::M_COMPONENT,
+                    $prefix. 'media', $itemid);
+            if ($files) {
+                $moduleinstance->{$prefix.'addmedia'} = 1;
+            } else {
+                $moduleinstance->{$prefix.'addmedia'} = 0;
+            }
+            if (!empty($moduleinstance->{$prefix.'tts'})) {
+                $moduleinstance->{$prefix.'addttsaudio'} = 1;
+            } else {
+                $moduleinstance->{$prefix.'addttsaudio'} = 0;
+            }
+            if (!empty($moduleinstance->{$prefix.'iframe'})) {
+                $moduleinstance->{$prefix.'addiframe'} = 1;
+            } else {
+                $moduleinstance->{$prefix.'addiframe'} = 0;
+            }
+            if (!empty($moduleinstance->{$prefix.'ytid'})) {
+                $moduleinstance->{$prefix.'addytclip'} = 1;
+            } else {
+                $moduleinstance->{$prefix.'addytclip'} = 0;
+            }
         }
 
         return $moduleinstance;

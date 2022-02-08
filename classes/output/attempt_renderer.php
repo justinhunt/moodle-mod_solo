@@ -50,57 +50,80 @@ class attempt_renderer extends \plugin_renderer_base {
  * @param lesson $lesson
  * @return string
  */
- public function add_edit_page_links($solo, $latestattempt, $thisstep, $cm) {
+ public function add_edit_page_links($solo, $latestattempt, $thisstep, $cm, $context) {
 		global $CFG;
 
      //instructions /intro
         $output = '';
-     echo $this->show_intro($solo, $cm);
+        $introcontent = $this->show_intro($solo, $cm);
 
         $parts = array();
         $buttonclass = 'btn ' . constants::M_COMPONENT .'_menubutton ' . constants::M_COMPONENT;
 
         //Set the attempt id
         $attemptid = 0;
+        //TODO reverted to non form processing, so id should be id, not like it says below. Confirm its working right
         //because of the way attemot/data are managed in form handler (manageattempts.php) the true attemptid is at 'attemptid' not 'id'
-        if($latestattempt){$attemptid = $latestattempt->attemptid;}
+        if($latestattempt){$attemptid = $latestattempt->id;}
 
+        //init buttons
+        $buttons = [];
 
         //Step One Button (user selections)
-        $addurl = new \moodle_url(constants::M_URL . '/attempt/manageattempts.php',
+        $pbutton = new \stdClass();
+        $pbutton->label=get_string('attempt_partone', constants::M_COMPONENT);
+        $pbutton->url = new \moodle_url(constants::M_URL . '/attempt/manageattempts.php',
                 array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_USERSELECTIONS));
-        $buttonopts =  array('class'=>$buttonclass . ($thisstep == constants::STEP_USERSELECTIONS ? '_activemenubutton' : '_completemenubutton'));
-         $parts[] = \html_writer::link($addurl, get_string('attempt_partone', constants::M_COMPONENT), $buttonopts);
+        $pbutton->class=$buttonclass . ($thisstep == constants::STEP_USERSELECTIONS ? '_activemenubutton' : '_completemenubutton');
+        $buttons[]=$pbutton;
+
 
      //Step Two Button (conversation recording)
+     $rbutton = new \stdClass();
+     $rbutton->label=get_string('attempt_parttwo', constants::M_COMPONENT);
      if($latestattempt && $latestattempt->completedsteps>=constants::STEP_USERSELECTIONS) {
-         $addurl = new \moodle_url('/mod/solo/attempt/manageattempts.php',
+         $rbutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
                  array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_AUDIORECORDING));
-         $buttonopts =  array('class'=>$buttonclass . ($thisstep == constants::STEP_AUDIORECORDING ? '_activemenubutton' : '_completemenubutton'));
+         $rbutton->class=$buttonclass . ($thisstep == constants::STEP_AUDIORECORDING ? '_activemenubutton' : '_completemenubutton');
      }else{
-         $addurl="#";
-         $buttonopts =  array('class'=>$buttonclass .'_deadmenubutton ');
+         $rbutton->url="#";
+         $rbutton->class = $buttonclass .'_deadmenubutton';
      }
-     $parts[] = \html_writer::link($addurl,get_string('attempt_parttwo', constants::M_COMPONENT), $buttonopts);
+     $buttons[]=$rbutton;
 
      //Step Three Button (self transcribe)
+     $stbutton = new \stdClass();
+     $stbutton->label=get_string('attempt_partthree', constants::M_COMPONENT);
      if($latestattempt && $latestattempt->completedsteps>=constants::STEP_AUDIORECORDING) {
-         $addurl = new \moodle_url('/mod/solo/attempt/manageattempts.php',
+         $stbutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
                  array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_SELFTRANSCRIBE));
-         $buttonopts =  array('class'=>$buttonclass . ($thisstep == constants::STEP_SELFTRANSCRIBE ? '_activemenubutton' : '_completemenubutton'));
+         $stbutton->class=$buttonclass . ($thisstep == constants::STEP_SELFTRANSCRIBE ? '_activemenubutton' : '_completemenubutton');
      }else{
-         $addurl="#";
-         $buttonopts =  array('class'=>$buttonclass .'_deadmenubutton ');
+         $stbutton->url="#";
+         $stbutton->class = $buttonclass .'_deadmenubutton';
      }
-     $parts[] = \html_writer::link($addurl, get_string('attempt_partthree', constants::M_COMPONENT), $buttonopts);
+     $buttons[]=$stbutton;
 
 
+     //Step Four Button (model answer)
+     if(utils::has_modelanswer($solo, $context)) {
+         $mabutton = new \stdClass();
+         $mabutton->label = get_string('attempt_partfour', constants::M_COMPONENT);
+         if ($latestattempt && $latestattempt->completedsteps >= constants::STEP_SELFTRANSCRIBE) {
+             $mabutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
+                 array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_MODEL));
+             $mabutton->class = $buttonclass . ($thisstep == constants::STEP_MODEL ? '_activemenubutton' : '_completemenubutton');
+         } else {
+             $mabutton->url = "#";
+             $mabutton->class = $buttonclass . '_deadmenubutton';
+         }
+         $buttons[] = $mabutton;
+     }
 
-    //$glue = '<i class="fa fa-arrow-right"></i>';
-     $glue = ' ';
 
-    $buttonsdiv = \html_writer::div(implode($glue, $parts),constants::M_COMPONENT .'_mbuttons');
-     return $this->output->box($output . $buttonsdiv, 'generalbox firstpageoptions');
+     return $this->output->render_from_template( constants::M_COMPONENT . '/activityintrobuttons', ['introcontent'=>$introcontent, 'buttons'=>$buttons]);
+    //$buttonsdiv = \html_writer::div(implode($glue, $parts),constants::M_COMPONENT .'_mbuttons');
+    // return $this->output->box($output . $buttonsdiv, 'generalbox firstpageoptions');
     }
 
     function show_userattemptsummary($moduleinstance,$attempt,$aidata, $stats){
