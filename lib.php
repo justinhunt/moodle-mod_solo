@@ -877,7 +877,11 @@ function solo_get_coursemodule_info($coursemodule) {
 
     $moduleinstance= $DB->get_record('solo', array('id' => $coursemodule->instance,), '*', MUST_EXIST);
     $result = new cached_cm_info();
-    $result->content = format_module_intro('solo', $moduleinstance, $coursemodule->id, false);
+    if ($coursemodule->showdescription) {
+        if (time() > $moduleinstance->viewstart) {
+            $result->content = format_module_intro('solo', $moduleinstance, $coursemodule->id, false);
+        }
+    }
     $result->name = 'solo';
     $result->name = $moduleinstance->name;
     $result->customdata['duedate'] = $moduleinstance->viewend;
