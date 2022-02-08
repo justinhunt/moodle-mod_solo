@@ -1090,7 +1090,8 @@ audio#mod_solo_passageaudioplayer {
 .mod_solo_teacherfeedback {
 	text-align: center;
 }
-.mod_solo_summaryresults .mod_solo_nativeaudioplayer_cont {
+.mod_solo_summaryresults .mod_solo_nativeaudioplayer_cont,
+.mod_solo_transcripteditor .mod_solo_nativeaudioplayer_cont {
 	text-align: center;
 }
 .mod_solo_maybereloadaudio {

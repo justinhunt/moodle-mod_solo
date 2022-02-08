@@ -72,15 +72,19 @@ class attempthelper
         }
 
         $attempts = $DB->get_records(constants::M_ATTEMPTSTABLE,
-                array(constants::M_MODNAME => $this->mod->id,'userid'=>$userid, 'completedsteps'=>constants::STEP_SELFTRANSCRIBE),
+                array(constants::M_MODNAME => $this->mod->id,'userid'=>$userid),
                 'id DESC');
+
         if($attempts){
-            $attempt = array_shift($attempts);
-            return $attempt;
+            foreach ($attempts as $attempt){
+                if($attempt->completedsteps==constants::STEP_SELFTRANSCRIBE ||$attempt->completedsteps==constants::STEP_MODEL){
+                    return $attempt;
+                }
+            }
         }else{
             return false;
         }
-    }
+           }
 
     public function fetch_latest_attempt($userid=false){
         global $DB, $USER;
