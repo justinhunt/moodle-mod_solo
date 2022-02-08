@@ -24,12 +24,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
-use \mod_solo\constants;
-use \mod_solo\utils;
+
 
 require_once("../../../config.php");
 require_once($CFG->dirroot.'/mod/solo/lib.php');
 
+use \mod_solo\constants;
+use \mod_solo\utils;
 
 global $USER,$DB;
 
@@ -289,6 +290,30 @@ $PAGE->navbar->add(get_string('editingattempt', constants::M_COMPONENT, get_stri
 $mode='attempts';
 
 echo $renderer->header($moduleinstance, $cm,$mode, null, get_string('edit', constants::M_COMPONENT));
+
+
+
+//show open close dates
+$hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart>0;
+if($hasopenclosedates){
+    echo $renderer->show_open_close_dates($moduleinstance);
+    $current_time=time();
+    $closed = false;
+    if ( $current_time>$moduleinstance->viewend){
+        echo get_string('activityisclosed',constants::M_COMPONENT);
+        $closed = true;
+    }elseif($current_time<$moduleinstance->viewstart){
+        echo get_string('activityisnotopenyet',constants::M_COMPONENT);
+        $closed = true;
+    }
+    //if we are not a teacher and the activity is closed/not-open leave at this point
+    if(!has_capability('mod/solo:preview', $context) && $closed){
+        echo $renderer->footer();
+        exit;
+    }
+}
+
+
 echo $attempt_renderer->add_edit_page_links($moduleinstance, $attempt,$type,$cm);
 echo html_writer::start_div(constants::M_COMPONENT .'_step' . $type);
 

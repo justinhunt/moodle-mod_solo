@@ -1563,7 +1563,7 @@ class utils{
     public static function add_mform_elements($mform, $context,$setuptab=false) {
         global $CFG;
         $config = get_config(constants::M_COMPONENT);
-
+          $dateoptions = array('optional' => true);
         //if this is setup tab we need to add a field to tell it the id of the activity
         if($setuptab) {
             $mform->addElement('hidden', 'n');
@@ -1608,6 +1608,24 @@ class utils{
       self::prepare_content_toggle('topic',$mform,$context);
 //--------------------------------------------------------
 
+
+	    $name = 'activityopenscloses';
+        $label = get_string($name, 'solo');
+        $mform->addElement('header', $name, $label);
+        $mform->setExpanded($name, false);
+        //-----------------------------------------------------------------------------
+
+        $name = 'viewstart';
+        $label = get_string($name, "solo");
+        $mform->addElement('date_time_selector', $name, $label, $dateoptions);
+        $mform->addHelpButton($name, $name,constants::M_COMPONENT);
+        
+
+        $name = 'viewend';
+        $label = get_string($name, "solo");
+        $mform->addElement('date_time_selector', $name, $label, $dateoptions);
+        $mform->addHelpButton($name, $name ,constants::M_COMPONENT);
+
         // Speaking Targets
         $mform->addElement('header', 'speakingtargetsheader', get_string('speakingtargetsheader', constants::M_COMPONENT));
 
@@ -1620,7 +1638,7 @@ class utils{
         //the size attribute doesn't work because the attributes are applied on the div container holding the select
         $mform->addElement('select','maxconvlength',get_string('maxconvlength', constants::M_COMPONENT), $options,array());
         $mform->setDefault('maxconvlength',constants::DEF_CONVLENGTH);
-
+       
 
         //targetwords
         $mform->addElement('static','targetwordsexplanation','',get_string('targetwordsexplanation',constants::M_COMPONENT));
