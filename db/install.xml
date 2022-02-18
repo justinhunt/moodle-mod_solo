@@ -72,6 +72,7 @@
         <FIELD NAME="jsontranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The full AI transcript (JSON)"/>
         <FIELD NAME="vtttranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The AI subtitles"/>
         <FIELD NAME="selftranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The users self transcript"/>
+        <FIELD NAME="grammarcorrection" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The Grammar Correction"/>
         <FIELD NAME="topictargetwords" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="mywords" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="convlength" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>

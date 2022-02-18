@@ -207,6 +207,17 @@ class attempthelper
 
                             utils::save_stats($stats, $attempt);
                         }
+
+                        //If this is English then lets see if we can get a grammar correction
+                        if(!empty($newattempt->selftranscript) && $this->is_english()){
+                            $siteconfig = get_config(constants::M_COMPONENT);
+                            $token= utils::fetch_token($siteconfig->apiuser,$siteconfig->apisecret);
+                            $grammarcorrection = utils::fetch_grammar_correction($token, $this->mod->region, $newattempt->selftranscript);
+                            if($grammarcorrection){
+                                $newattempt->grammarcorrection=$grammarcorrection;
+                            }
+                        }
+
                         //recalculate AI data, if the selftranscription is altered AND we have a jsontranscript
                         if($attempt->jsontranscript){
                             $passage = $newattempt->selftranscript;
@@ -249,6 +260,21 @@ class attempthelper
         //should not really get here , but lets return anyway
         return $ret;
 
+    }
+
+    public function is_english(){
+        switch($this->mod->ttslanguage){
+            case constants::M_LANG_ENUS:
+            case constants::M_LANG_ENAB:
+            case constants::M_LANG_ENGB:
+            case constants::M_LANG_ENIE:
+            case constants::M_LANG_ENWL:
+            case constants::M_LANG_ENIN:
+                return true;
+
+            default;
+                return false;
+        }
     }
 
 

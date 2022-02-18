@@ -1599,6 +1599,45 @@ class utils{
     }
 
     //fetch the MP3 URL of the text we want read aloud
+    public static function fetch_grammar_correction($token,$region,$passage) {
+        global $USER;
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'request_grammar_correction';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $passage;//urlencode($passage);
+        $params['subject'] = 'none';
+        $params['region'] = $region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then lets do the embed
+        } else if ($payloadobject->returnCode === 0) {
+            $correction = $payloadobject->returnMessage;
+            return $correction;
+        } else {
+            return false;
+        }
+    }
+
+    //fetch the MP3 URL of the text we want read aloud
     public static function fetch_polly_url($token,$region,$speaktext,$texttype, $voice) {
         global $USER;
 

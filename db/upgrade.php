@@ -203,6 +203,17 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022020500, 'solo');
     }
 
+    if ($oldversion < 2022021400) {
+        $table = new xmldb_table('solo_attempts');
+        $field =   new xmldb_field('grammarcorrection', XMLDB_TYPE_TEXT, null, null, null, null);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2022021400, 'solo');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }
