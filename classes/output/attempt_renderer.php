@@ -22,6 +22,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use \mod_solo\constants;
 use \mod_solo\utils;
+use \mod_solo\diff;
 
 /**
  * A custom renderer class that extends the plugin_renderer_base.
@@ -216,11 +217,95 @@ class attempt_renderer extends \plugin_renderer_base {
         }
         $tdata['markedpassage']=$markedpassage;
 
-
+        //if we have a correction, send that out too
+        if(!empty($attempt->grammarcorrection)){
+            list($grammarerrors,$grammarmatches) = $this->fetch_grammar_correction_diff($simpleselftranscript, $attempt->grammarcorrection);
+            $js_opts_html = \mod_solo\aitranscriptutils::prepare_corrections_amd($grammarerrors,$grammarmatches);
+            $markedupcorrections = \mod_solo\aitranscriptutils::render_passage($attempt->grammarcorrection,'corrections');
+            $markedupcorrections .= $js_opts_html;
+            $tdata['grammarcorrection']=$markedupcorrections;
+        }
 
         //send data to template
         $ret .= $this->output->render_from_template( constants::M_COMPONENT . '/summaryresults', $tdata);
         return $ret;
+    }
+
+    function fetch_grammar_correction_diff($selftranscript,$correction){
+
+
+        //turn the passage and transcript into an array of words
+        $alternatives = diff::fetchAlternativesArray('');
+        $wildcards = diff::fetchWildcardsArray($alternatives);
+        $passagebits = diff::fetchWordArray($selftranscript);
+        $transcriptbits = diff::fetchWordArray($correction);
+
+
+        //fetch sequences of transcript/passage matched words
+        // then prepare an array of "differences"
+        $passagecount = count($passagebits);
+        $transcriptcount = count($transcriptbits);
+        $language = constants::M_LANG_ENUS;
+        $sequences = diff::fetchSequences($passagebits,$transcriptbits,$alternatives,$language);
+
+        //fetch diffs
+        $diffs = diff::fetchDiffs($sequences, $passagecount,$transcriptcount);
+        $diffs = diff::applyWildcards($diffs,$passagebits,$wildcards);
+
+
+        //from the array of differences build error data, match data, markers, scores and metrics
+        $errors = new \stdClass();
+        $matches = new \stdClass();
+        $currentword=0;
+        $lastunmodified=0;
+        //loop through diffs
+        foreach($diffs as $diff){
+            $currentword++;
+            switch($diff[0]){
+                case Diff::UNMATCHED:
+                    //we collect error info so we can count and display them on passage
+                    $error = new \stdClass();
+                    $error->word=$passagebits[$currentword-1];
+                    $error->wordnumber=$currentword;
+                    $errors->{$currentword}=$error;
+                    break;
+
+                case Diff::MATCHED:
+                    //we collect match info so we can play audio from selected word
+                    $match = new \stdClass();
+                    $match->word=$passagebits[$currentword-1];
+                    $match->pposition=$currentword;
+                    $match->tposition = $diff[1];
+                    $match->audiostart=0;//not meaningful when processing corrections
+                    $match->audioend=0;//not meaningful when processing corrections
+                    $match->altmatch=$diff[2];//not meaningful when processing corrections
+                    $matches->{$currentword}=$match;
+                    $lastunmodified = $currentword;
+                    break;
+
+                default:
+                    //do nothing
+                    //should never get here
+
+            }
+        }
+        $sessionendword = $lastunmodified;
+
+        //discard errors that happen after session end word.
+        $errorcount = 0;
+        $finalerrors = new \stdClass();
+        foreach($errors as $key=>$error) {
+            if ($key < $sessionendword) {
+                $finalerrors->{$key} = $error;
+                $errorcount++;
+            }
+        }
+        //finalise and serialise session errors
+        $sessionerrors = json_encode($finalerrors);
+        $sessionmatches = json_encode($matches);
+
+        return [$sessionerrors,$sessionmatches];
+
     }
 
     function show_myreports($moduleinstance,$cm){

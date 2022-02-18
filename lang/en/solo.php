@@ -607,3 +607,5 @@ $string['modelanswerheader'] = "Model Answer";
 $string['modelanswerinstructions'] = "If you wish to display a model answer to students after they have entered their transcription, set that here.";
 $string['audiorec_heading'] = "Audio Recorder";
 $string['videorec_heading'] = "Video Recorder";
+$string['grammarcorrection'] = "Suggested Corrections";
+
