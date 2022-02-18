@@ -121,7 +121,9 @@ $stepcontent->attemptid = $attemptid;
 $stepcontent->type = $type;
 $stepcontent->cmid = $cm->id;
 $stepcontent->nexturl = $redirecturl;
-
+if(!empty($moduleinstance->targetwords)) {
+    $stepcontent->targetwords = explode(PHP_EOL, $moduleinstance->targetwords);
+}
 //steps "prepare" and "record" use the same media prompt, prepare that here
 $topicmedia = [];
 $context = \context_module::instance($cm->id);

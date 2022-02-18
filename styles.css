@@ -1237,3 +1237,6 @@ audio#mod_solo_passageaudioplayer {
 .mod_solo_speakingtopic_readonly {
 	text-align: center;
 }
+.mod_solo_activitycontent_container {
+	margin-top: 5px;
+}
