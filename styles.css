@@ -61,6 +61,7 @@ div.mod_solo_mbuttons {
 	padding: 5px;
 	border-radius: 5px;
 	margin: 2px;
+	display: inline-block;
 }
 
 .mod_solo_comparetranscripts{
@@ -1239,4 +1240,15 @@ audio#mod_solo_passageaudioplayer {
 }
 .mod_solo_activitycontent_container {
 	margin-top: 5px;
+}
+
+.mod_solo_corrections {
+	text-align: left;
+	font-style: normal;
+	padding: 5px;
+}
+
+span.mod_solo_corrections_suggestedword {
+	font-weight: bold;
+	background-color: azure;
 }
