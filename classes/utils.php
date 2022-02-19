@@ -661,7 +661,7 @@ class utils{
         //apply use ratio (default aiaccuracy)
         //eg we reduce score according to accuracy. in this case 50%
         // 64 x 50 x .01 = 32
-        if(!is_number($useratio)){$useratio=0;}//ai accuracy returns  "--" ..
+        if(!is_number($useratio) && !is_numeric($useratio)){$useratio=0;}//ai accuracy returns  "--" ..
         $autograde = $autograde * $useratio * .01;
 
         //apply bonuses
