@@ -161,7 +161,7 @@ function solo_reset_userdata($data) {
 }
 
 function solo_get_filemanagernames(){
-    return array('topicmedia');
+    return array('topicmedia','modelmedia');
 }
 
 function solo_get_editornames(){
@@ -862,4 +862,30 @@ function solo_get_completion_state($course,$cm,$userid,$type) {
         // Completion option is not enabled so just return $type
         return $type;
     }
+}
+
+function mod_solo_cm_info_dynamic(cm_info $cm) {
+    global $USER,$DB;
+
+        $moduleinstance= $DB->get_record('solo', array('id' => $cm->instance,), '*', MUST_EXIST);
+        if(method_exists($cm,'override_customdata')) {
+            $cm->override_customdata('duedate', $moduleinstance->viewend);
+            $cm->override_customdata('allowsubmissionsfromdate', $moduleinstance->viewstart);
+        }
+}
+function solo_get_coursemodule_info($coursemodule) {
+    global $DB;
+
+    $moduleinstance= $DB->get_record('solo', array('id' => $coursemodule->instance,), '*', MUST_EXIST);
+    $result = new cached_cm_info();
+    if ($coursemodule->showdescription) {
+        if (time() > $moduleinstance->viewstart) {
+            $result->content = format_module_intro('solo', $moduleinstance, $coursemodule->id, false);
+        }
+    }
+    $result->name = 'solo';
+    $result->name = $moduleinstance->name;
+    $result->customdata['duedate'] = $moduleinstance->viewend;
+    $result->customdata['allowsubmissionsfromdate'] = $moduleinstance->viewstart;
+    return $result;
 }

@@ -61,6 +61,7 @@ div.mod_solo_mbuttons {
 	padding: 5px;
 	border-radius: 5px;
 	margin: 2px;
+	display: inline-block;
 }
 
 .mod_solo_comparetranscripts{
@@ -172,6 +173,9 @@ div.mod_solo_mbuttons {
     font-weight: bold;
 }
 .mod_solo_forminstructions {
+	/*something*/
+}
+.mod_solo_activitycontent_container {
 	/*something*/
 }
 .mod_solo_summaryheader {
@@ -996,43 +1000,49 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 .mod_solo_activitycontent_video_cont,
 .mod_solo_activitycontent_audio_cont,
 .mod_solo_activitycontent_tts_cont,
-.mod_solo_activitycontent_iframe_cont {
+.mod_solo_activitycontent_iframe_cont,
+.mod_solo_activitycontent_ytclip_cont {
 	width: 100%;
 	margin-top: 10px;
-	/* text-align: center; */
+	 margin: auto;
+	 text-align: center;
 }
 
-.mod_solo_activitycontent_text {
+.mod_solo_audiorec_heading, .mod_solo_videorec_heading {
 	width: 100%;
 	max-width: 400px;
-	/* margin: auto; */
-	/* text-align: center; */
+	padding: 10px;
+	margin-top: 20px;
+	border: 1px grey solid;
+	border-radius: 4px;
+	text-align: center;
 }
 
-.mod_solo_activitycontent_iframe_cont {
+.mod_solo_activitycontent_iframe_cont,
+.mod_solo_activitycontent_ytclip_cont {
 	margin-top: 10px;
 	/* margin-left: auto; */
 	/* margin-right: auto; */
-	text-align: center;
 	width: 100%;
 	height: 100%;
-	max-width: 400px;
-	max-height: 225px;
+	max-width: 600px;
+	max-height: 337px;
+
 }
 
 .mod_solo_activitycontent_audio {
 	width: 100%;
-	max-width: 400px;
+	max-width: 600px;
 	margin: auto;
 }
 .mod_solo_activitycontent_video {
 	width: 100%;
-	max-width: 400px;
+	max-width: 600px;
 	margin: auto;
 }
 .mod_solo_activitycontent_image {
 	width: 100%;
-	max-width: 400px;
+	max-width: 600px;
 	margin: auto;
 }
 
@@ -1053,8 +1063,8 @@ top:0;
 height:100%;
 width:100%;
 position: absolute;
-max-width: 400px;
-max-height: 225px;
+max-width: 600px;
+max-height: 337px;
 }
 
 .mod_solo_summary_teachereval {
@@ -1075,13 +1085,14 @@ max-height: 225px;
 
 audio#mod_solo_passageaudioplayer {
 	width: 100%;
-	max-width: 400px;
+	max-width: 600px;
 }
 .mod_solo_rubric_results,
 .mod_solo_teacherfeedback {
 	text-align: center;
 }
-.mod_solo_summaryresults .mod_solo_nativeaudioplayer_cont {
+.mod_solo_summaryresults .mod_solo_nativeaudioplayer_cont,
+.mod_solo_transcripteditor .mod_solo_nativeaudioplayer_cont {
 	text-align: center;
 }
 .mod_solo_maybereloadaudio {
@@ -1113,10 +1124,7 @@ audio#mod_solo_passageaudioplayer {
 .mod_solo_bigfont {
 	font-size: 1.8em;
 }
-/* hide save button because users can try to leave too soon */
-.mod_solo_step2 .btn.btn-primary {
-	display: none;
-}
+
 .solo_grading_submissions_container {
 	max-width: 1200px;
 }
@@ -1125,4 +1133,122 @@ audio#mod_solo_passageaudioplayer {
 	width: 100%;
 	text-align: center;
 	margin-bottom: 10px;
+}
+
+/* audio/video player and audio/video recorders */
+
+.solo_audiorec_iframe {
+	left:0;
+	top:0;
+	height:100%;
+	width:100%;
+	position: absolute;
+	max-width: 400px;
+}
+.solo_videorec_iframe {
+	left:0;
+	top:0;
+	height:100%;
+	width:100%;
+	position: absolute;
+	max-width: 450px;
+}
+
+.solo_video {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.solo_video_cont {
+	position: relative;
+	height: 0;
+	max-width: 480px;
+}
+
+.solo_audio {
+	width: 100%;
+}
+
+.solo_audio_cont {
+	width: 100%;
+	max-width: 480px;
+}
+
+
+.solo_videorec_cont {
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+}
+.solo_audiorec_cont {
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+}
+
+@supports (padding-top: min(540px,150%)) {
+	.solo_audiorec_cont {
+		padding-top: min(300px,90%);
+	}
+
+	.solo_videorec_cont {
+		padding-top: min(540px,150%);
+	}
+	.solo_video_cont {
+		padding-bottom: min(360px,75%);
+	}
+}
+@supports not (padding-top: min(540px,150%)) {
+	.solo_audiorec_cont {
+		padding-top: 300px;
+	}
+	.solo_videorec_cont {
+		padding-top: 540px;
+	}
+	.solo_video_cont {
+		padding-bottom: 360px;
+	}
+}
+
+@media screen and (max-width: 667px) {
+	.solo_videorec_cont {
+		padding-top: 150%;
+	}
+	.solo_audiorec_cont {
+		padding-top: 90%;
+	}
+	.solo_video_cont {
+		padding-bottom: 75%;
+	}
+}
+
+/* this is not set on some themes and can collapse our responsive stuff */
+.form-control-static {
+	width: 100%;
+}
+
+.solo_stepinstructions,
+.mod_solo_stepsubmit {
+	text-align: center;
+	padding: 8px
+}
+.mod_solo_speakingtopic_readonly {
+	text-align: center;
+}
+.mod_solo_activitycontent_container {
+	margin-top: 5px;
+}
+
+.mod_solo_corrections {
+	text-align: left;
+	font-style: normal;
+	padding: 5px;
+}
+
+span.mod_solo_corrections_suggestedword {
+	font-weight: bold;
+	background-color: azure;
 }

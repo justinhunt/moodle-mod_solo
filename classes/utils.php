@@ -22,9 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
  namespace mod_solo;
+
 defined('MOODLE_INTERNAL') || die();
 
 use \mod_solo\constants;
+
+//sometimes its not present ... how
+require_once($CFG->dirroot . '/mod/solo/lib.php');
 
 
 /**
@@ -208,20 +212,7 @@ class utils{
         return true;
     }
 
-    //fetch interlocutor array to string
-    public static function interlocutors_array_to_string($interlocutors) {
-        //the incoming data is an array, and we need to csv it.
-        if($interlocutors) {
-            if(is_array($interlocutors)) {
-                $ret = implode(',', $interlocutors);
-            }else{
-                $ret = $interlocutors;
-            }
-        }else{
-            $ret ='';
-        }
-        return $ret;
-    }
+
 
     //fetch lang server url, services incl. 'transcribe' , 'lm', 'lt', 'spellcheck'
     public static function fetch_lang_server_url($region,$service='transcribe'){
@@ -247,7 +238,7 @@ class utils{
         }
     }
 
-    public static function fetch_sentence_stats($text,$stats){
+    public static function fetch_sentence_stats($text,$stats, $language){
 
         //count sentences
         $items = preg_split('/[!?.]+(?![0-9])/', $text);
@@ -260,7 +251,7 @@ class utils{
         $averagesentence=1;
         $totallengths = 0;
         foreach($items as $sentence){
-            $length = str_word_count($sentence,0);
+            $length = self::mb_count_words($sentence,$language);
             if($length>$longestsentence){
                 $longestsentence =$length;
             }
@@ -281,7 +272,7 @@ class utils{
         //prepare data
         $is_english=strpos($language,'en')===0;
         $items = \core_text::strtolower($text);
-        $items = str_word_count($items, 1);
+        $items = self::mb_count_words($items,$language,1);
         $items = array_unique($items);
 
         //unique words
@@ -307,6 +298,33 @@ class utils{
         return $stats;
     }
 
+    public static function mb_count_words($string, $language, $format=0)
+    {
+        //wordcount will be different for different languages
+        switch($language){
+            //arabic
+            case constants::M_LANG_ARAE:
+            case constants::M_LANG_ARSA:
+                //remove double spaces and count spaces remaining to estimate words
+                $string= preg_replace('!\s+!', ' ', $string);
+                switch($format){
+
+                    case 1:
+                        $wordcount = explode(' ', $string);
+                        break;
+                    case 0:
+                    default:
+                        $wordcount = substr_count($string, ' ') + 1;
+                }
+
+                break;
+            //others
+            default:
+                $wordcount = str_word_count($string,$format);
+        }
+
+        return $wordcount;
+    }
 
     /**
      * count_syllables
@@ -376,9 +394,19 @@ class utils{
             return $stats;
         }
 
+        //get lanserver lang string
+        switch($language){
+            case constants::M_LANG_ARSA:
+            case constants::M_LANG_ARAE:
+                $uselanguage = 'ar';
+                break;
+            default:
+                $uselanguage = $language;
+        }
+
         //fetch grammar stats
         $lt_url = utils::fetch_lang_server_url($region,'lt');
-        $postdata =array('text'=> $selftranscript,'language'=>$language);
+        $postdata =array('text'=> $selftranscript,'language'=>$uselanguage);
         $autogrammar = utils::curl_fetch($lt_url,$postdata,'post');
         //default grammar score
         $autogrammarscore =100;
@@ -386,7 +414,7 @@ class utils{
         //fetch spell stats
         $spellcheck_url = utils::fetch_lang_server_url($region,'spellcheck');
         $spelltranscript = diff::cleanText($selftranscript);
-        $postdata =array('passage'=>$spelltranscript,'lang'=>$language);
+        $postdata =array('passage'=>$spelltranscript,'lang'=>$uselanguage);
         $autospell = utils::curl_fetch($spellcheck_url,$postdata,'post');
         //default spell score
         $autospellscore =100;
@@ -451,10 +479,10 @@ class utils{
             $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $attempt->solo));
         }
         if(!$stats){
-            $stats = self::calculate_stats($attempt->selftranscript, $attempt);
+            $stats = self::calculate_stats($attempt->selftranscript, $attempt,$moduleinstance->ttslanguage);
             //if that worked, and why wouldn't it, lets save them too.
             if ($stats) {
-                $stats = utils::fetch_sentence_stats($attempt->selftranscript,$stats);
+                $stats = utils::fetch_sentence_stats($attempt->selftranscript,$stats,$moduleinstance->ttslanguage);
                 $stats = utils::fetch_word_stats($attempt->selftranscript,$moduleinstance->ttslanguage,$stats);
                 $stats = self::calc_grammarspell_stats($attempt->selftranscript,
                         $moduleinstance->region,$moduleinstance->ttslanguage,$stats);
@@ -491,7 +519,7 @@ class utils{
     }
 
     //calculate stats of transcript (no db code)
-    public static function calculate_stats($usetranscript, $attempt){
+    public static function calculate_stats($usetranscript, $attempt, $language){
         $stats= new \stdClass();
         $stats->turns=0;
         $stats->words=0;
@@ -511,7 +539,9 @@ class utils{
         $jsontranscript = '';
 
         foreach($transcriptarray as $sentence){
-            $wordcount = str_word_count($sentence,0);
+            //wordcount will be different for different languages
+            $wordcount = self::mb_count_words($sentence,$language);
+
             if($wordcount===0){continue;}
             $jsontranscript .= $sentence . ' ' ;
             $stats->turns++;
@@ -631,6 +661,7 @@ class utils{
         //apply use ratio (default aiaccuracy)
         //eg we reduce score according to accuracy. in this case 50%
         // 64 x 50 x .01 = 32
+        if(!is_number($useratio) && !is_numeric($useratio)){$useratio=0;}//ai accuracy returns  "--" ..
         $autograde = $autograde * $useratio * .01;
 
         //apply bonuses
@@ -1049,6 +1080,34 @@ class utils{
         return $rec_options;
     }
 
+    public static function has_modelanswer($moduleinstance, $context){
+        if(!empty(trim($moduleinstance->modelytid))) {return true;}
+        if(!empty(trim($moduleinstance->modeliframe))) {return true;}
+        if(!empty(trim($moduleinstance->modeltts))) {return true;}
+        $itemid=0;
+        $filearea='modelmedia';
+        $mediaurls = utils::fetch_media_urls($context->id,$filearea,$itemid);
+        if($mediaurls && count($mediaurls)>0) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function get_steplabel($step){
+        switch($step){
+            case constants::STEP_USERSELECTIONS:
+                return get_string('userselections', constants::M_COMPONENT);
+            case constants::STEP_AUDIORECORDING:
+                return get_string('audiorecording', constants::M_COMPONENT);
+            case constants::STEP_SELFTRANSCRIBE:
+                return get_string('selftranscribe', constants::M_COMPONENT);
+            case constants::STEP_MODEL:
+                return get_string('modelanswer', constants::M_COMPONENT);
+            default:
+                return '';
+        }
+    }
+
     public static function get_grade_element_options(){
         $options = [];
         for($x=0;$x<101;$x++){
@@ -1429,6 +1488,155 @@ class utils{
         }
     }
 
+    /**
+     * The html part of the recorder (js is in the fetch_activity_amd)
+     * PARAM $media one of audio, video
+     * PARAM $recordertype something like "upload" or "fresh" or "bmr"
+     */
+    public static function fetch_recorder_data($cm, $moduleinstance, $media, $token){
+        global $CFG, $USER;
+        $rec = new \stdClass();
+
+        $rec->timelimit = $moduleinstance->maxconvlength * 60;
+        $rec->recorderskin = $moduleinstance->recorderskin;
+        $rec->recordertype = $moduleinstance->recordertype;
+
+
+        $rec->widgetid = \html_writer::random_id(constants::M_WIDGETID);
+
+        switch ($moduleinstance->transcriber){
+            case constants::TRANSCRIBER_AMAZONSTREAMING :
+                $moduleinstance->transcriber = constants::TRANSCRIBER_AMAZONTRANSCRIBE;
+            case constants::TRANSCRIBER_AMAZONTRANSCRIBE:
+            case constants::TRANSCRIBER_GOOGLECLOUDSPEECH:
+            case constants::TRANSCRIBER_NONE:
+            default:
+            $can_transcribe = \mod_solo\utils::can_transcribe($moduleinstance);
+            $rec->transcribe = $can_transcribe ? $moduleinstance->transcriber : "0";
+            $rec->subtitle=$rec->transcribe;
+            $rec->speechevents="0";
+        }
+        
+        //get width and height
+        //set width and height
+        switch($rec->recordertype) {
+            case constants::REC_AUDIO:
+                //fresh
+                if($rec->recorderskin==constants::SKIN_FRESH){
+                    $rec->width = "400";
+                    $rec->height = "300";
+
+
+                }elseif($rec->recorderskin==constants::SKIN_PLAIN){
+                    $rec->width = "360";
+                    $rec->height = "190";
+
+                }elseif($rec->recorderskin==constants::SKIN_UPLOAD){
+                    $rec->width = "360";
+                    $rec->height = "150";
+
+                    //bmr 123 once standard
+                }else {
+                    $rec->width = "360";
+                    $rec->height = "240";
+                }
+                $rec->iframeclass= constants::CLASS_AUDIOREC_IFRAME;
+                break;
+            case constants::REC_VIDEO:
+            default:
+                //bmr 123 once
+                if($rec->recorderskin==constants::SKIN_BMR) {
+                    $rec->width = "360";
+                    $rec->height = "450";
+                }elseif($rec->recorderskin==constants::SKIN_123){
+                    $rec->width = "450";//"360";
+                    $rec->height = "550";//"410";
+                }elseif($rec->recorderskin==constants::SKIN_ONCE ){
+                    $rec->width = "350";
+                    $rec->height = "290";
+                }elseif($rec->recorderskin==constants::SKIN_UPLOAD){
+                    $rec->width = "350";
+                    $rec->height = "310";
+                    //standard
+                }else {
+                    $rec->width = "360";
+                    $rec->height = "410";
+                }
+                $rec->iframeclass= constants::CLASS_VIDEOREC_IFRAME;
+        }
+
+
+        //we encode any hints
+        $hints = new \stdClass();
+        $rec->hints = base64_encode(json_encode($hints));
+        $rec->id='therecorder';
+        $rec->parent=$CFG->wwwroot;
+        $rec->owner=hash('md5',$USER->username);
+        $rec->localloading='auto';
+        $rec->localloader= constants::M_URL . '/poodllloader.html';
+        $rec->media=$media;
+        $rec->appid=constants::M_COMPONENT;
+        $rec->updatecontrol=constants::M_WIDGETID . constants::RECORDINGURLFIELD;
+        $rec->transcode="1";
+        $rec->language=$moduleinstance->ttslanguage;
+        $rec->expiredays=$moduleinstance->expiredays;
+        $rec->region=$moduleinstance->region;
+        $rec->fallback='warning';
+        $rec->token=$token;
+
+        //here we set up any info we need to pass into javascript
+        //importantly we tell it the div id of the recorder
+       // $recopts =Array();
+      //  $recopts['recorderid']=$rec->widgetid;
+
+        $rec->transcriber=$moduleinstance->transcriber;
+        $rec->expiretime=300;//max expire time is 300 seconds
+        $rec->cmid=$cm->id;
+
+        //these need to be returned and echo'ed to the page
+        return $rec;
+
+    }
+
+    //fetch the MP3 URL of the text we want read aloud
+    public static function fetch_grammar_correction($token,$region,$passage) {
+        global $USER;
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'request_grammar_correction';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $passage;//urlencode($passage);
+        $params['subject'] = 'none';
+        $params['region'] = $region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then lets do the embed
+        } else if ($payloadobject->returnCode === 0) {
+            $correction = $payloadobject->returnMessage;
+            return $correction;
+        } else {
+            return false;
+        }
+    }
+
     //fetch the MP3 URL of the text we want read aloud
     public static function fetch_polly_url($token,$region,$speaktext,$texttype, $voice) {
         global $USER;
@@ -1469,7 +1677,7 @@ class utils{
     public static function add_mform_elements($mform, $context,$setuptab=false) {
         global $CFG;
         $config = get_config(constants::M_COMPONENT);
-
+          $dateoptions = array('optional' => true);
         //if this is setup tab we need to add a field to tell it the id of the activity
         if($setuptab) {
             $mform->addElement('hidden', 'n');
@@ -1514,6 +1722,24 @@ class utils{
       self::prepare_content_toggle('topic',$mform,$context);
 //--------------------------------------------------------
 
+
+	    $name = 'activityopenscloses';
+        $label = get_string($name, 'solo');
+        $mform->addElement('header', $name, $label);
+        $mform->setExpanded($name, false);
+        //-----------------------------------------------------------------------------
+
+        $name = 'viewstart';
+        $label = get_string($name, "solo");
+        $mform->addElement('date_time_selector', $name, $label, $dateoptions);
+        $mform->addHelpButton($name, $name,constants::M_COMPONENT);
+        
+
+        $name = 'viewend';
+        $label = get_string($name, "solo");
+        $mform->addElement('date_time_selector', $name, $label, $dateoptions);
+        $mform->addHelpButton($name, $name ,constants::M_COMPONENT);
+
         // Speaking Targets
         $mform->addElement('header', 'speakingtargetsheader', get_string('speakingtargetsheader', constants::M_COMPONENT));
 
@@ -1526,7 +1752,7 @@ class utils{
         //the size attribute doesn't work because the attributes are applied on the div container holding the select
         $mform->addElement('select','maxconvlength',get_string('maxconvlength', constants::M_COMPONENT), $options,array());
         $mform->setDefault('maxconvlength',constants::DEF_CONVLENGTH);
-
+       
 
         //targetwords
         $mform->addElement('static','targetwordsexplanation','',get_string('targetwordsexplanation',constants::M_COMPONENT));
@@ -1540,6 +1766,12 @@ class utils{
         $mform->setType('gradewordgoal', PARAM_INT);
         $mform->setDefault('gradewordgoal',60);
         $mform->addHelpButton('gradewordgoal', 'gradewordgoal', constants::M_MODNAME);
+
+        //Model Answer
+        $mform->addElement('header', 'modelanswerheader', get_string('modelanswerheader', constants::M_COMPONENT));
+        //$mform->addElement('html',"<div>" . get_string('modelanswerinstructions', constants::M_COMPONENT) . "</div>");
+        $mform->addElement('static','modelanswerinstructions','', "<div>" . get_string('modelanswerinstructions', constants::M_COMPONENT) . "</div>");
+        self::prepare_content_toggle('model',$mform,$context);
 
         // Language and Recording
         $mform->addElement('header', 'languageandrecordingheader', get_string('languageandrecordingheader', constants::M_COMPONENT));
@@ -1670,6 +1902,7 @@ class utils{
         $togglearray[] =& $mform->createElement('advcheckbox',$cp . 'addmedia',get_string('addmedia',constants::M_COMPONENT),'');
         $togglearray[] =& $mform->createElement('advcheckbox',$cp . 'addiframe',get_string('addiframe',constants::M_COMPONENT),'');
         $togglearray[] =& $mform->createElement('advcheckbox',$cp . 'addttsaudio',get_string('addttsaudio',constants::M_COMPONENT),'');
+        $togglearray[] =& $mform->createElement('advcheckbox',$cp . 'addytclip',get_string('addytclip',constants::M_COMPONENT),'');
         $mform->addGroup($togglearray, $cp . 'togglearray', get_string('mediaoptions', constants::M_COMPONENT), array(' '), false);
 
         //We assume they want to use some media
@@ -1715,6 +1948,25 @@ class utils{
             $mform->disabledIf($cp . 'tts', $cp . 'addttsaudio', 'neq', 1);
             $mform->disabledIf($cp . 'ttsvoice', $cp . 'addttsaudio', 'neq', 1);
         }
+
+        //Question YouTube Clip
+        $ytarray=array();
+        $ytarray[] =& $mform->createElement('text', $cp . 'ytid', get_string('content_ytid', constants::M_COMPONENT),  array('size'=>15, 'placeholder'=>"Video ID"));
+        $ytarray[] =& $mform->createElement('text', $cp . 'ytstart', get_string('content_ytstart', constants::M_COMPONENT),  array('size'=>3,'placeholder'=>"Start"));
+        $ytarray[] =& $mform->createElement('html','s - ');
+        $ytarray[] =& $mform->createElement('text', $cp . 'ytend', get_string('content_ytend', constants::M_COMPONENT),  array('size'=>3,'placeholder'=>"End"));
+        $ytarray[] =& $mform->createElement('html','s');
+
+        $mform->addGroup($ytarray, $cp .'ytarray' , get_string('ytclipdetails', constants::M_COMPONENT), array(' '), false);
+        $mform->setType($cp . 'ytid', PARAM_RAW);
+        $mform->setType($cp . 'ytstart', PARAM_INT);
+        $mform->setType($cp . 'ytend', PARAM_INT);
+
+        if($m35){
+            $mform->hideIf($cp .'ytarray', $cp . 'addytclip', 'neq', 1);
+        }else {
+            $mform->disabledIf($cp .'ytarray',$cp . 'addytclip', 'neq', 1);
+        }
     }
 
     public static function prepare_file_and_json_stuff($moduleinstance, $modulecontext){
@@ -1752,22 +2004,31 @@ class utils{
 
         $fs = get_file_storage();
         $itemid=0;
-        $files = $fs->get_area_files($modulecontext->id, constants::M_COMPONENT,
-                'topicmedia', $itemid);
-        if ($files) {
-            $moduleinstance->addmedia = 1;
-        } else {
-            $moduleinstance->addmedia = 0;
-        }
-        if (!empty($moduleinstance->topictts)) {
-            $moduleinstance->addttsaudio = 1;
-        } else {
-            $moduleinstance->addttsaudio = 0;
-        }
-        if (!empty($moduleinstance->topiciframe)) {
-            $moduleinstance->addiframe = 1;
-        } else {
-            $moduleinstance->addiframe = 0;
+        $mediasets = ['topic','model'];
+        foreach($mediasets as $prefix){
+
+            $files = $fs->get_area_files($modulecontext->id, constants::M_COMPONENT,
+                    $prefix. 'media', $itemid);
+            if ($files) {
+                $moduleinstance->{$prefix.'addmedia'} = 1;
+            } else {
+                $moduleinstance->{$prefix.'addmedia'} = 0;
+            }
+            if (!empty($moduleinstance->{$prefix.'tts'})) {
+                $moduleinstance->{$prefix.'addttsaudio'} = 1;
+            } else {
+                $moduleinstance->{$prefix.'addttsaudio'} = 0;
+            }
+            if (!empty($moduleinstance->{$prefix.'iframe'})) {
+                $moduleinstance->{$prefix.'addiframe'} = 1;
+            } else {
+                $moduleinstance->{$prefix.'addiframe'} = 0;
+            }
+            if (!empty($moduleinstance->{$prefix.'ytid'})) {
+                $moduleinstance->{$prefix.'addytclip'} = 1;
+            } else {
+                $moduleinstance->{$prefix.'addytclip'} = 0;
+            }
         }
 
         return $moduleinstance;

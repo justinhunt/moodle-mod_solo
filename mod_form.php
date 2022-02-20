@@ -29,7 +29,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/solo/classes/attempt/userselectionsform.php');
 
 use \mod_solo\constants;
 use \mod_solo\utils;
@@ -128,5 +127,17 @@ class mod_solo_mod_form extends moodleform_mod {
         return (!empty($data['completionallsteps']) && $data['completionallsteps'] != 0);
     }
 
+  public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+       
+          if (!empty($data['viewend'])) {
+            if ($data['viewend'] < $data['viewstart']) {
+                $errors['viewend'] = "End date should be after Start Date";
+            }
+        }
 
+
+
+        return $errors;
+    }
 }
