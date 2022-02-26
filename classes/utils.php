@@ -1447,7 +1447,7 @@ class utils{
                 constants::M_LANG_ESES => ['Enrique' => 'Enrique', 'Conchita' => 'Conchita', 'Lucia' => 'Lucia'],
             //constants::M_LANG_FAIR => [],
                 constants::M_LANG_FRCA => ['Chantal' => 'Chantal'],
-                constants::M_LANG_FRFR => ['Mathieu' => 'Mathieu', 'Celine' => 'Celine', 'Lea' => 'Léa'],
+                constants::M_LANG_FRFR => ['Mathieu' => 'Mathieu', 'Celine' => 'Celine', 'Lea' => 'Lea'],
                 constants::M_LANG_HIIN => ["Aditi" => "Aditi"],
             //constants::M_LANG_HEIL => [],
             //constants::M_LANG_IDID => [],
