@@ -1940,7 +1940,7 @@ class utils{
         //Speaking topic upload
         $filemanageroptions = solo_filemanager_options($context);
         $mform->addElement('filemanager',
-            $cp . 'media',
+            $cp . 'media',//topicmedia , modelmedia
             get_string('content_media',constants::M_COMPONENT),
             null,
             $filemanageroptions
