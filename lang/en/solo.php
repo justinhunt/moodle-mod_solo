@@ -163,7 +163,7 @@ $string['expiredays']='Days to keep file';
 $string['aigradenow']='AI Grade';
 
 $string['attemptsperpage']="Attempts to show per page: ";
-$string['backtotop']="Back to Start";
+$string['backtotop']="Back to Course";
 $string['transcript']="Transcript";
 $string['quickgrade']="Quick Grade";
 $string['ok']="OK";

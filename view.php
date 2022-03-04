@@ -212,6 +212,12 @@ if($start_or_continue) {
             $tdata->postattemptediturl=$postattemptediturl->out();
         }
     }
+    //show back to course button if we are not in an LTI window
+    if(!$config->enablesetuptab) {
+        $tdata->courseurl = $CFG->wwwroot . '/course/view.php?id=' . $moduleinstance->course;
+        $tdata->backtocourse = true;
+    }
+
     echo $renderer->render_from_template(constants::M_COMPONENT . '/postattemptbuttons', $tdata);
 }
 echo $renderer->footer();
