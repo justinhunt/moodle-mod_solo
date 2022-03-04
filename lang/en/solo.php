@@ -545,7 +545,7 @@ $string['rating_fair'] = 'Thank you';
 $string['rating_good'] = 'Good Job';
 $string['rating_verygood'] = 'Very Good';
 $string['rating_excellent'] = 'Excellent !';
-$string['maybereloadaudio']='(If audio does not play, try reloading the page.)';
+$string['toggleplayinstructions']='(Press ESC key to start and stop the audio player.)';
 
 //reattempt
 $string['reattempt'] = 'Try Again';
