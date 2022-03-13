@@ -214,7 +214,7 @@ if($start_or_continue) {
     }
     //show back to course button if we are not in an LTI window
     if(!$config->enablesetuptab) {
-        $tdata->courseurl = $CFG->wwwroot . '/course/view.php?id=' . $moduleinstance->course . '#section-'. $cm->sectionnum;
+        $tdata->courseurl = $CFG->wwwroot . '/course/view.php?id=' . $moduleinstance->course . '#section-'. ($cm->section-1);
         $tdata->backtocourse = true;
     }
 
