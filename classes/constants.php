@@ -148,6 +148,11 @@ const M_LANG_TAIN ='ta-IN';
 const M_LANG_TEIN ='te-IN';
 const M_LANG_TRTR ='tr-TR';
 
+const M_LANG_NBNO ='nb-NO';
+const M_LANG_PLPL ='pl-PL';
+const M_LANG_RORO ='ro-RO';
+const M_LANG_SVSE ='sv-SE';
+
 const M_HIDDEN_PLAYER = 'mod_solo_hidden_player';
 const M_HIDDEN_PLAYER_BUTTON = 'mod_solo_hidden_player_button';
 const M_HIDDEN_PLAYER_BUTTON_ACTIVE = 'mod_solo_hidden_player_button_active';
