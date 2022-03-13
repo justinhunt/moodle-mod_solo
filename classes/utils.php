@@ -1631,6 +1631,15 @@ class utils{
             //if all good, then lets do the embed
         } else if ($payloadobject->returnCode === 0) {
             $correction = $payloadobject->returnMessage;
+            //clean up the correction a little
+            if(\core_text::strlen($correction) > 0){
+                $correction = \core_text::trim_utf8_bom($correction);
+                $charone = substr($correction,0,1);
+                if(preg_match('/^[.,:!?;-]/',$charone)){
+                    $correction = substr($correction,1);
+                }
+            }
+
             return $correction;
         } else {
             return false;
