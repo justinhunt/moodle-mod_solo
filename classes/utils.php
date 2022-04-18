@@ -1434,6 +1434,14 @@ class utils{
         return (json_last_error() == JSON_ERROR_NONE);
     }
 
+    public static function fetch_options_steps(){
+        $ret = array(constants::M_STEP_NONE=>get_string('step_none',constants::M_COMPONENT),
+            constants::M_STEP_RECORD=>get_string('step_record',constants::M_COMPONENT),
+            constants::M_STEP_TRANSCRIBE=>get_string('step_transcribe',constants::M_COMPONENT),
+            constants::M_STEP_MODEL=>get_string('step_model',constants::M_COMPONENT));
+        return $ret;
+    }
+
     public static function get_tts_voices($langcode='en-US',$showall=true) {
         $alllang = array(
                 constants::M_LANG_ARAE => ['Zeina'],

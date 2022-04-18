@@ -200,7 +200,7 @@ function xmldb_solo_upgrade($oldversion) {
     if ($oldversion < 2022020500) {
         $table = new xmldb_table('solo');
 
-        // Define YT clip fields to be added to minilesson
+        // Define YT clip /TTS voice  to be added to solo as topic and model
         $fields=[];
         $fields[]= new xmldb_field('topicytid', XMLDB_TYPE_TEXT, null, null, null, null);
         $fields[]= new xmldb_field('topicytstart', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
@@ -231,6 +231,28 @@ function xmldb_solo_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2022021400, 'solo');
+    }
+
+    // Add model answer and ytclip fields to solo table
+    if ($oldversion < 2022033100) {
+        $table = new xmldb_table('solo');
+
+        // Define STEPS fields to be added to Solo
+        $fields=[];
+
+        $fields[]= new xmldb_field('step2', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, constants::M_STEP_RECORD);
+        $fields[]= new xmldb_field('step3', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, constants::M_STEP_TRANSCRIBE);
+        $fields[]= new xmldb_field('step4', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, constants::M_STEP_MODEL);
+        $fields[]= new xmldb_field('step5', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, constants::M_STEP_NONE);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2022033100, 'solo');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.

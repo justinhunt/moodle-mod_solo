@@ -30,6 +30,11 @@ const M_CLASS_TOPICSCHECKBOX = 'topicscheckbox';
 const M_PLUGINSETTINGS ='/admin/settings.php?section=modsettingsolo';
 
 const M_USE_DATATABLES=true;
+const M_STEP_NONE=1;
+const M_STEP_PREPARE=1;
+const M_STEP_RECORD=2;
+const M_STEP_TRANSCRIBE=3;
+const M_STEP_MODEL=4;
 
 //AI Transcript constants
 const M_AI_PARENTFIELDNAME = 'solo';

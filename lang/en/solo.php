@@ -624,3 +624,7 @@ $string['modelanswerinstructions'] = "If you wish to display a model answer to s
 $string['audiorec_heading'] = "Audio Recorder";
 $string['videorec_heading'] = "Video Recorder";
 $string['grammarcorrection'] = "Suggested Corrections";
+$string['step_none'] = 'None';
+$string['step_record'] = 'Record';
+$string['step_transcribe'] = 'Self Transcribe';
+$string['step_model'] = 'Model';
