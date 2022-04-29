@@ -1095,9 +1095,9 @@ class utils{
 
     public static function get_steplabel($step){
         switch($step){
-            case constants::STEP_USERSELECTIONS:
+            case constants::STEP_PREPARE:
                 return get_string('userselections', constants::M_COMPONENT);
-            case constants::STEP_AUDIORECORDING:
+            case constants::STEP_MEDIARECORDING:
                 return get_string('audiorecording', constants::M_COMPONENT);
             case constants::STEP_SELFTRANSCRIBE:
                 return get_string('selftranscribe', constants::M_COMPONENT);
@@ -1165,10 +1165,14 @@ class utils{
     }
 
     public static function get_lang_options() {
+
+        //we decided to limit this to what we can process and use langtool for:
+        //https://dev.languagetool.org/languages
+
         return array(
-                constants::M_LANG_ARAE => get_string('ar-ae', constants::M_COMPONENT),
-                constants::M_LANG_ARSA => get_string('ar-sa', constants::M_COMPONENT),
-                constants::M_LANG_DADK => get_string('da-dk', constants::M_COMPONENT),
+             //   constants::M_LANG_ARAE => get_string('ar-ae', constants::M_COMPONENT),
+             //   constants::M_LANG_ARSA => get_string('ar-sa', constants::M_COMPONENT),
+             //   constants::M_LANG_DADK => get_string('da-dk', constants::M_COMPONENT),
                 constants::M_LANG_DEDE => get_string('de-de', constants::M_COMPONENT),
                 constants::M_LANG_DECH => get_string('de-ch', constants::M_COMPONENT),
                 constants::M_LANG_ENUS => get_string('en-us', constants::M_COMPONENT),
@@ -1180,29 +1184,34 @@ class utils{
                 constants::M_LANG_ENAB => get_string('en-ab', constants::M_COMPONENT),
                 constants::M_LANG_ESUS => get_string('es-us', constants::M_COMPONENT),
                 constants::M_LANG_ESES => get_string('es-es', constants::M_COMPONENT),
-                constants::M_LANG_FAIR => get_string('fa-ir', constants::M_COMPONENT),
+             //   constants::M_LANG_FAIR => get_string('fa-ir', constants::M_COMPONENT),
+             //   constants::M_LANG_FILPH => get_string('fil-ph', constants::M_COMPONENT),
                 constants::M_LANG_FRCA => get_string('fr-ca', constants::M_COMPONENT),
                 constants::M_LANG_FRFR => get_string('fr-fr', constants::M_COMPONENT),
-                constants::M_LANG_HIIN => get_string('hi-in', constants::M_COMPONENT),
-                constants::M_LANG_HEIL => get_string('he-il', constants::M_COMPONENT),
-                constants::M_LANG_IDID => get_string('id-id', constants::M_COMPONENT),
+             //   constants::M_LANG_HIIN => get_string('hi-in', constants::M_COMPONENT),
+             //   constants::M_LANG_HEIL => get_string('he-il', constants::M_COMPONENT),
+             //   constants::M_LANG_IDID => get_string('id-id', constants::M_COMPONENT),
                 constants::M_LANG_ITIT => get_string('it-it', constants::M_COMPONENT),
               //  constants::M_LANG_JAJP => get_string('ja-jp', constants::M_COMPONENT),
               //  constants::M_LANG_KOKR => get_string('ko-kr', constants::M_COMPONENT),
-                constants::M_LANG_MSMY => get_string('ms-my', constants::M_COMPONENT),
+              //  constants::M_LANG_MSMY => get_string('ms-my', constants::M_COMPONENT),
                 constants::M_LANG_NLNL => get_string('nl-nl', constants::M_COMPONENT),
                 constants::M_LANG_PTBR => get_string('pt-br', constants::M_COMPONENT),
                 constants::M_LANG_PTPT => get_string('pt-pt', constants::M_COMPONENT),
                 constants::M_LANG_RURU => get_string('ru-ru', constants::M_COMPONENT),
-                constants::M_LANG_TAIN => get_string('ta-in', constants::M_COMPONENT),
-                constants::M_LANG_TEIN => get_string('te-in', constants::M_COMPONENT),
-                constants::M_LANG_TRTR => get_string('tr-tr', constants::M_COMPONENT),
+              //  constants::M_LANG_TAIN => get_string('ta-in', constants::M_COMPONENT),
+              //  constants::M_LANG_TEIN => get_string('te-in', constants::M_COMPONENT),
+              //  constants::M_LANG_TRTR => get_string('tr-tr', constants::M_COMPONENT),
              //   constants::M_LANG_ZHCN => get_string('zh-cn', constants::M_COMPONENT)
 
-              //  constants::M_LANG_NBNO => get_string('nb-no', constants::M_COMPONENT),
-              //  constants::M_LANG_PLPL => get_string('pl-pl', constants::M_COMPONENT),
-              //  constants::M_LANG_RORO => get_string('ro-ro', constants::M_COMPONENT),
-              //  constants::M_LANG_SVSE => get_string('sv-se', constants::M_COMPONENT)
+             //   constants::M_LANG_NBNO => get_string('nb-no', constants::M_COMPONENT),
+                constants::M_LANG_PLPL => get_string('pl-pl', constants::M_COMPONENT),
+            //    constants::M_LANG_RORO => get_string('ro-ro', constants::M_COMPONENT),
+            //    constants::M_LANG_SVSE => get_string('sv-se', constants::M_COMPONENT),
+                constants::M_LANG_UKUA => get_string('uk-ua',constants::M_COMPONENT),
+            //    constants::M_LANG_EUES => get_string('eu-es',constants::M_COMPONENT),
+            //    constants::M_LANG_FIFI => get_string('fi-fi',constants::M_COMPONENT),
+            //    constants::M_LANG_HUHU => get_string('hu-hu',constants::M_COMPONENT)
         );
     }
 
@@ -1314,7 +1323,7 @@ class utils{
         $gradefordisplay = null;
         $gradeddate = null;
         $grader = null;
-        $gradingmanager = \get_grading_manager($modulecontext, 'mod_solo', 'solo');
+        $gradingmanager = \get_grading_manager($modulecontext, constants::M_COMPONENT, 'solo');
         $gradingdisabled = false;
         $gradeid =$attempt->id;
 
@@ -1395,7 +1404,7 @@ class utils{
         //necessary for M3.3
         require_once($CFG->dirroot .'/grade/grading/lib.php');
 
-        $gradingmanager = \get_grading_manager($context, 'mod_solo', 'solo');
+        $gradingmanager = \get_grading_manager($context, constants::M_COMPONENT, 'solo');
         $gradinginstance = null;
         if ($gradingmethod = $gradingmanager->get_active_method()) {
             $controller = $gradingmanager->get_controller($gradingmethod);
@@ -1442,9 +1451,25 @@ class utils{
         return $ret;
     }
 
+    public static function fetch_options_sequences(){
+        $ret = array(constants::M_SEQ_PRTM=>get_string('seq_PRTM',constants::M_COMPONENT),
+            constants::M_SEQ_PRM=>get_string('seq_PRM',constants::M_COMPONENT),
+            constants::M_SEQ_PTRM=>get_string('seq_PTRM',constants::M_COMPONENT));
+        return $ret;
+    }
+    public static function fetch_step_no($moduleinstance, $type){
+        $steps = [2,3,4,5];
+        foreach($steps as $step){
+            if($moduleinstance->{'step' . $step}==$type){
+                return $step;
+            }
+        }
+        return false;
+    }
+
     public static function get_tts_voices($langcode='en-US',$showall=true) {
         $alllang = array(
-                constants::M_LANG_ARAE => ['Zeina'],
+                constants::M_LANG_ARAE => ['Zeina'=>'Zeina'],
             //constants::M_LANG_ARSA => [],
                 constants::M_LANG_DEDE => ['Hans' => 'Hans', 'Marlene' => 'Marlene', 'Vicki' => 'Vicki'],
             //constants::M_LANG_DECH => [],
@@ -1475,12 +1500,18 @@ class utils{
             //constants::M_LANG_TAIN => [],
             //constants::M_LANG_TEIN => [],
                 constants::M_LANG_TRTR => ['Filiz' => 'Filiz'],
-                constants::M_LANG_ZHCN => ['Zhiyu'],
+                constants::M_LANG_ZHCN => ['Zhiyu'=>'Zhiyu'],
 
-                constants::M_LANG_NBNO => ['Liv'=>'Liv'],
+                constants::M_LANG_NBNO => ['Liv'=>'Liv','nb-NO-Wavenet-B'=>'Lars_g'],
                 constants::M_LANG_PLPL => ['Ewa'=>'Ewa','Maja'=>'Maja','Jacek'=>'Jacek','Jan'=>'Jan'],
-                constants::M_LANG_RORO => ['Carmen'=>'Carmen'],
-                constants::M_LANG_SVSE => ['Astrid'=>'Astrid']
+                constants::M_LANG_RORO => ['Carmen'=>'Carmen','ro-RO-Wavenet-A'=>'Sorina_g'],
+                constants::M_LANG_SVSE => ['Astrid'=>'Astrid'],
+                constants::M_LANG_UKUA => ['uk-UA-Wavenet-A'=>'Katya_g'],
+                constants::M_LANG_FILPH => ['fil-PH-Wavenet-A'=>'Darna_g','fil-PH-Wavenet-B'=>'Reyna_g','fil-PH-Wavenet-C'=>'Bayani_g','fil-PH-Wavenet-D'=>'Ernesto_g'],
+                constants::M_LANG_FIFI => ['fi-FI-Wavenet-A'=>'Kaarina_g'],
+                constants::M_LANG_HUHU => ['hu-HU-Wavenet-A'=>'Eszter_g']
+
+
         );
         if (array_key_exists($langcode, $alllang) && !$showall) {
             return $alllang[$langcode];
@@ -1489,7 +1520,7 @@ class utils{
 
             //add current language first
             foreach ($alllang[$langcode] as $v => $thevoice) {
-                $usearray[$thevoice] = get_string(strtolower($langcode), constants::M_COMPONENT) . ': ' . $thevoice;
+                $usearray[$v] = get_string(strtolower($langcode), constants::M_COMPONENT) . ': ' . $thevoice;
             }
             //then all the rest
             foreach ($alllang as $lang => $voices) {
@@ -1497,7 +1528,7 @@ class utils{
                     continue;
                 }
                 foreach ($voices as $v => $thevoice) {
-                    $usearray[$thevoice] = get_string(strtolower($lang), constants::M_COMPONENT) . ': ' . $thevoice;
+                    $usearray[$v] = get_string(strtolower($lang), constants::M_COMPONENT) . ': ' . $thevoice;
                 }
             }
             return $usearray;
@@ -1529,7 +1560,7 @@ class utils{
             case constants::TRANSCRIBER_GOOGLECLOUDSPEECH:
             case constants::TRANSCRIBER_NONE:
             default:
-            $can_transcribe = \mod_solo\utils::can_transcribe($moduleinstance);
+            $can_transcribe = self::can_transcribe($moduleinstance);
             $rec->transcribe = $can_transcribe ? $moduleinstance->transcriber : "0";
             $rec->subtitle=$rec->transcribe;
             $rec->speechevents="0";
@@ -1729,6 +1760,59 @@ class utils{
         }
     }
 
+    public static function sequence_to_steps($moduleinstance){
+        switch($moduleinstance->activitysteps){
+
+            case constants::M_SEQ_PRM:
+                $moduleinstance->step2=constants::M_STEP_RECORD;
+                $moduleinstance->step3=constants::M_STEP_MODEL;
+                $moduleinstance->step4=constants::M_STEP_NONE;
+                $moduleinstance->step5=constants::M_STEP_NONE;
+                break;
+            case constants::M_SEQ_PTRM:
+                $moduleinstance->step2=constants::M_STEP_TRANSCRIBE;
+                $moduleinstance->step3=constants::M_STEP_RECORD;
+                $moduleinstance->step4=constants::M_STEP_MODEL;
+                $moduleinstance->step5=constants::M_STEP_NONE;
+                break;
+            case constants::M_SEQ_PRMT:
+                $moduleinstance->step2=constants::M_STEP_RECORD;
+                $moduleinstance->step3=constants::M_STEP_MODEL;
+                $moduleinstance->step4=constants::M_STEP_TRANSCRIBE;
+                $moduleinstance->step5=constants::M_STEP_NONE;
+                break;
+            case constants::M_SEQ_PRTM:
+            default:
+                $moduleinstance->step2=constants::M_STEP_RECORD;
+                $moduleinstance->step3=constants::M_STEP_TRANSCRIBE;
+                $moduleinstance->step4=constants::M_STEP_MODEL;
+                $moduleinstance->step5=constants::M_STEP_NONE;
+                break;
+        }
+        unset($moduleinstance->activitysteps);
+        return $moduleinstance;
+    }
+
+    public static function steps_to_sequence($moduleinstance){
+        //this just uses function sequence_to_steps to figure out the sequence (activitysteps)
+        $sequences = [constants::M_SEQ_PRM,constants::M_SEQ_PTRM,constants::M_SEQ_PRMT,constants::M_SEQ_PRTM];
+        foreach ($sequences as $sequence){
+            $fakemodule = new \stdClass();
+            $fakemodule->activitysteps=$sequence;
+            $fakemodule = self::sequence_to_steps($fakemodule);
+            if($fakemodule->step2 == $moduleinstance->step2
+                && $fakemodule->step3 == $moduleinstance->step3
+                && $fakemodule->step4 == $moduleinstance->step4
+                && $fakemodule->step5 == $moduleinstance->step5){
+                $moduleinstance->activitysteps = $sequence;
+                return $moduleinstance;
+            }
+        }
+        //if we got here just default to PRTM
+        $moduleinstance->activitysteps = constants::M_SEQ_PRTM;
+        return $moduleinstance;
+    }
+
     public static function add_mform_elements($mform, $context,$setuptab=false) {
         global $CFG;
         $config = get_config(constants::M_COMPONENT);
@@ -1772,6 +1856,11 @@ class utils{
         $mform->addHelpButton('speakingtopic', 'speakingtopic', constants::M_MODNAME);
         //$mform->addRule('speakingtopic', get_string('required'), 'required', null, 'client');
 
+        //Sequence of activities
+        $options = self::fetch_options_sequences();
+        $mform->addElement('select','activitysteps',get_string('activitysteps', constants::M_COMPONENT), $options,array());
+        $mform->setDefault('activitysteps',constants::M_SEQ_PRTM);
+
         //display media options for speaking prompt
 //--------------------------------------------------------
       self::prepare_content_toggle('topic',$mform,$context);
@@ -1779,19 +1868,19 @@ class utils{
 
 
 	    $name = 'activityopenscloses';
-        $label = get_string($name, 'solo');
+        $label = get_string($name, constants::M_COMPONENT);
         $mform->addElement('header', $name, $label);
         $mform->setExpanded($name, false);
         //-----------------------------------------------------------------------------
 
         $name = 'viewstart';
-        $label = get_string($name, "solo");
+        $label = get_string($name, constants::M_COMPONENT);
         $mform->addElement('date_time_selector', $name, $label, $dateoptions);
         $mform->addHelpButton($name, $name,constants::M_COMPONENT);
         
 
         $name = 'viewend';
-        $label = get_string($name, "solo");
+        $label = get_string($name, constants::M_COMPONENT);
         $mform->addElement('date_time_selector', $name, $label, $dateoptions);
         $mform->addHelpButton($name, $name ,constants::M_COMPONENT);
 

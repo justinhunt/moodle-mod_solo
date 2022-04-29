@@ -170,11 +170,11 @@ class attempthelper
 
             //type specific settings
             switch($data->activitytype) {
-                case constants::STEP_USERSELECTIONS:
+                case constants::STEP_PREPARE:
                     $newattempt->topictargetwords = $this->mod->targetwords;
                     break;
 
-                case constants::STEP_AUDIORECORDING:
+                case constants::STEP_MEDIARECORDING:
                     $rerecording = $attempt && $newattempt->filename
                         && $attempt->filename != $newattempt->filename;
 

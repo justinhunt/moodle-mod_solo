@@ -16,8 +16,13 @@
     <div class="row">
         <div class="col-sm">
             <div class='mod_solo_transcripteditor'>
-                {{>mod_solo/audioplayer}}
-                <div class='mod_solo_maybereloadaudio'>{{#str}}toggleplayinstructions, mod_solo{{/str}}</div>
+                {{#audiofilename}}
+                    {{>mod_solo/audioplayer}}
+                    <div class='mod_solo_maybereloadaudio'>{{#str}}toggleplayinstructions, mod_solo{{/str}}</div>
+                {{/audiofilename}}
+                {{^audiofilename}}
+                    <div class='mod_solo_maybereloadaudio'>{{#str}}prerecordtranscriptinstructions, mod_solo{{/str}}</div>
+                {{/audiofilename}}
                 <textarea name="selftranscript" id="{{uniqid}}_selftranscript" class="form-control" rows="5" cols="80">{{selftranscript}}</textarea>
             </div>
         </div>

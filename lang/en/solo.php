@@ -129,6 +129,7 @@ $string['en-au'] = 'English (Aus.)';
 $string['en-gb'] = 'English (GB)';
 $string['fr-ca'] = 'French (Can.)';
 $string['fr-fr'] = 'French (FR)';
+$string['fil-ph'] = 'Filipino';
 $string['it-it'] = 'Italian (IT)';
 $string['pt-br'] = 'Portuguese (BR)';
 $string['en-in'] = 'English (IN)';
@@ -156,6 +157,11 @@ $string['ru-ru'] = 'Russian';
 $string['ta-in'] = 'Tamil';
 $string['te-in'] = 'Telegu';
 $string['tr-tr'] = 'Turkish';
+
+$string['uk-ua'] = 'Ukranian';
+$string['eu-es'] = 'Basque';
+$string['fi-fi'] = 'Finnish';
+$string['hu-hu'] = 'Hungarian';
 
 $string['sv-se'] = 'Swedish';
 $string['nb-no'] = 'Norwegian';
@@ -336,17 +342,12 @@ $string['chooseusers'] = 'Choose Partner(s)';
 $string['users'] = 'Partners';
 $string['topic'] = 'Topic';
 
-$string['attempt_partone'] = '1: Prepare';
-$string['attempt_partone_title'] = '1: Prepare to Speak';
-$string['attempt_parttwo'] = '2: Record';
-$string['attempt_partthree'] = '3: Transcribe';
-$string['attempt_partfour'] = '4: Model Answer';
-$string['attempt_partfive'] = '5: Review';
-$string['attempt_partone_instructions'] = 'Choose your partners, topic, target words and target speaking time from the options below. When you are ready, move to the next page and begin speaking';
-$string['attempt_parttwo_instructions'] = 'Use the recorder below to record yourself. Try to use the target words. Good luck.';
-$string['attempt_partthree_instructions'] = 'Listen to your recording and enter what you said in the editor below. Do not change what you said, when you type it.';
-$string['attempt_partfour_instructions'] = 'Check the model answer. Do you think it is a good answer?';
-$string['attempt_partfive_instructions'] = 'Compare the transcript you entered, to the automatically generated transcript. Are there many differences? Could you improve your speaking? Enter your self review in the text fields below.';
+$string['attempt_prepare'] = 'Prepare';
+$string['attempt_prepare_title'] = 'Prepare to Speak';
+$string['attempt_record'] = 'Record';
+$string['attempt_transcribe'] = 'Transcribe';
+$string['attempt_model'] = 'Model Answer';
+$string['attempt_review'] = 'Review';
 
 $string['step_preparetitle']='Prepare';
 $string['step_prepareinstructions']='Check the speaking topic, target words and target speaking time from the options below. When you are ready, move to the next page and begin speaking';
@@ -551,6 +552,8 @@ $string['rating_good'] = 'Good Job';
 $string['rating_verygood'] = 'Very Good';
 $string['rating_excellent'] = 'Excellent !';
 $string['toggleplayinstructions']='(Press ESC key to start and stop the audio player.)';
+$string['prerecordtranscriptinstructions']='(Press ESC key to start and stop the audio player.)';
+
 
 //reattempt
 $string['reattempt'] = 'Try Again';
@@ -628,3 +631,10 @@ $string['step_none'] = 'None';
 $string['step_record'] = 'Record';
 $string['step_transcribe'] = 'Self Transcribe';
 $string['step_model'] = 'Model';
+$string['seq_PRTM']='Prepare -> Record -> Transcribe -> Model (if set)';
+$string['seq_PRMT']='Prepare -> Record -> Model -> Transcript';
+$string['seq_PRM']='Prepare -> Record -> Model (if set)';
+$string['seq_PTRM']='Prepare -> Transcribe -> Record -> Model (if set)';
+$string['activitysteps'] = "Activity Steps";
+$string['preloadtranscript'] = 'Preload transcript';
+$string['preloadtranscript_details'] = 'Preload transcript into transcript editor, so the student the student just has to edit it. NB the transcript can take several minutes to become available.';

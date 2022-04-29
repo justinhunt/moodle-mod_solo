@@ -70,61 +70,70 @@ class attempt_renderer extends \plugin_renderer_base {
         //init buttons
         $buttons = [];
 
-        //Step One Button (user selections)
-        $pbutton = new \stdClass();
-        $pbutton->label=get_string('attempt_partone', constants::M_COMPONENT);
-        $pbutton->url = new \moodle_url(constants::M_URL . '/attempt/manageattempts.php',
-                array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_USERSELECTIONS));
-        $pbutton->class=$buttonclass . ($thisstep == constants::STEP_USERSELECTIONS ? '_activemenubutton' : '_completemenubutton');
-        $buttons[]=$pbutton;
+     //Prepare Menu Button / We need this but its always number one and not a part of the steps kept in db sequence fields
+     $pbutton = new \stdClass();
+     $pbutton->label = get_string('attempt_prepare', constants::M_COMPONENT);
+     $pbutton->url = new \moodle_url(constants::M_URL . '/attempt/manageattempts.php',
+         array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_PREPARE));
+     $pbutton->class = $buttonclass . ($thisstep == 1 ? '_activemenubutton' : '_completemenubutton');
+     $buttons[] = $pbutton;
+
+     $steps = [2,3,4,5];
+     foreach($steps as $step) {
+            switch($solo->{'step' . $step}) {
+                case constants::M_STEP_RECORD:
+                //Mediarecord Menu Button
+                    $rbutton = new \stdClass();
+                    $rbutton->label = get_string('attempt_record', constants::M_COMPONENT);
+                    if ($latestattempt && ($latestattempt->completedsteps+1) >= $step) {
+                        $rbutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
+                        array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_MEDIARECORDING));
+                        $rbutton->class = $buttonclass . ($thisstep == $step ? '_activemenubutton' : '_completemenubutton');
+                    }
+                    else {
+                            $rbutton->url = "#";
+                            $rbutton->class = $buttonclass . '_deadmenubutton';
+                    }
+                    $buttons[] = $rbutton;
+                    break;
+
+                case constants::M_STEP_TRANSCRIBE:
+                    //Self Transcribe Menu Button
+                    $stbutton = new \stdClass();
+                    $stbutton->label = get_string('attempt_transcribe', constants::M_COMPONENT);
+                    if ($latestattempt && ($latestattempt->completedsteps +1) >=  $step) {
+                        $stbutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
+                            array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_SELFTRANSCRIBE));
+                        $stbutton->class = $buttonclass . ($thisstep == $step ? '_activemenubutton' : '_completemenubutton');
+                    } else {
+                        $stbutton->url = "#";
+                        $stbutton->class = $buttonclass . '_deadmenubutton';
+                    }
+                    $buttons[] = $stbutton;
+                    break;
+
+                case constants::M_STEP_MODEL:
+                    //Model Answer Menu Button
+                    if (utils::has_modelanswer($solo, $context)) {
+                        $mabutton = new \stdClass();
+                        $mabutton->label = get_string('attempt_model', constants::M_COMPONENT);
+                        if ($latestattempt && ($latestattempt->completedsteps+1) >=  $step) {
+                            $mabutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
+                                array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_MODEL));
+                            $mabutton->class = $buttonclass . ($thisstep == $step ? '_activemenubutton' : '_completemenubutton');
+                        } else {
+                            $mabutton->url = "#";
+                            $mabutton->class = $buttonclass . '_deadmenubutton';
+                        }
+                        $buttons[] = $mabutton;
+                    }
+            }//end of switch
+        }//end of for each
 
 
-     //Step Two Button (conversation recording)
-     $rbutton = new \stdClass();
-     $rbutton->label=get_string('attempt_parttwo', constants::M_COMPONENT);
-     if($latestattempt && $latestattempt->completedsteps>=constants::STEP_USERSELECTIONS) {
-         $rbutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                 array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_AUDIORECORDING));
-         $rbutton->class=$buttonclass . ($thisstep == constants::STEP_AUDIORECORDING ? '_activemenubutton' : '_completemenubutton');
-     }else{
-         $rbutton->url="#";
-         $rbutton->class = $buttonclass .'_deadmenubutton';
-     }
-     $buttons[]=$rbutton;
-
-     //Step Three Button (self transcribe)
-     $stbutton = new \stdClass();
-     $stbutton->label=get_string('attempt_partthree', constants::M_COMPONENT);
-     if($latestattempt && $latestattempt->completedsteps>=constants::STEP_AUDIORECORDING) {
-         $stbutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                 array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_SELFTRANSCRIBE));
-         $stbutton->class=$buttonclass . ($thisstep == constants::STEP_SELFTRANSCRIBE ? '_activemenubutton' : '_completemenubutton');
-     }else{
-         $stbutton->url="#";
-         $stbutton->class = $buttonclass .'_deadmenubutton';
-     }
-     $buttons[]=$stbutton;
-
-
-     //Step Four Button (model answer)
-     if(utils::has_modelanswer($solo, $context)) {
-         $mabutton = new \stdClass();
-         $mabutton->label = get_string('attempt_partfour', constants::M_COMPONENT);
-         if ($latestattempt && $latestattempt->completedsteps >= constants::STEP_SELFTRANSCRIBE) {
-             $mabutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                 array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_MODEL));
-             $mabutton->class = $buttonclass . ($thisstep == constants::STEP_MODEL ? '_activemenubutton' : '_completemenubutton');
-         } else {
-             $mabutton->url = "#";
-             $mabutton->class = $buttonclass . '_deadmenubutton';
-         }
-         $buttons[] = $mabutton;
-     }
-
-
-     return $this->output->render_from_template( constants::M_COMPONENT . '/activityintrobuttons', ['introcontent'=>$introcontent, 'buttons'=>$buttons]);
-    //$buttonsdiv = \html_writer::div(implode($glue, $parts),constants::M_COMPONENT .'_mbuttons');
-    // return $this->output->box($output . $buttonsdiv, 'generalbox firstpageoptions');
+         return $this->output->render_from_template( constants::M_COMPONENT . '/activityintrobuttons', ['introcontent'=>$introcontent, 'buttons'=>$buttons]);
+        //$buttonsdiv = \html_writer::div(implode($glue, $parts),constants::M_COMPONENT .'_mbuttons');
+        // return $this->output->box($output . $buttonsdiv, 'generalbox firstpageoptions');
     }
 
     function show_userattemptsummary($moduleinstance,$attempt,$aidata, $stats){
@@ -379,7 +388,7 @@ class attempt_renderer extends \plugin_renderer_base {
             $itemtitle = get_string('attempt_partone', constants::M_COMPONENT);
             if($attempt->completedsteps >= constants::STEP_NONE) {
                 $editurl = new \moodle_url($actionurl,
-                        array('id' => $cm->id, 'attemptid' => $attempt->id, 'type' => constants::STEP_USERSELECTIONS));
+                        array('id' => $cm->id, 'attemptid' => $attempt->id, 'type' => constants::STEP_PREPARE));
                 $edituserselections = \html_writer::link($editurl, $itemtitle);
                 $parts[] = $edituserselections;
             }else{
@@ -387,9 +396,9 @@ class attempt_renderer extends \plugin_renderer_base {
             }
 
             $itemtitle = get_string('attempt_parttwo', constants::M_COMPONENT);
-            if($attempt->completedsteps >= constants::STEP_USERSELECTIONS) {
+            if($attempt->completedsteps >= constants::STEP_PREPARE) {
                 $editurl = new \moodle_url($actionurl,
-                        array('id' => $cm->id, 'attemptid' => $attempt->id, 'type' => constants::STEP_AUDIORECORDING));
+                        array('id' => $cm->id, 'attemptid' => $attempt->id, 'type' => constants::STEP_MEDIARECORDING));
                 $editaudio = \html_writer::link($editurl,$itemtitle);
                 $parts[] = $editaudio;
             }else{
@@ -397,7 +406,7 @@ class attempt_renderer extends \plugin_renderer_base {
             }
 
             $itemtitle = get_string('attempt_partthree', constants::M_COMPONENT);
-            if($attempt->completedsteps >= constants::STEP_AUDIORECORDING) {
+            if($attempt->completedsteps >= constants::STEP_MEDIARECORDING) {
                     $editurl = new \moodle_url($actionurl,
                             array('id' => $cm->id, 'attemptid' => $attempt->id, 'type' => constants::STEP_SELFTRANSCRIBE));
                     $edittranscript = \html_writer::link($editurl, $itemtitle);

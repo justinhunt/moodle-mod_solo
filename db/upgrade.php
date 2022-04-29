@@ -252,6 +252,13 @@ function xmldb_solo_upgrade($oldversion) {
             }
         }
 
+        //set the value of those steps
+        //set all transcriber to "guided" (before was 1) chrome:strict stt:guided or 2) stt:guided - ie all mixed up
+        $DB->set_field(constants::M_TABLE,'step2',constants::M_STEP_RECORD);
+        $DB->set_field(constants::M_TABLE,'step3',constants::M_STEP_TRANSCRIBE);
+        $DB->set_field(constants::M_TABLE,'step4',constants::M_STEP_MODEL);
+        $DB->set_field(constants::M_TABLE,'step5',constants::M_STEP_NONE);
+
         upgrade_mod_savepoint(true, 2022033100, 'solo');
     }
 

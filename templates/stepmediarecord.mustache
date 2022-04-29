@@ -31,7 +31,13 @@
             </div>
         </div>
     </div>
-
+    {{#selftranscript}}
+        <div class="row">
+            <div class="col-sm">
+                <div class="mod_solo_audiorec_selftranscript_plain">{{selftranscript}}</div>
+            </div>
+        </div>
+    {{/selftranscript}}
     <div class="row">
         <div class="col-sm-6 mx-auto">
             <input type="hidden" id="{{rec.widgetid}}_filename"/>

@@ -91,11 +91,11 @@ if($config->enablesetuptab && empty($moduleinstance->speakingtopic)){
 $start_or_continue=false;
 if(count($attempts)==0){
     $start_or_continue=true;
-    $nextstep = constants::STEP_USERSELECTIONS;
+    $nextstep = constants::STEP_PREPARE;
     $attemptid = 0;
 } elseif($reattempt==1){
     $start_or_continue=true;
-    $nextstep = constants::STEP_USERSELECTIONS;
+    $nextstep = constants::STEP_PREPARE;
     $attemptid = 0;
 }else{
     $latestattempt = $attempt = $attempthelper->fetch_latest_attempt();
@@ -114,7 +114,7 @@ if(count($attempts)==0){
 //either redirect to a form handler for the attempt step, or show our attempt summary
 if($start_or_continue) {
     $redirecturl = new moodle_url(constants::M_URL . '/attempt/manageattempts.php',
-            array('id'=>$cm->id, 'attemptid' => $attemptid, 'type' => $nextstep));
+            array('id'=>$cm->id, 'attemptid' => $attemptid, 'stepno' => $nextstep));
     redirect($redirecturl);
 
 
@@ -187,8 +187,6 @@ if($start_or_continue) {
             //echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats,$autotranscriptready);
         }
 
-
-
         //myreports
        // echo $attempt_renderer->show_myreports($moduleinstance,$cm);
 
@@ -207,8 +205,14 @@ if($start_or_continue) {
     if($attempt) {
 
         if ($moduleinstance->postattemptedit || has_capability('mod/solo:manageattempts', $context)) {
+            //if they are going back in to edit then, to what step should we take them?
+            if($moduleinstance->step3 != constants::M_STEP_MODEL && $moduleinstance->step3 != constants::M_STEP_NONE){
+                $editstep= 3;
+            }else{
+                $editstep= 2;
+            }
             $postattemptediturl = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                    array('id' => $cm->id, 'attemptid' => $attempt->id, 'type' => constants::STEP_SELFTRANSCRIBE));
+                    array('id' => $cm->id, 'attemptid' => $attempt->id, 'stepno' => $editstep));
             $tdata->postattemptediturl=$postattemptediturl->out();
         }
     }
