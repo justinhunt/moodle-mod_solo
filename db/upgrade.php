@@ -262,6 +262,26 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022033100, 'solo');
     }
 
+    //add missing defaults on wordcards
+    if ($oldversion < 2022060500) {
+        $table = new xmldb_table(constants::M_TABLE);
+
+
+
+        $vfields=[];
+        $vfields[] = new xmldb_field('viewstart', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED,null, null, 0);
+        $vfields[] = new xmldb_field('viewend', XMLDB_TYPE_INTEGER, 10,XMLDB_UNSIGNED, null, null, 0);
+
+        // Add fields
+        foreach ($vfields as $field) {
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->change_field_default($table, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, 2022060500, 'solo');
+    }
+
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

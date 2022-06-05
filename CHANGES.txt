@@ -1,4 +1,7 @@
-fixed broken delete attempt
+Version 1.0.18 (Build 2022060500)
+- fixed broken delete attempt
+- added defaults to vide start and view end
+- added a better free trial link and rebuild js for < M3.8
 
 Version 1.0.39(Build 2022041800)
 - Removed JQuery UI which was breaking Moodle 4.0 dock
