@@ -105,7 +105,7 @@ if($action == 'confirmdelete'){
     /////// Delete attempt NOW////////
 }elseif ($action == 'delete'){
     require_sesskey();
-    $success = \mod_solo\attempt\helper::delete_attempt($moduleinstance,$attemptid,$context);
+    $success = \mod_solo\attempthelper::delete_attempt($moduleinstance,$attemptid,$context);
     redirect($redirecturl);
 }
 

@@ -115,6 +115,23 @@ class attempthelper
         return $attempt;
     }
 
+    //Delete an attempt
+    public function delete_attempt($attemptid) {
+        global $DB;
+
+        //delete stats for this attempt (why check it exists?)
+        $oldstats =$DB->get_record(constants::M_STATSTABLE,
+            array('solo'=>   $this->mod->id,'attemptid'=>$attemptid));
+        if($oldstats) {
+            $DB->delete_records(constants::M_STATSTABLE, array('id'=>$oldstats->id));
+        }
+        //delete AI data for this attempt
+        $DB->delete_records(constants::M_AITABLE, array('attemptid'=>$attemptid));
+        //delete Attempt
+        $DB->delete_records(constants::M_ATTEMPTSTABLE, array('id'=>$attemptid));
+
+    }
+
 
     public function fetch_attempts_for_js(){
 
