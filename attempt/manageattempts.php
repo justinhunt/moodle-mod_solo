@@ -91,6 +91,7 @@ if ($attemptid) {
 $redirecturl = new moodle_url('/mod/solo/view.php', array('id'=>$cm->id));
 //just init this when we need it.
 $topichelper=false;
+$attempthelper = new \mod_solo\attempthelper($cm);
 
 //handle delete actions
 if($action == 'confirmdelete'){
@@ -105,7 +106,7 @@ if($action == 'confirmdelete'){
     /////// Delete attempt NOW////////
 }elseif ($action == 'delete'){
     require_sesskey();
-    $success = \mod_solo\attempthelper::delete_attempt($moduleinstance,$attemptid,$context);
+    $attempthelper->delete_attempt($attemptid);
     redirect($redirecturl);
 }
 
@@ -195,14 +196,17 @@ if($mediaurls && count($mediaurls)>0){
         switch($file_parts['extension'])
         {
             case "jpg":
+            case "jepg":
             case "png":
             case "gif":
             case "bmp":
             case "svg":
+            case "webp":
                 $topicmedia['itemimage'] = $mediaurl;
                 break;
 
             case "mp4":
+            case "m4v":
             case "mov":
             case "webm":
             case "ogv":
@@ -212,6 +216,7 @@ if($mediaurls && count($mediaurls)>0){
             case "mp3":
             case "ogg":
             case "wav":
+            case "m4a":
                 $topicmedia['itemaudio'] = $mediaurl;
                 break;
 
@@ -246,7 +251,10 @@ switch($type) {
         //there is only one contentitem in the array , it just seems the neatest way to pass a big chunk of data to a partial
         $stepcontent->contentitems = [$topicmedia];
         $transcribestep = utils::fetch_step_no($moduleinstance,constants::M_STEP_TRANSCRIBE);
-        if($stepno > $transcribestep){
+        if($stepno > $transcribestep && $transcribestep!==false){
+            //flag this is post transcription
+            $stepcontent->posttranscribing = true;
+
             //if we already have a transcript then we need to show that (or a blank)
             if(isset($attempt->selftranscript)&&!empty($attempt->selftranscript)){
                 $stepcontent->selftranscript=$attempt->selftranscript;
@@ -259,17 +267,29 @@ switch($type) {
         break;
 
     case constants::STEP_SELFTRANSCRIBE:
-
+        $recordstepno = utils::fetch_step_no($moduleinstance,constants::M_STEP_RECORD);
+        //if we have a selftranscript set it
         if(isset($attempt->selftranscript)&&!empty($attempt->selftranscript)){
             $stepcontent->selftranscript=$attempt->selftranscript;
         }else{
+            //otherwise make a blank one
             $stepcontent->selftranscript='';
+            //in the case that this is a re-try and they already entered a pre-transcript, we load that up again
+            if($stepno < $recordstepno && $recordstepno!==false) {
+                $oldattempt = $attempthelper->fetch_latest_complete_attempt();
+                if($oldattempt && $oldattempt->id !== $attempt->id){
+                    $stepcontent->selftranscript=$oldattempt->selftranscript;
+                    //we really ought to do something to make sure we dont get suggestions for
+                }
+            }
         }
 
-        $recordstep = utils::fetch_step_no($moduleinstance,constants::M_STEP_RECORD);
+
         //if we are transcribing first and then talking, we want to do things a bit differently
-        if($stepno<$recordstep){
+        if($stepno<$recordstepno){
             $stepcontent->contentitems = [$topicmedia];
+            $stepcontent->activityid =$moduleinstance->id;
+            $stepcontent->prerecording=true;
             echo $renderer->render_from_template(constants::M_COMPONENT . '/stepselftranscribe', $stepcontent);
         }else{
             //we will need an audio file to transcribe from

@@ -5,13 +5,24 @@
 {{! we set the title and instructions}}
 <div class="container">
 
+
     <div class="row">
         <div class="col-sm-12 mx-auto">
             <div class="solo_stepinstructions">
-                {{#str}}step_selftranscribeinstructions, mod_solo{{/str}}
+                {{^prerecording}}
+                    {{#str}}step_selftranscribeinstructions, mod_solo{{/str}}
+                {{/prerecording}}
+                {{#prerecording}}
+                    {{#str}}step_prerecord_transcribeinstructions, mod_solo{{/str}}
+                {{/prerecording}}
             </div>
         </div>
     </div>
+
+
+    {{#prerecording}}
+        {{>mod_solo/stepprompt}}
+    {{/prerecording}}
 
     <div class="row">
         <div class="col-sm">
@@ -27,6 +38,14 @@
             </div>
         </div>
     </div>
+
+    {{#prerecording}}
+        <div class="row">
+            <div class="col-sm">
+                {{>mod_solo/grammarsuggestions}}
+            </div>
+        </div>
+    {{/prerecording}}
 
     <div class="row">
         <div class="col-sm-6 mx-auto mod_solo_stepsubmit">
@@ -49,7 +68,7 @@
                     data.activitytype = 3; // {{type}}
                     var cmid={{cmid}};
                     var id={{id}};
-                    var step=3;
+                    var step={{stepno}};
                     var action = 'submitstep';
 
                    var ret = Ajax.call([{

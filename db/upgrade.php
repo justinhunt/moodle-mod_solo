@@ -46,7 +46,7 @@ function xmldb_solo_upgrade($oldversion) {
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
     if ($oldversion < 2019092400){
-        $table = new xmldb_table('solo_ai_result');
+        $table = new xmldb_table(constants::M_AITABLE);
 
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
@@ -78,7 +78,7 @@ function xmldb_solo_upgrade($oldversion) {
 
 
     if ($oldversion < 2019100500) {
-        $table = new xmldb_table('solo_attemptstats');
+        $table = new xmldb_table(constants::M_STATSTABLE);
         $field =  new xmldb_field('aiaccuracy', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         if (!$dbman->field_exists($table, $field)) {
@@ -89,7 +89,7 @@ function xmldb_solo_upgrade($oldversion) {
     }
 
     if ($oldversion < 2019120900) {
-        $table = new xmldb_table('solo');
+        $table = new xmldb_table(constants::M_TABLE);
         $field =  new xmldb_field('postattemptedit', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         if (!$dbman->field_exists($table, $field)) {
@@ -102,7 +102,7 @@ function xmldb_solo_upgrade($oldversion) {
 
     if ($oldversion < 2020061615) {
         // Define field feedback to be added to solo_attempts.
-        $table = new xmldb_table('solo_attempts');
+        $table = new xmldb_table(constants::M_ATTEMPTSTABLE);
         $field = new xmldb_field('feedback', XMLDB_TYPE_TEXT, null, null, null, null, null, 'completedsteps');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -113,7 +113,7 @@ function xmldb_solo_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020071501) {
-        $table = new xmldb_table('solo_attempts');
+        $table = new xmldb_table(constants::M_ATTEMPTSTABLE);
         $field =  new xmldb_field('grade', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null);
 
         if (!$dbman->field_exists($table, $field)) {
@@ -124,7 +124,7 @@ function xmldb_solo_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020082500) {
-        $table = new xmldb_table('solo');
+        $table = new xmldb_table(constants::M_TABLE);
         $field =  new xmldb_field('completionallsteps', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         if (!$dbman->field_exists($table, $field)) {
@@ -135,7 +135,7 @@ function xmldb_solo_upgrade($oldversion) {
     }
 
     if ($oldversion < 2021011001) {
-        $table = new xmldb_table('solo');
+        $table = new xmldb_table(constants::M_TABLE);
         $field =  new xmldb_field('gradewordgoal', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 200);
 
         if (!$dbman->field_exists($table, $field)) {
@@ -147,7 +147,7 @@ function xmldb_solo_upgrade($oldversion) {
 
     // Add TTS topic  to solo table
     if ($oldversion < 2021022200) {
-        $table = new xmldb_table('solo');
+        $table = new xmldb_table(constants::M_TABLE);
 
         // Define fields itemtts and itemtts voice to be added to minilesson
         $fields=[];
@@ -165,7 +165,7 @@ function xmldb_solo_upgrade($oldversion) {
 
     // Add foriframe option to solo table
     if ($oldversion < 2021053100) {
-        $table = new xmldb_table('solo');
+        $table = new xmldb_table(constants::M_TABLE);
 
 
         // Define field foriframe to be added to solo
@@ -198,7 +198,7 @@ function xmldb_solo_upgrade($oldversion) {
 
     // Add model answer and ytclip fields to solo table
     if ($oldversion < 2022020500) {
-        $table = new xmldb_table('solo');
+        $table = new xmldb_table(constants::M_TABLE);
 
         // Define YT clip /TTS voice  to be added to solo as topic and model
         $fields=[];
@@ -223,7 +223,7 @@ function xmldb_solo_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022021400) {
-        $table = new xmldb_table('solo_attempts');
+        $table = new xmldb_table(constants::M_ATTEMPTSTABLE);
         $field =   new xmldb_field('grammarcorrection', XMLDB_TYPE_TEXT, null, null, null, null);
 
         if (!$dbman->field_exists($table, $field)) {
@@ -235,7 +235,7 @@ function xmldb_solo_upgrade($oldversion) {
 
     // Add model answer and ytclip fields to solo table
     if ($oldversion < 2022033100) {
-        $table = new xmldb_table('solo');
+        $table = new xmldb_table(constants::M_TABLE);
 
         // Define STEPS fields to be added to Solo
         $fields=[];
@@ -262,7 +262,7 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022033100, 'solo');
     }
 
-    //add missing defaults on wordcards
+    //add missing defaults on solo
     if ($oldversion < 2022060500) {
         $table = new xmldb_table(constants::M_TABLE);
 
@@ -279,6 +279,23 @@ function xmldb_solo_upgrade($oldversion) {
             }
         }
         upgrade_mod_savepoint(true, 2022060500, 'solo');
+    }
+
+    if ($oldversion < 2022061000) {
+        $table = new xmldb_table(constants::M_TABLE);
+
+        $fields=[];
+        $fields[]= new xmldb_field('enablesuggestions', XMLDB_TYPE_INTEGER, 2, XMLDB_UNSIGNED,null, null, 1);
+        $fields[]= new xmldb_field('enabletts', XMLDB_TYPE_INTEGER, 2, XMLDB_UNSIGNED,null, null, 0);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2022061000, 'solo');
     }
 
 

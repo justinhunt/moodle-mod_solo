@@ -291,6 +291,7 @@ $string['attemptname'] = 'Attempt';
 $string['nodataavailable'] = 'No data available';
 $string['transcriber'] = 'Transcriber';
 $string['transcriber_details'] = 'The transcription engine to use. ';
+$string['transcriber_open'] = 'Open transcription';
 $string['transcriber_amazontranscribe'] = 'Regular transcription(AWS)';
 $string['transcriber_amazonstreaming'] = 'Instant Transcription(AWS)';
 $string['transcriber_googlechrome'] = 'Instant transcription (Chrome only)';
@@ -353,10 +354,13 @@ $string['step_preparetitle']='Prepare';
 $string['step_prepareinstructions']='Check the speaking topic, target words and target speaking time from the options below. When you are ready, move to the next page and begin speaking';
 $string['step_mediarecordtitle']='Record';
 $string['step_mediarecordinstructions']='Use the recorder below to record yourself. Try to use the target words. Good luck.';
+$string['step_posttranscriberecordinstructions']='Use the recorder below to record yourself speaking.';
 $string['step_typetitle']='Enter Text';
 $string['step_typeinstructions']='Use the recorder below to record yourself. Try to use the target words. Good luck.';
 $string['step_selftranscribetitle']='Transcribe';
 $string['step_selftranscribeinstructions']='Listen to your recording and enter what you said in the editor below. Do not change what you said, when you type it.';
+$string['step_prerecord_transcribeinstructions']='Check the instructions and speaking targets, then type your response in the text editor below.';
+
 $string['step_modeltitle']='Model Answer';
 $string['step_modelinstructions']='Check the model answer below.';
 
@@ -552,7 +556,7 @@ $string['rating_good'] = 'Good Job';
 $string['rating_verygood'] = 'Very Good';
 $string['rating_excellent'] = 'Excellent !';
 $string['toggleplayinstructions']='(Press ESC key to start and stop the audio player.)';
-$string['prerecordtranscriptinstructions']='(Press ESC key to start and stop the audio player.)';
+$string['prerecordtranscriptinstructions']='Enter your response in the text area below. In the next step you will read it aloud';
 
 
 //reattempt
@@ -638,3 +642,20 @@ $string['seq_PTRM']='Prepare -> Transcribe -> Record -> Model (if set)';
 $string['activitysteps'] = "Activity Steps";
 $string['preloadtranscript'] = 'Preload transcript';
 $string['preloadtranscript_details'] = 'Preload transcript into transcript editor, so the student the student just has to edit it. NB the transcript can take several minutes to become available.';
+
+$string['enabletts'] = 'Enable TTS';
+$string['enabletts_help'] = 'Allow students to hear their transcript read aloud by a TTS voice';
+$string['enabletts_details'] = 'Allow students to hear their transcript read aloud by a TTS voice';
+$string['default_enabletts'] = 'Enable TTS (default)';
+
+
+$string['enablesuggestions'] = 'Enable AI Suggestions';
+$string['enablesuggestions_help'] = 'Allow AI to suggest a more correct version of the student transcript. Results can be unpredictable. So it is not currently connected with grading. ';
+$string['enablesuggestions_details'] = 'Allow AI to suggest a more correct version of the student transcript. Results can be unpredictable. So it is not currently connected with grading. ';
+$string['default_enablesuggestions'] = 'Enable AI Suggestions (default)';
+
+$string['enablegallery'] = 'Enable Gallery';
+$string['enablegallery_help'] = 'Allow students to hear other student submissions on the topic';
+$string['enablegallery_details'] = 'Allow students to hear other student submissions on the topic';
+$string['nosuggestions'] = "No suggestions.";
+$string['checkgrammarandspelling'] = 'Check grammar and spelling';

@@ -1,3 +1,8 @@
+Version 1.0.19 (Build 2022061000)
+- Added different activity sequences ( ... that's big)
+- Added non-English suggestions
+- added TTS / Suggestions / Gallery settings (not implemented)
+
 Version 1.0.18 (Build 2022060500)
 - fixed broken delete attempt
 - added defaults to vide start and view end
