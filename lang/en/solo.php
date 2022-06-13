@@ -322,6 +322,8 @@ $string['topictargetwords'] = 'Target Words';
 $string['targetwords'] = 'Target Words';
 $string['tips'] = 'Tips';
 $string['targettime'] = 'Target time';
+$string['targetspeakingtime'] = 'Target Speaking Time';
+$string['type'] = 'Type';
 $string['confirmtopicdelete'] = 'Do you really want to delete topic: {$a}';
 $string['choosetopic'] = 'Choose Topic';
 $string['topicinstructions']='Add or edit topics. Custom topics will only be available here. Course level topics will be available course wide. Selected topics will be available for students to choose from in this activity. ';
@@ -346,7 +348,7 @@ $string['topic'] = 'Topic';
 $string['attempt_prepare'] = 'Prepare';
 $string['attempt_prepare_title'] = 'Prepare to Speak';
 $string['attempt_record'] = 'Record';
-$string['attempt_transcribe'] = 'Transcribe';
+$string['attempt_transcribe'] = 'Type';
 $string['attempt_model'] = 'Model Answer';
 $string['attempt_review'] = 'Review';
 

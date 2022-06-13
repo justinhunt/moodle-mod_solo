@@ -1,6 +1,6 @@
-Version 1.0.19 (Build 2022061000)
+Version 1.0.19 (Build 2022061001)
 - Added different activity sequences ( ... that's big)
-- Added non-English suggestions
+- Added non-English suggestions and AJAX suggestions
 - added TTS / Suggestions / Gallery settings (not implemented)
 
 Version 1.0.18 (Build 2022060500)
