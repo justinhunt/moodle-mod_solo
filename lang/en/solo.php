@@ -663,3 +663,6 @@ $string['nosuggestions'] = "No suggestions.";
 $string['checkgrammarandspelling'] = 'Check grammar and spelling';
 $string['important'] = 'Important';
 $string['noemptyselftranscript'] = 'Please enter something in the textbox before leaving this page.';
+
+$string['enablelocalpost']="Enable Local Post";
+$string['enablelocalpost_details']="This is an experimental setting for users in mainland China. Local post will send audio recording submissions to the Moodle server, which will relay them onto our cloud servers. It *might* improve reliability for users with slow connections.";
