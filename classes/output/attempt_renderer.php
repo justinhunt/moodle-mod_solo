@@ -207,7 +207,7 @@ class attempt_renderer extends \plugin_renderer_base {
         if($tdata['grammarerrors']){$tdata['hasgrammarerrors']=true;}
         if($selftranscribe){$tdata['selftranscribe']=true; }
         if($aidata) {
-            $simpleselftranscript='';
+            $simpleselftranscript=' ';
             if(!empty($attempt->selftranscript)){
                 $simpleselftranscript=$attempt->selftranscript;
             }
