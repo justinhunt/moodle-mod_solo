@@ -350,7 +350,7 @@ class external extends external_api {
             }
         }
 
-        //if no results, thats that. return.
+        //if no results, that's that. return.
         if($have_aieval || $have_humaneval){
             $ret['ready']=true;
         }
