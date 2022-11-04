@@ -402,8 +402,8 @@ class utils{
         if(empty($attempt->selftranscript) && $transcribestep !==false){
             if($trace) {
                 $trace->output("Self Transcript not ready yet. quitting");
+                return false;
             }
-            return false;
         }
 
         //if we do not have automatic transcripts, try to fetch them
