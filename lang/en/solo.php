@@ -385,6 +385,9 @@ $string['stats_targetwords'] = 'Target Words';
 $string['stats_aiaccuracy'] = 'Speaking clarity';
 $string['stats_uniquewords'] = 'Unique Words';
 $string['stats_longwords'] = 'Long Words';
+$string['stats_ideacount'] = 'Concepts';
+$string['stats_cefrlevel'] = 'CEFR Level';
+
 //$string['transcripteditor']= 'Transcript Editor';
 $string['multiattempts'] = 'Allow Multiple Attempts';
 $string['multiattempts_details'] = 'If checked a student can choose to overwrite an existing attempt with a new one.';

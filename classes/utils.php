@@ -384,7 +384,11 @@ class utils{
     public static function fetch_targetwords($attempt){
         $targetwords = explode(PHP_EOL,$attempt->topictargetwords);
         $mywords = explode(PHP_EOL,$attempt->mywords);
-        $alltargetwords = array_unique(array_merge($targetwords, $mywords));
+        //Do new lines and commas
+        $allwords = explode(',',array_merge($targetwords, $mywords));
+        //remove any duplicates or blanks
+        $alltargetwords = array_filter(array_unique($allwords));
+
         return $alltargetwords;
     }
 
@@ -441,6 +445,7 @@ class utils{
 
         //update statistics and grammar correction if we need to
         self::process_all_stats($moduleinstance, $attempt, $contextid);
+
         //fetch grammar correction or use existing one
         $attempt->grammarcorrection = self::process_grammar_correction($moduleinstance,$attempt);
 
@@ -463,6 +468,8 @@ class utils{
             }
             $stats = utils::calculate_stats($attempt->selftranscript, $attempt, $moduleinstance->ttslanguage);
             if ($stats) {
+                $stats->ideacount = self::process_idea_count($moduleinstance,$attempt,$stats);
+                $stats->cefrlevel = self::process_cefr_level($moduleinstance,$attempt,$stats);
                 $stats = utils::fetch_sentence_stats($attempt->selftranscript,$stats, $moduleinstance->ttslanguage);
                 $stats = utils::fetch_word_stats($attempt->selftranscript,$moduleinstance->ttslanguage,$stats);
                 $stats = utils::calc_grammarspell_stats($attempt->selftranscript,$moduleinstance->region,
@@ -499,6 +506,47 @@ class utils{
             }
         }
         return $attempt->grammarcorrection;
+    }
+
+    public static function process_cefr_level($moduleinstance,$attempt,$stats){
+        global $DB;
+
+        //if there is a cefrlevel and its not null, then return that
+        if(isset($stats->cefrlevel)&&$stats->cefrlevel!=null){
+            return $stats->cefrlevel;
+        }
+        $cefrlevel=false;//default is blank
+        if(!empty($attempt->selftranscript)){
+            $siteconfig = get_config(constants::M_COMPONENT);
+            $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
+            $cefrlevel = utils::fetch_cefr_level($token, $moduleinstance->region,$moduleinstance->ttslanguage, $attempt->selftranscript);
+        }
+        if ($cefrlevel!==false) {
+            return $cefrlevel;
+        }else{
+            return "";
+        }
+    }
+
+    public static function process_idea_count($moduleinstance,$attempt,$stats){
+        global $DB;
+
+        //if there is a cefrlevel and its not null, then return that
+        if(isset($stats->ideacount)&&$stats->ideacount!=null){
+            return $stats->ideacount;
+        }
+        $ideacount=false;
+        if(!empty($attempt->selftranscript)){
+            $siteconfig = get_config(constants::M_COMPONENT);
+            $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
+            $ideacount = utils::fetch_idea_count($token, $moduleinstance->region,$moduleinstance->ttslanguage, $attempt->selftranscript);
+        }
+        if ($ideacount!==false) {
+            return $ideacount;
+        }else{
+            return 0;
+        }
+
     }
 
     public static function fetch_grammar_correction_diff($selftranscript,$correction){
@@ -687,8 +735,12 @@ class utils{
         }
         if(!$stats){
             $stats = self::calculate_stats($attempt->selftranscript, $attempt,$moduleinstance->ttslanguage);
+
             //if that worked, and why wouldn't it, lets save them too.
             if ($stats) {
+                //get the AI stats
+                $stats->ideacount = self::process_idea_count($moduleinstance,$attempt,$stats);
+                $stats->cefrlevel = self::process_cefr_level($moduleinstance,$attempt,$stats);
                 $stats = utils::fetch_sentence_stats($attempt->selftranscript,$stats,$moduleinstance->ttslanguage);
                 $stats = utils::fetch_word_stats($attempt->selftranscript,$moduleinstance->ttslanguage,$stats);
                 $stats = self::calc_grammarspell_stats($attempt->selftranscript,
@@ -1857,7 +1909,7 @@ class utils{
 
     }
 
-    //fetch the MP3 URL of the text we want read aloud
+    //fetch the grammar correction suggestions
     public static function fetch_grammar_correction($token,$region,$ttslanguage,$passage) {
         global $USER;
 
@@ -1901,6 +1953,96 @@ class utils{
             }
 
             return $correction;
+        } else {
+            return false;
+        }
+    }
+
+    //fetch the CEFR Level
+    public static function fetch_cefr_level($token,$region,$ttslanguage,$passage) {
+        global $USER;
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'predict_cefr';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $passage;//urlencode($passage);
+        $params['language'] = $ttslanguage;
+        $params['subject'] = 'none';
+        $params['region'] = $region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then lets do the embed
+        } else if ($payloadobject->returnCode === 0) {
+            $cefr = $payloadobject->returnMessage;
+            //make pretty sure its a CEFR level
+            if(\core_text::strlen($cefr) !== 2){
+                $cefr=false;
+            }
+
+            return $cefr;
+        } else {
+            return false;
+        }
+    }
+
+    //fetch the Idea Count
+    public static function fetch_idea_count($token,$region,$ttslanguage,$passage) {
+        global $USER;
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'count_unique_ideas';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $passage;//urlencode($passage);
+        $params['language'] = $ttslanguage;
+        $params['subject'] = 'none';
+        $params['region'] = $region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then lets do the embed
+        } else if ($payloadobject->returnCode === 0) {
+            $ideacount = $payloadobject->returnMessage;
+            //clean up the correction a little
+            if(!is_number($ideacount)){
+                $ideacount=false;
+            }
+
+            return $ideacount;
         } else {
             return false;
         }

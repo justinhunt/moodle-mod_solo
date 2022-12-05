@@ -298,6 +298,20 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022061000, 'solo');
     }
 
+    if ($oldversion < 2022110500) {
+        $table = new xmldb_table(constants::M_STATSTABLE);
+        $fields=[];
+        $fields[] =  new xmldb_field('cefrlevel', XMLDB_TYPE_CHAR, '4', XMLDB_UNSIGNED);
+        $fields[] =  new xmldb_field('ideacount', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, 2022110500, 'solo');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
