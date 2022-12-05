@@ -1,4 +1,4 @@
-
+- added ideacount and cefr level to grading
 - cleaned up target words so it uses new lines AND commas and ignored blanks
 - Set default report view size to 50
 
