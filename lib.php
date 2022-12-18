@@ -195,6 +195,7 @@ function solo_add_instance(stdClass $moduleinstance, mod_solo_mod_form $mform = 
     $moduleinstance = solo_process_filemanagers($moduleinstance,$mform);
     $moduleinstance = solo_process_autogradeoptions($moduleinstance,$mform);
     $moduleinstance = utils::sequence_to_steps($moduleinstance);
+    $moduleinstance = utils::process_modeltts_stats($moduleinstance);
     $moduleinstance->id = $DB->insert_record(constants::M_TABLE, $moduleinstance);
     solo_grade_item_update($moduleinstance);
 	return $moduleinstance->id;
@@ -267,7 +268,9 @@ function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform
 
 
     $params = array('id' => $moduleinstance->instance);
-    $oldgradefield = $DB->get_field(constants::M_TABLE, 'grade', $params);
+    $oldmod = $DB->get_record(constants::M_TABLE, $params);
+    $oldgrade = $oldmod->grade;
+    $oldmodeltts = $oldmod->modeltts;
 
     $moduleinstance->timemodified = time();
     $moduleinstance->id = $moduleinstance->instance;
@@ -276,10 +279,13 @@ function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform
     $moduleinstance = solo_process_filemanagers($moduleinstance,$mform);
     $moduleinstance = solo_process_autogradeoptions($moduleinstance,$mform);
     $moduleinstance = utils::sequence_to_steps($moduleinstance);
+    if($oldmodeltts !== $moduleinstance->modeltts) {
+        $moduleinstance =  utils::process_modeltts_stats($moduleinstance);
+    }
 	$success = $DB->update_record(constants::M_TABLE, $moduleinstance);
     solo_grade_item_update($moduleinstance);
 
-    $update_grades = ($moduleinstance->grade === $oldgradefield ? false : true);
+    $update_grades = ($moduleinstance->grade === $oldgrade ? false : true);
     if ($update_grades) {
         solo_update_grades($moduleinstance, 0, false);
     }
