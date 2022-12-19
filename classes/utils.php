@@ -1532,7 +1532,7 @@ class utils{
         $method = $gradingmanager->get_active_method();
         if($method=='rubric') {
             if ($controller = $gradingmanager->get_active_controller()) {
-                $menu = make_grades_menu($moduleinstance->grade);
+                $menu = \mod_pchat\utils::make_grades_menu($moduleinstance->grade);
                 $controller->set_grade_range($menu, $moduleinstance->grade > 0);
                 $gradefordisplay = $controller->render_grade($PAGE,
                         $gradeid,
@@ -1598,7 +1598,7 @@ class utils{
 
         $raterid = $USER->id;
 
-        $grademenu = make_grades_menu($moduleinstance->grade);
+        $grademenu = \mod_pchat\utils::make_grades_menu($moduleinstance->grade);
         $allowgradedecimals = $moduleinstance->grade > 0;
 
         $advancedgradingwarning = false;
