@@ -266,7 +266,8 @@ class utils{
     }
 
     public static function is_english($language){
-        return strpos($language,'en')===0;
+        $ret = strpos($language,'en')===0;
+        return $ret;
     }
 
     public static function fetch_word_stats($text,$language, $stats) {
@@ -497,16 +498,34 @@ class utils{
         if(!empty($attempt->grammarcorrection)){
             return $attempt->grammarcorrection;
         }
+
         //If this is English then lets see if we can get a grammar correction
-       // if(!empty($attempt->selftranscript) && utils::is_english($moduleinstance)){
+       // if(!empty($attempt->selftranscript) && self::is_english($moduleinstance)){
         if(!empty($attempt->selftranscript)){
             if(empty($attempt->grammarcorrection)) {
                 $siteconfig = get_config(constants::M_COMPONENT);
                 $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
                 $grammarcorrection = utils::fetch_grammar_correction($token, $moduleinstance->region,$moduleinstance->ttslanguage, $attempt->selftranscript);
                 if ($grammarcorrection) {
+                    //set grammar correction (GC)
                     $attempt->grammarcorrection = $grammarcorrection;
-                    $DB->update_record(constants::M_ATTEMPTSTABLE, array('id'=>$attempt->id,'grammarcorrection'=>$attempt->grammarcorrection));
+                    $DB->update_record(constants::M_ATTEMPTSTABLE,
+                        array('id'=>$attempt->id,
+                            'grammarcorrection'=>$attempt->grammarcorrection));
+
+                    //fetch and set GC Diffs
+                    list($gcerrors,$gcmatches,$insertioncount) = utils::fetch_grammar_correction_diff($attempt->selftranscript, $attempt->grammarcorrection);
+                    if(self::is_json($gcerrors)&& self::is_json($gcmatches)) {
+                        $gcerrors_obj = json_decode($gcerrors);
+                        $gcerrorcount = count(get_object_vars($gcerrors_obj)) +$insertioncount;
+                        $stats = $DB->get_record(constants::M_STATSTABLE,
+                            array('solo' => $attempt->solo, 'attemptid' => $attempt->id, 'userid' => $attempt->userid));
+                        $DB->update_record(constants::M_STATSTABLE,
+                            array('id' => $stats->id,
+                                'gcerrorcount' => $gcerrorcount,
+                                'gcerrors' => $gcerrors,
+                                'gcmatches' => $gcmatches));
+                    }
                 }
             }
         }
@@ -516,7 +535,7 @@ class utils{
     public static function process_relevance($moduleinstance,$attempt,$stats){
         global $DB;
 
-        //if there is a cefrlevel and its not null, then return that
+        //if there is a relevance and its not null, then return that
         if(isset($stats->relevance)&&$stats->relevance!=null){
             return $stats->relevance;
         }
@@ -588,6 +607,10 @@ class utils{
         // then prepare an array of "differences"
         $passagecount = count($passagebits);
         $transcriptcount = count($transcriptbits);
+        //rough estimate of insertions
+        $insertioncount = $transcriptcount - $passagecount;
+        if($insertioncount<0){$insertioncount=0;}
+
         $language = constants::M_LANG_ENUS;
         $sequences = diff::fetchSequences($passagebits,$transcriptbits,$alternatives,$language);
 
@@ -647,7 +670,7 @@ class utils{
         $sessionerrors = json_encode($finalerrors);
         $sessionmatches = json_encode($matches);
 
-        return [$sessionerrors,$sessionmatches];
+        return [$sessionerrors,$sessionmatches,$insertioncount];
 
     }
 
@@ -896,19 +919,19 @@ class utils{
         $airesult = $DB->get_record(constants::M_AITABLE,array('attemptid'=>$attemptid));
 
         //figure out the autograde
-        $ag_options = json_decode($moduleinstance->autogradeoptions);
+        $agoptions = json_decode($moduleinstance->autogradeoptions);
 
         //basescore
-        $basescore = $ag_options->gradebasescore;
+        $basescore = $agoptions->gradebasescore;
 
         //wordcount value
-        $thewordcount = $ag_options->gradewordcount== 'totalunique' ? $stats->uniquewords : $stats->words;
+        $thewordcount = $agoptions->gradewordcount== 'totalunique' ? $stats->uniquewords : $stats->words;
         $gradewordgoal = $moduleinstance->gradewordgoal;
         if($gradewordgoal<1){$gradewordgoal=1;}//what kind of person would set to 0 anyway?
 
         //ratio to apply to start ratio
         $useratio = 100;
-        switch($ag_options->graderatioitem){
+        switch($agoptions->graderatioitem){
             case 'spelling':
                 $useratio = $stats->autospellscore;
                 break;
@@ -925,6 +948,39 @@ class utils{
                 $useratio = 100;
                 break;
 
+        }
+
+        //Ratio for relevance
+        $relevance_ratio=1;
+        if(self::is_english($moduleinstance->ttslanguage)
+            && !empty($moduleinstance->modelttsembedding)
+            && isset($agoptions->relevancegrade)){
+            switch($agoptions->relevancegrade){
+                case constants::RELEVANCE_NONE:
+                case constants::RELEVANCE_BROAD:
+                case constants::RELEVANCE_QUITE:
+                case constants::RELEVANCE_VERY:
+                case constants::RELEVANCE_EXTREME:
+                    $relevance_penalty = $agoptions->relevancegrade - $stats->relevance; // eg. 90  - 87
+                    if($relevance_penalty>0){
+                        $relevance_ratio= 1- ($relevance_penalty / $agoptions->relevancegrade);
+                    }
+                    break;
+                default:
+                    $relevance_ratio=1;
+            }
+        }
+
+        //Ratio for suggestions grade
+        $suggestions_ratio=1;
+        if(self::is_english($moduleinstance->ttslanguage)
+            && !empty($attempt->grammarcorrection)
+            && isset($agoptions->suggestionsgrade)
+            && !empty($stats->gcerrorcount)){
+                $suggestionspenalty=$stats->words - $stats->gcerrorcount;
+                if($suggestionspenalty>0){
+                    $suggestions_ratio = $suggestionspenalty / $stats->words;
+                }
         }
 
         //get starting value from which to add/minus bonuses
@@ -944,14 +1000,17 @@ class utils{
         if(!is_number($useratio) && !is_numeric($useratio)){$useratio=0;}//ai accuracy returns  "--" ..
         $autograde = $autograde * $useratio * .01;
 
+        //apply suggestions and similarity rations
+        $autograde = $autograde * $suggestions_ratio * $relevance_ratio;
+
         //apply bonuses
         for($bonusno =1;$bonusno<=4;$bonusno++){
             $factor=1;
-            if($ag_options->{'bonusdirection' . $bonusno}=='minus'){
+            if($agoptions->{'bonusdirection' . $bonusno}=='minus'){
                 $factor=-1;
             }
             $bonusscore=0;
-            switch($ag_options->{'bonus' . $bonusno}){
+            switch($agoptions->{'bonus' . $bonusno}){
                 case 'spellingmistake':
                     $bonusscore=$stats->autospellerrors;
                     break;
@@ -975,7 +1034,7 @@ class utils{
             }
             //eg 3 points minus'ed for each of 7 spelling mistakes:
             //if we had 32% : 32 - [3 points] * [-1] * [7] = 11%
-            $autograde += $ag_options->{'bonuspoints' . $bonusno} * $factor * $bonusscore;
+            $autograde += $agoptions->{'bonuspoints' . $bonusno} * $factor * $bonusscore;
         }
 
 
@@ -2372,6 +2431,12 @@ class utils{
         $mform->setDefault('tips_editor',array('text'=>$config->speakingtips, 'format'=>FORMAT_HTML));
         $mform->setType('tips_editor',PARAM_RAW);
 
+        //Disable copy pasting on transcribe text box
+        $mform->addElement('selectyesno', 'nopasting', get_string('nopasting', constants::M_MODNAME));
+        $mform->setType('nopasting', PARAM_INT);
+        $mform->setDefault('nopasting',0);
+        $mform->addHelpButton('nopasting', 'nopasting', constants::M_MODNAME);
+
         //Sequence of activities
         $options = self::fetch_options_sequences();
         $mform->addElement('select','activitysteps',get_string('activitysteps', constants::M_COMPONENT), $options,array());
@@ -2684,14 +2749,25 @@ class utils{
 
         //autograde options
         if(isset($moduleinstance->autogradeoptions)) {
-            $ag_options = json_decode($moduleinstance->autogradeoptions);
-            $moduleinstance->graderatioitem = $ag_options->graderatioitem;
-            $moduleinstance->gradewordcount = $ag_options->gradewordcount;
-            $moduleinstance->gradebasescore = $ag_options->gradebasescore;
+            $agoptions = json_decode($moduleinstance->autogradeoptions);
+            $moduleinstance->graderatioitem = $agoptions->graderatioitem;
+            $moduleinstance->gradewordcount = $agoptions->gradewordcount;
+            $moduleinstance->gradebasescore = $agoptions->gradebasescore;
+            if(isset($agoptions->relevancegrade)) {
+                $moduleinstance->relevancegrade = $agoptions->relevancegrade;
+            }else{
+                $moduleinstance->suggestionsgrade=constants::RELEVANCE_NONE;
+            }
+            if(isset($agoptions->suggestionsgrade)) {
+                $moduleinstance->suggestionsgrade = $agoptions->suggestionsgrade;
+            }else{
+                $moduleinstance->suggestionsgrade=constants::SUGGEST_GRADE_NONE;
+            }
+
             for ($bonusno=1;$bonusno<=4;$bonusno++) {
-                $moduleinstance->{'bonusdirection' . $bonusno} = $ag_options->{'bonusdirection' . $bonusno};
-                $moduleinstance->{'bonuspoints' . $bonusno}  = $ag_options->{'bonuspoints' . $bonusno} ;
-                $moduleinstance->{'bonus' . $bonusno} = $ag_options->{'bonus' . $bonusno};
+                $moduleinstance->{'bonusdirection' . $bonusno} = $agoptions->{'bonusdirection' . $bonusno};
+                $moduleinstance->{'bonuspoints' . $bonusno}  = $agoptions->{'bonuspoints' . $bonusno} ;
+                $moduleinstance->{'bonus' . $bonusno} = $agoptions->{'bonus' . $bonusno};
             }
         }
 

@@ -336,6 +336,43 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022121700, 'solo');
     }
 
+    if ($oldversion < 2022121900) {
+        $table = new xmldb_table(constants::M_STATSTABLE);
+        $fields=[];
+        $fields[] =  new xmldb_field('gcerrors', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] =  new xmldb_field('gcmatches', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] =  new xmldb_field('gcerrorcount', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, null, null);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        $table_s = new xmldb_table(constants::M_ATTEMPTSTABLE);
+        $field_s =  new xmldb_field('stembedding', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null);
+        // Add fields
+        if (!$dbman->field_exists($table_s, $field_s)) {
+            $dbman->add_field($table_s, $field_s);
+        }
+
+        upgrade_mod_savepoint(true, 2022121900, 'solo');
+    }
+    if ($oldversion < 2022122000) {
+
+        $table_s = new xmldb_table(constants::M_TABLE);
+        $field_s =  new xmldb_field('nopasting', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null,0);
+        // Add fields
+        if (!$dbman->field_exists($table_s, $field_s)) {
+            $dbman->add_field($table_s, $field_s);
+        }
+
+        upgrade_mod_savepoint(true, 2022122000, 'solo');
+    }
+
+
+
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

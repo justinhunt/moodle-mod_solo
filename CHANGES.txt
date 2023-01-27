@@ -1,4 +1,6 @@
-- added ideacount and cefr level and relevance to grading attributes
+Version 1.0.23 (Build 2022122000)
+- added ideacount and cefr level and relevance and Grammar Suggestions to grading attributes
+- added no pasting option for preventing students pasting in a transcript
 - cleaned up target words so it uses new lines AND commas and ignored blanks
 - Set default report view size to 50
 

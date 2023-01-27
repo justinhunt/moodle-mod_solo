@@ -220,6 +220,8 @@ function solo_process_autogradeoptions(stdClass $moduleinstance, $mform) {
     $ag_options->graderatioitem = $moduleinstance->graderatioitem;
     $ag_options->gradewordcount = $moduleinstance->gradewordcount;
     $ag_options->gradebasescore = $moduleinstance->gradebasescore;
+    $ag_options->suggestionsgrade = $moduleinstance->suggestionsgrade;
+    $ag_options->relevancegrade = $moduleinstance->relevancegrade;
 
     for ($bonusno=1;$bonusno<=4;$bonusno++) {
         $ag_options->{'bonusdirection' . $bonusno} = $moduleinstance->{'bonusdirection' . $bonusno} ;

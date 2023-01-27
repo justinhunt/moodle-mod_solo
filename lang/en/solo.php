@@ -387,7 +387,7 @@ $string['stats_uniquewords'] = 'Unique Words';
 $string['stats_longwords'] = 'Long Words';
 $string['stats_ideacount'] = 'Concepts';
 $string['stats_cefrlevel'] = 'CEFR Level';
-$string['stats_relevance'] = 'Similarity';
+$string['stats_relevance'] = 'Relevance'; //AKA similarity
 
 //$string['transcripteditor']= 'Transcript Editor';
 $string['multiattempts'] = 'Allow Multiple Attempts';
@@ -653,6 +653,11 @@ $string['enabletts'] = 'Enable TTS';
 $string['enabletts_help'] = 'Allow students to hear their transcript read aloud by a TTS voice';
 $string['enabletts_details'] = 'Allow students to hear their transcript read aloud by a TTS voice';
 $string['default_enabletts'] = 'Enable TTS (default)';
+
+$string['nopasting'] = 'Disable paste';
+$string['nopasting_help'] = 'Prevent users pasting text into the transcript/text area.';
+$string['nopasting_details'] = 'Prevent users pasting text into the transcript/text area.';
+
 
 
 $string['enablesuggestions'] = 'Enable AI Suggestions';

@@ -99,6 +99,18 @@
                     }
                 });
 
+                //this prevents students pasting into the text area
+                if('{{nopasting}}'=='1')
+                {
+                    $('#' + '{{uniqid}}_selftranscript').bind("cut copy paste", function(e) {
+                        e.preventDefault();
+                       // alert("You cannot paste into this text field.");
+                        $('#' + '{{uniqid}}_selftranscript').bind("contextmenu", function(e) {
+                            e.preventDefault();
+                        });
+                    });
+                }
+
 
             }
         );

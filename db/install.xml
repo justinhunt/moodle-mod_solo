@@ -58,6 +58,7 @@
         <FIELD NAME="enabletts" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="enable TTS"/>
         <FIELD NAME="modelttsembedding" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Tips for the solo activity"/>
         <FIELD NAME="modelttsideacount" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="model tts ideacount"/>
+        <FIELD NAME="nopasting" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Disable pasting"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
@@ -82,6 +83,7 @@
         <FIELD NAME="jsontranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The full AI transcript (JSON)"/>
         <FIELD NAME="vtttranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The AI subtitles"/>
         <FIELD NAME="selftranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The users self transcript"/>
+        <FIELD NAME="stembedding" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The users self transcript embedding"/>
         <FIELD NAME="grammarcorrection" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The Grammar Correction"/>
         <FIELD NAME="topictargetwords" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="mywords" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -126,6 +128,9 @@
         <FIELD NAME="autospell" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="cefrlevel" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The CEFR level"/>
         <FIELD NAME="ideacount" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="The number of ideas"/>
+        <FIELD NAME="gcerrorcount" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The Grammar Correction errors"/>
+        <FIELD NAME="gcerrors" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The Grammar Correction errors"/>
+        <FIELD NAME="gcmatches" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The Grammar Correction matches"/>
         <FIELD NAME="relevance" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="relevance to model %"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>

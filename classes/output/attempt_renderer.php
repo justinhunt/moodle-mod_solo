@@ -236,7 +236,7 @@ class attempt_renderer extends \plugin_renderer_base {
 
         //if we have a correction, send that out too
         if(!empty($attempt->grammarcorrection)){
-            list($grammarerrors,$grammarmatches) = utils::fetch_grammar_correction_diff($simpleselftranscript, $attempt->grammarcorrection);
+            list($grammarerrors,$grammarmatches,$insertioncount) = utils::fetch_grammar_correction_diff($simpleselftranscript, $attempt->grammarcorrection);
             $js_opts_html = \mod_solo\aitranscriptutils::prepare_corrections_amd($grammarerrors,$grammarmatches);
             $markedupcorrections = \mod_solo\aitranscriptutils::render_passage($attempt->grammarcorrection,'corrections');
             $markedupcorrections .= $js_opts_html;
