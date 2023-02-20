@@ -449,7 +449,9 @@ class utils{
         }
 
         //update statistics and grammar correction if we need to
-        self::process_all_stats($moduleinstance, $attempt, $contextid);
+        if($hastranscripts) {
+            self::process_all_stats($moduleinstance, $attempt, $contextid);
+        }
 
         //fetch grammar correction or use existing one
         $attempt->grammarcorrection = self::process_grammar_correction($moduleinstance,$attempt);
@@ -776,6 +778,10 @@ class utils{
         if(!$moduleinstance) {
             $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $attempt->solo));
         }
+
+        // We dont want to calc stats outside of process_attempt 2023-02-20
+        //the transcripts may not be back yet and they just get stuck on 0
+        /*
         if(!$stats){
             $stats = self::calculate_stats($attempt->selftranscript, $attempt,$moduleinstance->ttslanguage);
 
@@ -792,6 +798,7 @@ class utils{
                 self::save_stats($stats, $attempt);
             }
         }
+        */
         //0 aiaccuracy means absolutely nothing was matched
         //-1 means we do not have ai data
         if($stats && $stats->aiaccuracy < 0){
