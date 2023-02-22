@@ -2653,12 +2653,7 @@ class utils{
         $cp = $contentprefix;
         $m35 = $CFG->version >= 2018051700;
 
-        //Speaking topic TTS
-        if($cp=='model') {
-            $mform->addElement('textarea', $cp . 'tts', get_string('content_tts', constants::M_COMPONENT), array('wrap' => 'virtual', 'style' => 'width: 100%;'));
-            $mform->setType($cp . 'tts', PARAM_RAW);
-            $mform->addHelpButton($cp . 'tts', 'content_tts', constants::M_MODNAME);
-        }
+
 
         $togglearray=array();
         $togglearray[] =& $mform->createElement('advcheckbox',$cp . 'addmedia',get_string('addmedia',constants::M_COMPONENT),'');
@@ -2697,16 +2692,21 @@ class utils{
         }
 
         //Speaking topic TTS
-        if($cp=='topic') {
-            $mform->addElement('textarea', $cp . 'tts', get_string('content_tts', constants::M_COMPONENT), array('wrap' => 'virtual', 'style' => 'width: 100%;'));
-            $mform->setType($cp . 'tts', PARAM_RAW);
-            $mform->addHelpButton($cp . 'tts', 'content_tts', constants::M_MODNAME);
-            if($m35){
-                $mform->hideIf($cp . 'tts',$cp .  'addttsaudio', 'neq', 1);
-            }else {
-                $mform->disabledIf($cp . 'tts', $cp . 'addttsaudio', 'neq', 1);
-            }
+        switch($cp){
+            case 'topic':
+            case 'model':
+                $mform->addElement('textarea', $cp . 'tts', get_string('content_tts', constants::M_COMPONENT), array('wrap' => 'virtual', 'style' => 'width: 100%;'));
+                $mform->setType($cp . 'tts', PARAM_RAW);
+                $mform->addHelpButton($cp . 'tts', 'content_tts', constants::M_MODNAME);
+                if($m35){
+                    $mform->hideIf($cp . 'tts',$cp .  'addttsaudio', 'neq', 1);
+                }else {
+                    $mform->disabledIf($cp . 'tts', $cp . 'addttsaudio', 'neq', 1);
+                }
+                break;
         }
+    
+
         $voiceoptions = utils::get_tts_voices();
         $mform->addElement('select', $cp . 'ttsvoice', get_string('content_ttsvoice',constants::M_COMPONENT), $voiceoptions);
         $mform->setDefault($cp . 'ttsvoice','Amy');
