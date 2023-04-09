@@ -281,7 +281,7 @@ function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform
     $moduleinstance = solo_process_filemanagers($moduleinstance,$mform);
     $moduleinstance = solo_process_autogradeoptions($moduleinstance,$mform);
     $moduleinstance = utils::sequence_to_steps($moduleinstance);
-    if($oldmodeltts !== $moduleinstance->modeltts) {
+    if( isset($moduleinstance->modeltts) && ($oldmodeltts !== $moduleinstance->modeltts)) {
         $moduleinstance =  utils::process_modeltts_stats($moduleinstance);
     }
 	$success = $DB->update_record(constants::M_TABLE, $moduleinstance);
