@@ -2705,7 +2705,7 @@ class utils{
                 }
                 break;
         }
-    
+
 
         $voiceoptions = utils::get_tts_voices();
         $mform->addElement('select', $cp . 'ttsvoice', get_string('content_ttsvoice',constants::M_COMPONENT), $voiceoptions);

@@ -370,6 +370,27 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022122000, 'solo');
     }
 
+    if($oldversion < 2023051300) {
+        // fields to change the notnull definition for] viewstart and viewend and modelttsideacount
+        $table = new xmldb_table(constants::M_TABLE);
+        $fields = [];
+        $fields[] = new xmldb_field('viewstart', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('viewend', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('modelttsideacount', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+
+        $DB->set_field(constants::M_TABLE, 'viewstart', 0, ['viewstart' => null]);
+        $DB->set_field(constants::M_TABLE, 'viewend', 0, ['viewend' => null]);
+        $DB->set_field(constants::M_TABLE, 'modelttsideacount', 0, ['modelttsideacount' => null]);
+
+        // Alter fields
+        foreach ($fields as $field) {
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->change_field_notnull($table, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, 2023051300, 'solo');
+    }
+
 
 
 
