@@ -43,8 +43,8 @@ class external extends external_api {
 
         $siteconfig = get_config(constants::M_COMPONENT);
         $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-
-        $suggestions = utils::fetch_grammar_correction($token,$mod->region,$mod->ttslanguage,$text);
+        $textanalyser = new textanalyser($token,$text,$mod->region,$mod->ttslanguage);
+        $suggestions = $textanalyser->fetch_grammar_correction();
         if($suggestions==$text || empty($suggestions)){
             return "";
         }

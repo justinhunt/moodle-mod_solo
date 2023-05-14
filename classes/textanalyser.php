@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * text analysis for solo plugin
+ * text analyser for solo plugin
  *
  * @package    mod_solo
  * @copyright  2015 Justin Hunt (poodllsupport@gmail.com)
@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2015 Justin Hunt (poodllsupport@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class textanalysis {
+class textanalyser {
 
     const CLOUDPOODLL = 'https://cloud.poodll.com';
     //const CLOUDPOODLL = 'https://vbox.poodll.com/cphost';
@@ -59,7 +59,7 @@ class textanalysis {
          * The class constructor.
          *
          */
-    public function __construct($token, $region, $passage, $language, $userlanguage=false){
+    public function __construct($token,$passage, $region,  $language, $userlanguage=false){
         $this->token = $token;
         $this->region = $region;
         $this->passage = $passage;
@@ -80,7 +80,11 @@ class textanalysis {
     }
 
 
-    public function fetch_sentence_stats($passage){
+    public function fetch_sentence_stats($passage=''){
+
+        if(empty($passage)){
+            $passage = $this->passage;
+        }
 
         //count sentences
         $items = preg_split('/[!?.]+(?![0-9])/', $passage);
@@ -112,12 +116,16 @@ class textanalysis {
         return $ret;
     }
 
-    public function fetch_word_stats($passage) {
+    public function fetch_word_stats($passage='') {
+
+        if(empty($passage)){
+            $passage = $this->passage;
+        }
 
         //prepare data
         $is_english=$this->is_english();
-        $items = \core_text::strtolower($passage);
-        $items = $this->mb_count_words($items,1);
+        $lowerpassage = \core_text::strtolower($passage);
+        $items = $this->mb_count_words($lowerpassage,1); //returns array for format 1
         $totalwords = count($items);
         $items = array_unique($items);
 
@@ -231,31 +239,17 @@ class textanalysis {
         return $count;
     }
 
-
-    public static function fetch_targetwords($attempt){
-        $targetwords = explode(PHP_EOL,$attempt->topictargetwords);
-        $mywords = explode(PHP_EOL,$attempt->mywords);
-        //Do new lines and commas
-        $allwords = array_merge($targetwords, $mywords);
-        //remove any duplicates or blanks
-        $alltargetwords = array_filter(array_unique($allwords));
-
-        return $alltargetwords;
-    }
-
-
-
     public function process_all_stats($targetwords=[]){
-
 
             $stats = $this->calculate_stats($this->passage,$targetwords);
             if ($stats) {
-                $stats->ideacount = $this->process_idea_count($this->passage);
-                $stats->cefrlevel = $this->process_cefr_level($this->passage);
-                $stats->relevance = $this->process_relevance($this->passage);
-                $stats = array_merge($stats,$this->fetch_sentence_stats($this->passage));
+                $stats['ideacount'] = $this->process_idea_count();
+                $stats['cefrlevel'] = $this->process_cefr_level();
+                $stats['relevance'] = $this->process_relevance();
+                $stats = array_merge($stats,$this->fetch_sentence_stats());
                 $stats = array_merge($stats,$this->fetch_word_stats($this->passage));
-                $stats = array_merge($stats,$this->calc_grammarspell_stats($this->passage,$stats->wordtotal));
+                $stats = array_merge($stats,$this->calc_grammarspell_stats($stats['wordstotal']));
+                $stats = (object)$stats;
             }
             return $stats;
     }
@@ -283,8 +277,11 @@ class textanalysis {
         return $ret;
     }
 
-    public function process_relevance($passage,$targetembedding=false){
-        global $DB;
+    public function process_relevance($passage='',$targetembedding=false){
+
+        if(empty($passage)){
+            $passage = $this->passage;
+        }
 
         $relevance=false;//default is blank
         if(!empty($passage)&&$targetembedding!==false){
@@ -297,7 +294,11 @@ class textanalysis {
         }
     }
 
-    public function process_cefr_level($passage){
+    public function process_cefr_level($passage=''){
+
+        if(empty($passage)){
+            $passage = $this->passage;
+        }
 
         $cefrlevel=false;//default is blank
         if(!empty($passage)){
@@ -310,7 +311,11 @@ class textanalysis {
         }
     }
 
-    public function process_idea_count($passage){
+    public function process_idea_count($passage=''){
+
+        if(empty($passage)){
+            $passage = $this->passage;
+        }
 
         $ideacount=false;
         if(!empty($passage)){
@@ -324,8 +329,548 @@ class textanalysis {
 
     }
 
-    public static function fetch_grammar_correction_diff($selftranscript,$correction){
 
+    //we leave it up to the grading logic how/if it adds the ai grades to gradebook
+    public function calc_grammarspell_stats($wordcount,$passage=''){
+        //init stats with defaults
+        $stats= new \stdClass();
+        $stats->autospell="";
+        $stats->autogrammar="";
+        $stats->autospellscore=100;
+        $stats->autogrammarscore=100;
+        $stats->autospellerrors = 0;
+        $stats->autogrammarerrors=0;
+
+
+        if($passage==''){
+            $passage = $this->passage;
+        }
+
+        //if we have no words for whatever reason the calc will not work
+        if(!$wordcount || $wordcount<1) {
+            //update spelling and grammar stats in DB
+            return $stats;
+        }
+
+        //get lanserver lang string
+        switch($this->language){
+            case constants::M_LANG_ARSA:
+            case constants::M_LANG_ARAE:
+                $targetlanguage = 'ar';
+                break;
+            default:
+                $targetlanguage = $this->language;
+        }
+
+        //fetch grammar stats
+        $lt_url = self::fetch_lang_server_url('lt');
+        $postdata =array('text'=> $passage,'language'=>$targetlanguage);
+        $autogrammar = self::curl_fetch($lt_url,$postdata,'post');
+        //default grammar score
+        $autogrammarscore =100;
+
+        //fetch spell stats
+        $spellcheck_url = self::fetch_lang_server_url('spellcheck');
+        $spelltranscript = self::cleanText($passage);
+        $postdata =array('passage'=>$spelltranscript,'lang'=>$targetlanguage);
+        $autospell = self::curl_fetch($spellcheck_url,$postdata,'post');
+        //default spell score
+        $autospellscore =100;
+
+
+
+        //calc grammar score
+        if(self::is_json($autogrammar)) {
+            //work out grammar
+            $grammarobj = json_decode($autogrammar);
+            $incorrect = count($grammarobj->matches);
+            $stats->autogrammarerrors= $incorrect;
+            $raw = $wordcount - ($incorrect * 3);
+            if ($raw < 1) {
+                $autogrammarscore = 0;
+            } else {
+                $autogrammarscore = round($raw / $wordcount, 2) * 100;
+            }
+
+            $stats->autogrammar = $autogrammar;
+            $stats->autogrammarscore = $autogrammarscore;
+        }
+
+        //calculate spell score
+        if(self::is_json($autospell)) {
+
+            //work out spelling
+            $spellobj = json_decode($autospell);
+            $correct = 0;
+            if($spellobj->status) {
+                $spellarray = $spellobj->data->results;
+                foreach ($spellarray as $val) {
+                    if ($val) {
+                        $correct++;
+                    }else{
+                        $stats->autospellerrors++;
+                    }
+                }
+
+                if ($correct > 0) {
+                    $autospellscore = round($correct / $wordcount, 2) * 100;
+                } else {
+                    $autospellscore = 0;
+                }
+            }
+        }
+
+        //update spelling and grammar stats in data object and return
+        $stats->autospell=$autospell;
+        $stats->autogrammar=$autogrammar;
+        $stats->autospellscore=$autospellscore;
+        $stats->autogrammarscore=$autogrammarscore;
+        return get_object_vars($stats);
+    }
+
+
+
+    //calculate stats of transcript
+    public function calculate_stats($passage='',$targetwords=[]){
+
+        if($passage==''){
+            $passage = $this->passage;
+        }
+
+        $stats= new \stdClass();
+        $stats->turns=0;
+        $stats->words=0;
+        $stats->avturn=0;
+        $stats->longestturn=0;
+        $stats->targetwords=0;
+        $stats->totaltargetwords=0;
+        $stats->aiaccuracy=-1;
+
+        if(!$passage || empty($passage)){
+            return $stats;
+        }
+
+        $items = preg_split('/[!?.]+(?![0-9])/', $passage);
+        $transcriptarray = array_filter($items);
+        $totalturnlengths=0;
+        $jsontranscript = '';
+
+        foreach($transcriptarray as $sentence){
+            //wordcount will be different for different languages
+            $wordcount = self::mb_count_words($sentence,$this->language);
+
+            if($wordcount===0){continue;}
+            $jsontranscript .= $sentence . ' ' ;
+            $stats->turns++;
+            $stats->words+= $wordcount;
+            $totalturnlengths += $wordcount;
+            if($stats->longestturn < $wordcount){$stats->longestturn = $wordcount;}
+        }
+        if(!$stats->turns){
+            return false;
+        }
+        $stats->avturn= round($totalturnlengths  / $stats->turns);
+        $stats->totaltargetwords = count($targetwords);
+
+
+        $searchpassage = \core_text::strtolower($jsontranscript);
+        foreach($targetwords as $theword){
+            $searchword = self::cleanText($theword);
+            if(empty($searchword) || empty($searchpassage)){
+                $usecount=0;
+            }else {
+                $usecount = substr_count($searchpassage, $searchword);
+            }
+            if($usecount){$stats->targetwords++;}
+        }
+        return get_object_vars($stats);
+    }
+
+
+    //fetch the grammar correction suggestions
+    public function fetch_grammar_correction($passage='') {
+        global $USER;
+
+        //use local passage if not set
+        if(empty($passage)){
+            $passage = $this->passage;
+        }
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $this->token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'request_grammar_correction';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $passage;//urlencode($passage);
+        $params['language'] = $this->language;
+        $params['subject'] = 'none';
+        $params['region'] = $this->region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then lets do the embed
+        } else if ($payloadobject->returnCode === 0) {
+            $correction = $payloadobject->returnMessage;
+            //clean up the correction a little
+            if(\core_text::strlen($correction) > 0){
+                $correction = \core_text::trim_utf8_bom($correction);
+                $charone = substr($correction,0,1);
+                if(preg_match('/^[.,:!?;-]/',$charone)){
+                    $correction = substr($correction,1);
+                }
+            }
+
+            return $correction;
+        } else {
+            return false;
+        }
+    }
+
+    //fetch the relevance
+    public  function fetch_relevance($model_or_modelembedding,$passage='') {
+        global $USER;
+
+        //default to 100% relevant if no TTS model or if it's not English
+        if(!$this->is_english() || $model_or_modelembedding===false || empty($model_or_modelembedding)){
+            return 1;
+        }
+
+        //use local passage if not set
+        if(empty($passage)){
+            $passage = $this->passage;
+        }
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $this->token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'get_semantic_sim';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $passage;//urlencode($passage);
+        $params['subject'] = $model_or_modelembedding;
+        $params['language'] = $this->language;
+        $params['region'] = $this->region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params,'post');
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then return the value
+        } else if ($payloadobject->returnCode === 0) {
+            $relevance = $payloadobject->returnMessage;
+            if(is_numeric($relevance)){
+                $relevance=(int)round($relevance * 100,0);
+            }else{
+                $relevance = false;
+            }
+            return $relevance;
+        } else {
+            return false;
+        }
+    }
+
+    //fetch the CEFR Level
+    public function fetch_cefr_level($passage='') {
+        global $USER;
+
+        if(empty($passage)){
+            $passage = $this->passage;
+        }
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $this->token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'predict_cefr';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $passage;//urlencode($passage);
+        $params['language'] = $this->language;
+        $params['subject'] = 'none';
+        $params['region'] = $this->region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then return the value
+        } else if ($payloadobject->returnCode === 0) {
+            $cefr = $payloadobject->returnMessage;
+            //make pretty sure its a CEFR level
+            if(\core_text::strlen($cefr) !== 2){
+                $cefr=false;
+            }
+
+            return $cefr;
+        } else {
+            return false;
+        }
+    }
+
+    //fetch embedding
+    public function fetch_embedding($passage='') {
+        global $USER;
+
+        if(empty($passage)){
+            $passage=$this->passage;
+        }
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $this->token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'get_embedding';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $passage;//urlencode($passage);
+        $params['language'] = $this->language;
+        $params['subject'] = 'none';
+        $params['region'] = $this->region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then process  it
+        } else if ($payloadobject->returnCode === 0) {
+            $return_data = $payloadobject->returnMessage;
+            //clean up the correction a little
+            if(!self::is_json($return_data)){
+                $embedding=false;
+            }else{
+                $data_object = json_decode($return_data);
+                if(is_array($data_object)&&$data_object[0]->object=='embedding') {
+                    $embedding = json_encode($data_object[0]->embedding);
+                }else{
+                    $embedding=false;
+                }
+            }
+            return $embedding;
+        } else {
+            return false;
+        }
+    }
+
+    //fetch the Idea Count
+    public function fetch_idea_count($passage='') {
+        global $USER;
+
+        if(empty($passage)){
+            $passage=$this->passage;
+        }
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $this->token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'count_unique_ideas';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $passage;//urlencode($passage);
+        $params['language'] = $this->language;
+        $params['subject'] = 'none';
+        $params['region'] = $this->region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then lets do the embed
+        } else if ($payloadobject->returnCode === 0) {
+            $ideacount = $payloadobject->returnMessage;
+            //clean up the correction a little
+            if(!is_number($ideacount)){
+                $ideacount=false;
+            }
+
+            return $ideacount;
+        } else {
+            return false;
+        }
+    }
+
+    public function process_modeltts_stats($passage=''){
+        $ret = ['embedding'=>false,'ideacount'=>false];
+
+        if(empty($passage)){
+            $passage  = $this->passage;
+        }
+
+        if(empty($passage) || !$this->is_english()) {
+            return $ret;
+        }
+
+        $embedding = self::fetch_embedding($passage);
+        $ideacount = self::fetch_idea_count($passage);
+        if($embedding){
+            $ret['embedding'] = $embedding;
+        }
+        if($ideacount){
+            $ret['ideacount'] = $ideacount;
+        }
+        return $ret;
+    }
+
+    /*
+ * Clean word of things that might prevent a match
+  * i) lowercase it
+  * ii) remove html characters
+  * iii) replace any line ends with spaces (so we can "split" later)
+  * iv) remove punctuation
+ *
+ */
+    public static function cleanText($thetext){
+        //lowercaseify
+        $thetext=\core_text::strtolower($thetext);
+
+        //remove any html
+        $thetext = strip_tags($thetext);
+
+        //replace all line ends with empty strings
+        $thetext = preg_replace('#\R+#', '', $thetext);
+
+        //remove punctuation
+        //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
+        // $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
+        //https://stackoverflow.com/questions/5689918/php-strip-punctuation
+        $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
+
+        //remove bad chars
+        $b_open="“";
+        $b_close="”";
+        $b_sopen='‘';
+        $b_sclose='’';
+        $bads= array($b_open,$b_close,$b_sopen,$b_sclose);
+        foreach($bads as $bad){
+            $thetext=str_replace($bad,'',$thetext);
+        }
+
+        //remove double spaces
+        //split on spaces into words
+        $textbits = explode(' ',$thetext);
+        //remove any empty elements
+        $textbits = array_filter($textbits, function($value) { return $value !== ''; });
+        $thetext = implode(' ',$textbits);
+        return $thetext;
+    }
+
+    //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
+    //this is our helper
+    //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
+    //this is our helper
+    public static function curl_fetch($url,$postdata=false, $method='get')
+    {
+        global $CFG;
+
+        require_once($CFG->libdir.'/filelib.php');
+        $curl = new \curl();
+
+        if($method=='post') {
+            $result = $curl->post($url, $postdata);
+        }else{
+            $result = $curl->get($url, $postdata);
+        }
+        return $result;
+    }
+
+
+    public static function fetch_spellingerrors($stats, $transcript) {
+        $spellingerrors=array();
+        $usetranscript = self::cleanText($transcript);
+        //sanity check
+        if(empty($usetranscript) ||!self::is_json($stats->autospell)){
+            return $spellingerrors;
+        }
+
+        //return errors
+        $spellobj = json_decode($stats->autospell);
+        if($spellobj->status) {
+            $spellarray = $spellobj->data->results;
+            $wordarray = explode(' ', $usetranscript);
+            for($index=0;$index<count($spellarray); $index++) {
+                if (!$spellarray[$index]) {
+                    $spellingerrors[]=$wordarray[$index];
+                }
+            }
+        }
+        return $spellingerrors;
+
+    }
+
+    public static function fetch_grammarerrors($stats, $transcript) {
+        $usetranscript = self::cleanText($transcript);
+        //sanity check
+        if(empty($usetranscript) ||!self::is_json($stats->autogrammar)){
+            return [];
+        }
+
+        //return errors
+        $grammarobj = json_decode($stats->autogrammar);
+        return $grammarobj->matches;
+
+    }
+
+    public static function fetch_grammar_correction_diff($selftranscript,$correction){
 
         //turn the passage and transcript into an array of words
         $alternatives = diff::fetchAlternativesArray('');
@@ -405,507 +950,21 @@ class textanalysis {
 
     }
 
-
-    //we leave it up to the grading logic how/if it adds the ai grades to gradebook
-    public function calc_grammarspell_stats($passage,$wordcount){
-        //init stats with defaults
-        $stats= new \stdClass();
-        $stats->autospell="";
-        $stats->autogrammar="";
-        $stats->autospellscore=100;
-        $stats->autogrammarscore=100;
-        $stats->autospellerrors = 0;
-        $stats->autogrammarerrors=0;
-
-
-        //if we have no words for whatever reason the calc will not work
-        if(!$wordcount || $wordcount<1) {
-            //update spelling and grammar stats in DB
-            return $stats;
-        }
-
-        //get lanserver lang string
-        switch($this->language){
-            case constants::M_LANG_ARSA:
-            case constants::M_LANG_ARAE:
-                $targetlanguage = 'ar';
-                break;
-            default:
-                $targetlanguage = $this->language;
-        }
-
-        //fetch grammar stats
-        $lt_url = utils::fetch_lang_server_url($this->region,'lt');
-        $postdata =array('text'=> $passage,'language'=>$targetlanguage);
-        $autogrammar = utils::curl_fetch($lt_url,$postdata,'post');
-        //default grammar score
-        $autogrammarscore =100;
-
-        //fetch spell stats
-        $spellcheck_url = utils::fetch_lang_server_url($this->region,'spellcheck');
-        $spelltranscript = diff::cleanText($passage);
-        $postdata =array('passage'=>$spelltranscript,'lang'=>$targetlanguage);
-        $autospell = utils::curl_fetch($spellcheck_url,$postdata,'post');
-        //default spell score
-        $autospellscore =100;
-
-
-
-        //calc grammar score
-        if(self::is_json($autogrammar)) {
-            //work out grammar
-            $grammarobj = json_decode($autogrammar);
-            $incorrect = count($grammarobj->matches);
-            $stats->autogrammarerrors= $incorrect;
-            $raw = $wordcount - ($incorrect * 3);
-            if ($raw < 1) {
-                $autogrammarscore = 0;
-            } else {
-                $autogrammarscore = round($raw / $wordcount, 2) * 100;
-            }
-
-            $stats->autogrammar = $autogrammar;
-            $stats->autogrammarscore = $autogrammarscore;
-        }
-
-        //calculate spell score
-        if(self::is_json($autospell)) {
-
-            //work out spelling
-            $spellobj = json_decode($autospell);
-            $correct = 0;
-            if($spellobj->status) {
-                $spellarray = $spellobj->data->results;
-                foreach ($spellarray as $val) {
-                    if ($val) {
-                        $correct++;
-                    }else{
-                        $stats->autospellerrors++;
-                    }
-                }
-
-                if ($correct > 0) {
-                    $autospellscore = round($correct / $wordcount, 2) * 100;
-                } else {
-                    $autospellscore = 0;
-                }
+    public static function fetch_duration_from_transcript($jsontranscript){
+        $transcript = json_decode($jsontranscript);
+        $titems=$transcript->results->items;
+        $twords=array();
+        foreach($titems as $titem){
+            if($titem->type == 'pronunciation'){
+                $twords[] = $titem;
             }
         }
-
-        //update spelling and grammar stats in data object and return
-        $stats->autospell=$autospell;
-        $stats->autogrammar=$autogrammar;
-        $stats->autospellscore=$autospellscore;
-        $stats->autogrammarscore=$autogrammarscore;
-        return get_object_vars($stats);
-    }
-
-
-
-    //calculate stats of transcript (no db code)
-    public function calculate_stats($passage,$targetwords){
-        $stats= new \stdClass();
-        $stats->turns=0;
-        $stats->words=0;
-        $stats->avturn=0;
-        $stats->longestturn=0;
-        $stats->targetwords=0;
-        $stats->totaltargetwords=0;
-        $stats->aiaccuracy=-1;
-
-        if(!$passage || empty($passage)){
-            return $stats;
-        }
-
-        $items = preg_split('/[!?.]+(?![0-9])/', $passage);
-        $transcriptarray = array_filter($items);
-        $totalturnlengths=0;
-        $jsontranscript = '';
-
-        foreach($transcriptarray as $sentence){
-            //wordcount will be different for different languages
-            $wordcount = self::mb_count_words($sentence,$this->language);
-
-            if($wordcount===0){continue;}
-            $jsontranscript .= $sentence . ' ' ;
-            $stats->turns++;
-            $stats->words+= $wordcount;
-            $totalturnlengths += $wordcount;
-            if($stats->longestturn < $wordcount){$stats->longestturn = $wordcount;}
-        }
-        if(!$stats->turns){
-            return false;
-        }
-        $stats->avturn= round($totalturnlengths  / $stats->turns);
-        $stats->totaltargetwords = count($targetwords);
-
-
-        $searchpassage = strtolower($jsontranscript);
-        foreach($targetwords as $theword){
-            $searchword = self::cleanText($theword);
-            if(empty($searchword) || empty($searchpassage)){
-                $usecount=0;
-            }else {
-                $usecount = substr_count($searchpassage, $searchword);
-            }
-            if($usecount){$stats->targetwords++;}
-        }
-        return get_object_vars($stats);
-    }
-
-    /*
-   * Clean word of things that might prevent a match
-    * i) lowercase it
-    * ii) remove html characters
-    * iii) replace any line ends with spaces (so we can "split" later)
-    * iv) remove punctuation
-   *
-   */
-    public static function cleanText($thetext){
-        //lowercaseify
-        $thetext=strtolower($thetext);
-
-        //remove any html
-        $thetext = strip_tags($thetext);
-
-        //replace all line ends with empty strings
-        $thetext = preg_replace('#\R+#', '', $thetext);
-
-        //remove punctuation
-        //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
-        // $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
-        //https://stackoverflow.com/questions/5689918/php-strip-punctuation
-        $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
-
-        //remove bad chars
-        $b_open="“";
-        $b_close="”";
-        $b_sopen='‘';
-        $b_sclose='’';
-        $bads= array($b_open,$b_close,$b_sopen,$b_sclose);
-        foreach($bads as $bad){
-            $thetext=str_replace($bad,'',$thetext);
-        }
-
-        //remove double spaces
-        //split on spaces into words
-        $textbits = explode(' ',$thetext);
-        //remove any empty elements
-        $textbits = array_filter($textbits, function($value) { return $value !== ''; });
-        $thetext = implode(' ',$textbits);
-        return $thetext;
-    }
-
-    //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
-    //this is our helper
-    //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
-    //this is our helper
-    public static function curl_fetch($url,$postdata=false, $method='get')
-    {
-        global $CFG;
-
-        require_once($CFG->libdir.'/filelib.php');
-        $curl = new \curl();
-
-        if($method=='post') {
-            $result = $curl->post($url, $postdata);
+        $lastindex = count($twords);
+        if($lastindex>0){
+            return $twords[$lastindex-1]->end_time;
         }else{
-            $result = $curl->get($url, $postdata);
+            return 0;
         }
-        return $result;
-    }
-
-
-    public static function fetch_spellingerrors($stats, $transcript) {
-        $spellingerrors=array();
-        $usetranscript = diff::cleanText($transcript);
-        //sanity check
-        if(empty($usetranscript) ||!self::is_json($stats->autospell)){
-            return $spellingerrors;
-        }
-
-        //return errors
-        $spellobj = json_decode($stats->autospell);
-        if($spellobj->status) {
-            $spellarray = $spellobj->data->results;
-            $wordarray = explode(' ', $usetranscript);
-            for($index=0;$index<count($spellarray); $index++) {
-                if (!$spellarray[$index]) {
-                    $spellingerrors[]=$wordarray[$index];
-                }
-            }
-        }
-        return $spellingerrors;
-
-    }
-    public static function fetch_grammarerrors($stats, $transcript) {
-        $usetranscript = diff::cleanText($transcript);
-        //sanity check
-        if(empty($usetranscript) ||!self::is_json($stats->autogrammar)){
-            return [];
-        }
-
-        //return errors
-        $grammarobj = json_decode($stats->autogrammar);
-        return $grammarobj->matches;
-
-    }
-
-    //fetch the grammar correction suggestions
-    public function fetch_grammar_correction($passage) {
-        global $USER;
-
-        //The REST API we are calling
-        $functionname = 'local_cpapi_call_ai';
-
-        $params = array();
-        $params['wstoken'] = $this->token;
-        $params['wsfunction'] = $functionname;
-        $params['moodlewsrestformat'] = 'json';
-        $params['action'] = 'request_grammar_correction';
-        $params['appid'] = 'mod_solo';
-        $params['prompt'] = $passage;//urlencode($passage);
-        $params['language'] = $this->language;
-        $params['subject'] = 'none';
-        $params['region'] = $this->region;
-        $params['owner'] = hash('md5',$USER->username);
-
-        //log.debug(params);
-
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
-        $response = self::curl_fetch($serverurl, $params);
-        if (!self::is_json($response)) {
-            return false;
-        }
-        $payloadobject = json_decode($response);
-
-        //returnCode > 0  indicates an error
-        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
-            return false;
-            //if all good, then lets do the embed
-        } else if ($payloadobject->returnCode === 0) {
-            $correction = $payloadobject->returnMessage;
-            //clean up the correction a little
-            if(\core_text::strlen($correction) > 0){
-                $correction = \core_text::trim_utf8_bom($correction);
-                $charone = substr($correction,0,1);
-                if(preg_match('/^[.,:!?;-]/',$charone)){
-                    $correction = substr($correction,1);
-                }
-            }
-
-            return $correction;
-        } else {
-            return false;
-        }
-    }
-
-    //fetch the relevance
-    public  function fetch_relevance($passage,$model_or_modelembedding=false) {
-        global $USER;
-
-        //default to 100% relevant if no TTS model or if it's not English
-        if(!$this->is_english() || $model_or_modelembedding===false){
-            return 1;
-        }
-
-        //The REST API we are calling
-        $functionname = 'local_cpapi_call_ai';
-
-        $params = array();
-        $params['wstoken'] = $this->token;
-        $params['wsfunction'] = $functionname;
-        $params['moodlewsrestformat'] = 'json';
-        $params['action'] = 'get_semantic_sim';
-        $params['appid'] = 'mod_solo';
-        $params['prompt'] = $passage;//urlencode($passage);
-        $params['subject'] = $model_or_modelembedding;
-        $params['language'] = $this->language;
-        $params['region'] = $this->region;
-        $params['owner'] = hash('md5',$USER->username);
-
-        //log.debug(params);
-
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
-        $response = self::curl_fetch($serverurl, $params,'post');
-        if (!self::is_json($response)) {
-            return false;
-        }
-        $payloadobject = json_decode($response);
-
-        //returnCode > 0  indicates an error
-        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
-            return false;
-            //if all good, then return the value
-        } else if ($payloadobject->returnCode === 0) {
-            $relevance = $payloadobject->returnMessage;
-            if(is_numeric($relevance)){
-                $relevance=(int)round($relevance * 100,0);
-            }else{
-                $relevance = false;
-            }
-            return $relevance;
-        } else {
-            return false;
-        }
-    }
-
-    //fetch the CEFR Level
-    public function fetch_cefr_level($passage) {
-        global $USER;
-
-        //The REST API we are calling
-        $functionname = 'local_cpapi_call_ai';
-
-        $params = array();
-        $params['wstoken'] = $this->token;
-        $params['wsfunction'] = $functionname;
-        $params['moodlewsrestformat'] = 'json';
-        $params['action'] = 'predict_cefr';
-        $params['appid'] = 'mod_solo';
-        $params['prompt'] = $passage;//urlencode($passage);
-        $params['language'] = $this->language;
-        $params['subject'] = 'none';
-        $params['region'] = $this->region;
-        $params['owner'] = hash('md5',$USER->username);
-
-        //log.debug(params);
-
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
-        $response = self::curl_fetch($serverurl, $params);
-        if (!self::is_json($response)) {
-            return false;
-        }
-        $payloadobject = json_decode($response);
-
-        //returnCode > 0  indicates an error
-        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
-            return false;
-            //if all good, then return the value
-        } else if ($payloadobject->returnCode === 0) {
-            $cefr = $payloadobject->returnMessage;
-            //make pretty sure its a CEFR level
-            if(\core_text::strlen($cefr) !== 2){
-                $cefr=false;
-            }
-
-            return $cefr;
-        } else {
-            return false;
-        }
-    }
-
-    //fetch embedding
-    public function fetch_embedding($thetextpassage) {
-        global $USER;
-
-        //The REST API we are calling
-        $functionname = 'local_cpapi_call_ai';
-
-        $params = array();
-        $params['wstoken'] = $this->token;
-        $params['wsfunction'] = $functionname;
-        $params['moodlewsrestformat'] = 'json';
-        $params['action'] = 'get_embedding';
-        $params['appid'] = 'mod_solo';
-        $params['prompt'] = $thetextpassage;//urlencode($passage);
-        $params['language'] = $this->language;
-        $params['subject'] = 'none';
-        $params['region'] = $this->region;
-        $params['owner'] = hash('md5',$USER->username);
-
-        //log.debug(params);
-
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
-        $response = self::curl_fetch($serverurl, $params);
-        if (!self::is_json($response)) {
-            return false;
-        }
-        $payloadobject = json_decode($response);
-
-        //returnCode > 0  indicates an error
-        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
-            return false;
-            //if all good, then process  it
-        } else if ($payloadobject->returnCode === 0) {
-            $return_data = $payloadobject->returnMessage;
-            //clean up the correction a little
-            if(!self::is_json($return_data)){
-                $embedding=false;
-            }else{
-                $data_object = json_decode($return_data);
-                if(is_array($data_object)&&$data_object[0]->object=='embedding') {
-                    $embedding = json_encode($data_object[0]->embedding);
-                }else{
-                    $embedding=false;
-                }
-            }
-            return $embedding;
-        } else {
-            return false;
-        }
-    }
-
-    //fetch the Idea Count
-    public function fetch_idea_count($passage) {
-        global $USER;
-
-        //The REST API we are calling
-        $functionname = 'local_cpapi_call_ai';
-
-        $params = array();
-        $params['wstoken'] = $this->token;
-        $params['wsfunction'] = $functionname;
-        $params['moodlewsrestformat'] = 'json';
-        $params['action'] = 'count_unique_ideas';
-        $params['appid'] = 'mod_solo';
-        $params['prompt'] = $passage;//urlencode($passage);
-        $params['language'] = $this->language;
-        $params['subject'] = 'none';
-        $params['region'] = $this->region;
-        $params['owner'] = hash('md5',$USER->username);
-
-        //log.debug(params);
-
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
-        $response = self::curl_fetch($serverurl, $params);
-        if (!self::is_json($response)) {
-            return false;
-        }
-        $payloadobject = json_decode($response);
-
-        //returnCode > 0  indicates an error
-        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
-            return false;
-            //if all good, then lets do the embed
-        } else if ($payloadobject->returnCode === 0) {
-            $ideacount = $payloadobject->returnMessage;
-            //clean up the correction a little
-            if(!is_number($ideacount)){
-                $ideacount=false;
-            }
-
-            return $ideacount;
-        } else {
-            return false;
-        }
-    }
-
-    public function process_modeltts_stats($passage){
-        $ret = ['embedding'=>false,'ideacount'=>false];
-        if(empty($passage) || !$this->is_english()) {
-            return $ret;
-        }
-
-        $embedding = self::fetch_embedding($passage);
-        $ideacount = self::fetch_idea_count($passage);
-        if($embedding){
-            $ret['embedding'] = $embedding;
-        }
-        if($ideacount){
-            $ret['ideacount'] = $ideacount;
-        }
-        return $ret;
     }
 
     //see if this is truly json or some error

@@ -59,6 +59,7 @@
         <FIELD NAME="modelttsembedding" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Tips for the solo activity"/>
         <FIELD NAME="modelttsideacount" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="model tts ideacount"/>
         <FIELD NAME="nopasting" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Disable pasting"/>
+        <FIELD NAME="preloadtranscrip" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="pre-load manual transcript"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
@@ -131,6 +132,8 @@
         <FIELD NAME="gcerrorcount" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The Grammar Correction errors"/>
         <FIELD NAME="gcerrors" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The Grammar Correction errors"/>
         <FIELD NAME="gcmatches" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The Grammar Correction matches"/>
+        <FIELD NAME="wpm" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" default="0"/>
+        <FIELD NAME="speakingtime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" default="0"/>
         <FIELD NAME="relevance" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="relevance to model %"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>

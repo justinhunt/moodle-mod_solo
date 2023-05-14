@@ -397,6 +397,9 @@ class utils{
         return $alltargetwords;
     }
 
+    /*
+     * 2023/5/13 TO DO: remove unneeded AI transcript constructer and edited self-transcript ... it can not be empty or edited
+     */
     public static function process_attempt($moduleinstance, $attempt, $contextid, $cmid, $trace=false){
         global $DB;
 
@@ -436,7 +439,6 @@ class utils{
         }
 
         //this should run down the aitranscript constructor and do the diffs if the passage arrives late or on time, but not redo
-
         //this line caused an error if the user entered a blank transcript. Do we need to check for empty?
         //if($hastranscripts && !empty($attempt->selftranscript)){
         if($hastranscripts){
@@ -448,13 +450,38 @@ class utils{
             // $attempt = $attempthelper->fetch_latest_complete_attempt();
         }
 
+        //get token, for web service calls
+        $siteconfig = get_config(constants::M_COMPONENT);
+        $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
+
+        //get target words
+        $topictargetwords = utils::fetch_targetwords($attempt);
+        $mywords = explode(PHP_EOL,$attempt->mywords);
+        $targetwords = array_filter(array_unique(array_merge($topictargetwords, $mywords)));
+
+        //get text analyser
+        $passage = $attempt->selftranscript;
+        $textanalyser = new textanalyser($token,$passage,$moduleinstance->region,$moduleinstance->ttslanguage);
+
         //update statistics and grammar correction if we need to
         if($hastranscripts) {
-            self::process_all_stats($moduleinstance, $attempt, $contextid);
+            //if we dont already have stats calculate them
+            if($DB->get_records(constants::M_STATSTABLE,['attemptid'=>$attempt->id])){
+                $stats = $textanalyser->process_all_stats($targetwords);
+                if($stats){
+                    self::save_stats($stats, $attempt);
+                }
+
+                //recalculate AI data, if the selftranscription is altered AND we have a jsontranscript
+                if($attempt->jsontranscript){
+                    $aitranscript = new \mod_solo\aitranscript($attempt->id, $contextid,$passage,$attempt->transcript, $attempt->jsontranscript);
+                    $aitranscript->recalculate($passage,$attempt->transcript, $attempt->jsontranscript);
+                }
+            }
         }
 
-        //fetch grammar correction or use existing one
-        $attempt->grammarcorrection = self::process_grammar_correction($moduleinstance,$attempt);
+        //Process grammar correction
+        self::process_grammar_correction($moduleinstance,$attempt);
 
         //if we have an ungraded activity, lets grade it
         if($hastranscripts && $requiresgrading) {
@@ -466,34 +493,10 @@ class utils{
         return $attempt;
     }
 
-    public static function process_all_stats($moduleinstance, $attempt, $contextid){
-             global $DB;
 
-             //if we already have stats, then yay
-            if($DB->get_records(constants::M_STATSTABLE,['attemptid'=>$attempt->id])){
-                return;
-            }
-            $stats = utils::calculate_stats($attempt->selftranscript, $attempt, $moduleinstance->ttslanguage);
-            if ($stats) {
-                $stats->ideacount = self::process_idea_count($moduleinstance,$attempt,$stats);
-                $stats->cefrlevel = self::process_cefr_level($moduleinstance,$attempt,$stats);
-                $stats->relevance = self::process_relevance($moduleinstance,$attempt,$stats);
-                $stats = utils::fetch_sentence_stats($attempt->selftranscript,$stats, $moduleinstance->ttslanguage);
-                $stats = utils::fetch_word_stats($attempt->selftranscript,$moduleinstance->ttslanguage,$stats);
-                $stats = utils::calc_grammarspell_stats($attempt->selftranscript,$moduleinstance->region,
-                    $moduleinstance->ttslanguage,$stats);
-
-                utils::save_stats($stats, $attempt);
-            }
-
-            //recalculate AI data, if the selftranscription is altered AND we have a jsontranscript
-            if($attempt->jsontranscript){
-                $passage = $attempt->selftranscript;
-                $aitranscript = new \mod_solo\aitranscript($attempt->id, $contextid,$passage,$attempt->transcript, $attempt->jsontranscript);
-                $aitranscript->recalculate($passage,$attempt->transcript, $attempt->jsontranscript);
-            }
-    }
-
+     /*
+      * Process grammar correction details as returned by text analyser
+      */
     public static function process_grammar_correction($moduleinstance,$attempt){
         global $DB;
 
@@ -507,7 +510,10 @@ class utils{
             if(empty($attempt->grammarcorrection)) {
                 $siteconfig = get_config(constants::M_COMPONENT);
                 $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-                $grammarcorrection = utils::fetch_grammar_correction($token, $moduleinstance->region,$moduleinstance->ttslanguage, $attempt->selftranscript);
+                //get text analyser
+                $textanalyser = new textanalyser($token, $attempt->selftranscript,$moduleinstance->region,$moduleinstance->ttslanguage);
+                list($grammarcorrection,$gcerrors,$gcmatches,$gcerrorcount) = $textanalyser->process_grammar_correction($attempt->selftranscript);;
+
                 if ($grammarcorrection) {
                     //set grammar correction (GC)
                     $attempt->grammarcorrection = $grammarcorrection;
@@ -515,11 +521,7 @@ class utils{
                         array('id'=>$attempt->id,
                             'grammarcorrection'=>$attempt->grammarcorrection));
 
-                    //fetch and set GC Diffs
-                    list($gcerrors,$gcmatches,$insertioncount) = utils::fetch_grammar_correction_diff($attempt->selftranscript, $attempt->grammarcorrection);
                     if(self::is_json($gcerrors)&& self::is_json($gcmatches)) {
-                        $gcerrors_obj = json_decode($gcerrors);
-                        $gcerrorcount = count(get_object_vars($gcerrors_obj)) +$insertioncount;
                         $stats = $DB->get_record(constants::M_STATSTABLE,
                             array('solo' => $attempt->solo, 'attemptid' => $attempt->id, 'userid' => $attempt->userid));
                         $DB->update_record(constants::M_STATSTABLE,
@@ -534,6 +536,9 @@ class utils{
         return $attempt->grammarcorrection;
     }
 
+    /*
+      * TO DO -  remove this
+      */
     public static function process_relevance($moduleinstance,$attempt,$stats){
         global $DB;
 
@@ -545,7 +550,9 @@ class utils{
         if(!empty($attempt->selftranscript)){
             $siteconfig = get_config(constants::M_COMPONENT);
             $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-            $relevance = utils::fetch_relevance($token, $moduleinstance, $attempt->selftranscript);
+            $textanalyser = new textanalyser($token,$attempt->selftranscript,$moduleinstance->region,$moduleinstance->ttslanguage,);
+            $modelembedding = !empty($moduleinstance->modelttsembedding) ? $moduleinstance->modelttsembedding : $moduleinstance->modeltts;
+            $relevance = $textanalyser->fetch_relevance($modelembedding);
         }
         if ($relevance!==false) {
             return $relevance;
@@ -554,6 +561,9 @@ class utils{
         }
     }
 
+    /*
+          * TO DO -  remove this
+          */
     public static function process_cefr_level($moduleinstance,$attempt,$stats){
         global $DB;
 
@@ -565,7 +575,8 @@ class utils{
         if(!empty($attempt->selftranscript)){
             $siteconfig = get_config(constants::M_COMPONENT);
             $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-            $cefrlevel = utils::fetch_cefr_level($token, $moduleinstance->region,$moduleinstance->ttslanguage, $attempt->selftranscript);
+            $textanalyser = new textanalyser($token,$attempt->selftranscript,$moduleinstance->region,$moduleinstance->ttslanguage);
+            $cefrlevel = $textanalyser->fetch_cefr_level();
         }
         if ($cefrlevel!==false) {
             return $cefrlevel;
@@ -574,6 +585,9 @@ class utils{
         }
     }
 
+    /*
+      * TO DO -  remove this
+      */
     public static function process_idea_count($moduleinstance,$attempt,$stats){
         global $DB;
 
@@ -585,7 +599,8 @@ class utils{
         if(!empty($attempt->selftranscript)){
             $siteconfig = get_config(constants::M_COMPONENT);
             $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-            $ideacount = utils::fetch_idea_count($token, $moduleinstance, $attempt->selftranscript);
+            $textanalyser = new textanalyser($token,$attempt->selftranscript,$moduleinstance->region,$moduleinstance->ttslanguage);
+            $ideacount = $textanalyser->fetch_idea_count();
         }
         if ($ideacount!==false) {
             return $ideacount;
@@ -676,6 +691,9 @@ class utils{
 
     }
 
+    /*
+      * TO DO -  remove this
+      */
 
     //we leave it up to the grading logic how/if it adds the ai grades to gradebook
     public static function calc_grammarspell_stats($selftranscript, $region, $language, $stats){
@@ -770,6 +788,7 @@ class utils{
         return $stats;
     }
 
+
     //fetch stats, one way or the other
     public static function fetch_stats($attempt,$moduleinstance=false) {
         global $DB;
@@ -828,6 +847,9 @@ class utils{
         return;
     }
 
+    /*
+      * TO DO -  remove this
+      */
     //calculate stats of transcript (no db code)
     public static function calculate_stats($usetranscript, $attempt, $language){
         $stats= new \stdClass();
@@ -1624,6 +1646,9 @@ class utils{
         );
     }
 
+    /*
+     * 2023/05/13 To DO - delete this function
+     */
     public static function fetch_spellingerrors($stats, $transcript) {
         $spellingerrors=array();
         $usetranscript = diff::cleanText($transcript);
@@ -1646,6 +1671,10 @@ class utils{
         return $spellingerrors;
 
     }
+
+    /*
+     * 2023/05/13 To DO - delete this function
+     */
     public static function fetch_grammarerrors($stats, $transcript) {
         $usetranscript = diff::cleanText($transcript);
         //sanity check
@@ -1810,9 +1839,10 @@ class utils{
     }
 
     public static function fetch_options_sequences(){
-        $ret = array(constants::M_SEQ_PRTM=>get_string('seq_PRTM',constants::M_COMPONENT),
-            constants::M_SEQ_PRM=>get_string('seq_PRM',constants::M_COMPONENT),
-            constants::M_SEQ_PTRM=>get_string('seq_PTRM',constants::M_COMPONENT));
+        $ret = array();
+        $ret[constants::M_SEQ_PRTM] = get_string('seq_PRTM',constants::M_COMPONENT);
+        $ret[constants::M_SEQ_PRM] =get_string('seq_PRM',constants::M_COMPONENT);
+        //$ret[constants::M_SEQ_PTRM]=get_string('seq_PTRM',constants::M_COMPONENT);
         return $ret;
     }
     public static function fetch_step_no($moduleinstance, $type){
@@ -2013,6 +2043,10 @@ class utils{
 
     }
 
+    /*
+     * 2023/05/13 - Delete this
+     */
+
     //fetch the grammar correction suggestions
     public static function fetch_grammar_correction($token,$region,$ttslanguage,$passage) {
         global $USER;
@@ -2061,6 +2095,10 @@ class utils{
             return false;
         }
     }
+
+    /*
+     * 2023/05/13 - Delete this
+     */
 
     //fetch the relevance
     public static function fetch_relevance($token, $moduleinstance,$passage) {
@@ -2112,6 +2150,9 @@ class utils{
         }
     }
 
+    /*
+    * 2023/05/13 - Delete this
+    */
     //fetch the CEFR Level
     public static function fetch_cefr_level($token,$region,$ttslanguage,$passage) {
         global $USER;
@@ -2157,6 +2198,9 @@ class utils{
         }
     }
 
+    /*
+    * 2023/05/13 - Delete this
+    */
     //fetch embedding
     public static function fetch_embedding($token,$moduleinstance,$passage) {
         global $USER;
@@ -2324,8 +2368,9 @@ class utils{
         }
         $siteconfig = get_config(constants::M_COMPONENT);
         $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-        $embedding = self::fetch_embedding($token,$moduleinstance,$moduleinstance->modeltts);
-        $ideacount = self::fetch_idea_count($token,$moduleinstance,$moduleinstance->modeltts);
+        $textanalyser = new textanalyser($token,$moduleinstance->modeltts,$moduleinstance->region,$moduleinstance->ttslanguage);
+        $embedding = $textanalyser->fetch_embedding();
+        $ideacount = $textanalyser->fetch_idea_count();
         if($embedding){
             $moduleinstance->modelttsembedding = $embedding;
         }

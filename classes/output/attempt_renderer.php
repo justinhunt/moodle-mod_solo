@@ -23,6 +23,7 @@ defined('MOODLE_INTERNAL') || die();
 use \mod_solo\constants;
 use \mod_solo\utils;
 use \mod_solo\diff;
+use \mod_solo\textanalyser;
 
 /**
  * A custom renderer class that extends the plugin_renderer_base.
@@ -201,8 +202,8 @@ class attempt_renderer extends \plugin_renderer_base {
         $ret='';
         //spelling and grammar data
         $tdata=array('a'=>$attempt, 's'=>$stats, 'audiofilename'=>$attempt->filename, 'autotranscriptready'=>$autotranscriptready);
-        $tdata['spellingerrors'] = utils::fetch_spellingerrors($stats,$attempt->selftranscript);
-        $tdata['grammarerrors'] = utils::fetch_grammarerrors($stats,$attempt->selftranscript);
+        $tdata['spellingerrors'] = textanalyser::fetch_spellingerrors($stats,$attempt->selftranscript);
+        $tdata['grammarerrors'] = textanalyser::fetch_grammarerrors($stats,$attempt->selftranscript);
         if($tdata['spellingerrors']){$tdata['hasspellingerrors']=true;}
         if($tdata['grammarerrors']){$tdata['hasgrammarerrors']=true;}
         if($selftranscribe){$tdata['selftranscribe']=true; }
