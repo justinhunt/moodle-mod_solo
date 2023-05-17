@@ -497,7 +497,8 @@ class aitranscriptutils{
         $doc = new \DOMDocument;
         // it will assume ISO-8859-1  encoding, so we need to hint it:
         //see: http://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
-        @$doc->loadHTML(mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8'));
+        $safepassage = mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8');
+        @$doc->loadHTML($safepassage,LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
 
         // select all the text nodes
         $xpath = new \DOMXPath($doc);

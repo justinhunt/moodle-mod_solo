@@ -1,5 +1,8 @@
 Version 1.0.27 (Build 2023051300)
  -fixed no null definitions that could break restore for certain DB fields
+ - added WPM field
+ - added preload transcript feature
+ - internal refactoring
 
 Version 1.0.23 (Build 2022122000)
 - added ideacount and cefr level and relevance and Grammar Suggestions to grading attributes

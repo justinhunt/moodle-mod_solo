@@ -360,7 +360,7 @@ $string['step_posttranscriberecordinstructions']='Use the recorder below to reco
 //$string['step_typetitle']='Enter Text';
 //$string['step_typeinstructions']='Use the recorder below to record yourself. Try to use the target words. Good luck.';
 //$string['step_selftranscribetitle']='Transcribe';
-$string['step_selftranscribeinstructions']='Listen to your recording and enter what you said in the editor below. Do not change what you said, when you type it.';
+$string['step_selftranscribeinstructions']='Listen to your recording and enter/check what you said in the editor below. Do not change what you said.';
 $string['step_prerecord_transcribeinstructions']='Check the instructions and speaking targets, then type your response in the text editor below.';
 
 //$string['step_modeltitle']='Model Answer';
@@ -388,6 +388,7 @@ $string['stats_longwords'] = 'Long Words';
 $string['stats_ideacount'] = 'Concepts';
 $string['stats_cefrlevel'] = 'CEFR Level';
 $string['stats_relevance'] = 'Relevance'; //AKA similarity
+$string['stats_wpm'] = 'Words per Min.';
 
 //$string['transcripteditor']= 'Transcript Editor';
 $string['multiattempts'] = 'Allow Multiple Attempts';
@@ -633,7 +634,7 @@ $string['activityopenscloses']="Activity open/close dates";
 $string['solo:preview'] = 'Can preview Solo activities';
 $string['modelanswer'] = "Model Answer";
 $string['modelanswerheader'] = "Model Answer";
-$string['modelanswerinstructions'] = "The model answer can be read aloud to students using text-to-speech if 'Add TTS audio' is selected below. It can also be used as a 'good answer', against which similarity scores are calculated for automatic grading.";
+$string['modelanswerinstructions'] = "The model answer can be read aloud to students using text-to-speech if 'Add TTS audio' is selected below. It can also be used as a 'good answer', against which similarity (relevance) scores are calculated for automatic grading.";
 $string['audiorec_heading'] = "Audio Recorder";
 $string['videorec_heading'] = "Video Recorder";
 $string['grammarcorrection'] = "Suggested Corrections";
@@ -658,6 +659,9 @@ $string['nopasting'] = 'Disable paste';
 $string['nopasting_help'] = 'Prevent users pasting text into the transcript/text area.';
 $string['nopasting_details'] = 'Prevent users pasting text into the transcript/text area.';
 
+$string['preloadtranscript'] = 'Preload Automatic Transcript';
+$string['preloadtranscript_help'] = 'This will load the users automatic transcript into the manual transcript area. They can then simply adjust any mistranscriptions.';
+$string['preloadtranscript_details'] = 'This will load the users automatic transcript into the manual transcript area. They can then simply adjust any mistranscriptions.';
 
 
 $string['enablesuggestions'] = 'Enable AI Suggestions';
@@ -678,7 +682,7 @@ $string['enablelocalpost_details']="This is an experimental setting for users in
 
 $string['gradeequals'] = 'Grade = ';
 $string['bonusgrade'] = 'Auto grading - Adjustments';
-$string['relevancegrade'] = 'Auto grading - Similarity';
+$string['relevancegrade'] = 'Auto grading - Similarity/Relevance';
 $string['relevancegrade_help'] = 'Similarity is an AI generated measure of how semantically similar the students response is to the model answer text. When the students similarity score falls below the threshold (x %) their overall grade is reduced proportionally. Similarity is only calculated for responses in English.';
 $string['relevancegrade_details'] = 'Reduce the score of English submissions to the extent that their semantic similarity to the model answer falls below the threshold (x %). If no model answer is specified, this is ignored.';
 $string['relevance_none'] = 'Similarity not considered';
@@ -691,3 +695,4 @@ $string['suggestionsgrade_none'] = 'Suggestions do not affect grade';
 $string['suggestionsgrade_use'] = 'Suggested corrections reduce grade';
 $string['suggestionsgrade_details'] = 'If suggested corrections affect the grade, then the percentage difference between the transcript and suggestions text reduces the grade proportionally.';
 $string['suggestionsgrade_help'] = 'If suggested corrections affect the grade, then the percentage difference between the transcript and suggestions text reduces the grade proportionally.';
+$string['fetching_auto_transcript']='Fetching the transcript. Please wait ...';

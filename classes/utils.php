@@ -461,14 +461,31 @@ class utils{
 
         //get text analyser
         $passage = $attempt->selftranscript;
-        $textanalyser = new textanalyser($token,$passage,$moduleinstance->region,$moduleinstance->ttslanguage);
+        $textanalyser = new textanalyser($token,$passage,$moduleinstance->region,$moduleinstance->ttslanguage,$moduleinstance->modelttsembedding);
 
         //update statistics and grammar correction if we need to
         if($hastranscripts) {
             //if we dont already have stats calculate them
-            if($DB->get_records(constants::M_STATSTABLE,['attemptid'=>$attempt->id])){
+            if(!$DB->get_records(constants::M_STATSTABLE,['attemptid'=>$attempt->id])){
+
                 $stats = $textanalyser->process_all_stats($targetwords);
                 if($stats){
+                    //for historical reasons some Solo stats field names are weird
+                    //but text analyser returns nice names, here we turn them into weird ones.
+                    $stats->turns=$stats->sentences; unset($stats->sentences);
+                    $stats->avturn=$stats->sentenceavg; unset($stats->sentenceavg);
+                    $stats->longestturn=$stats->sentencelongest; unset($stats->sentencelongest);
+                    $stats->uniquewords=$stats->wordsunique; unset($stats->wordsunique);
+                    $stats->longwords=$stats->wordslong; unset($stats->wordslong);
+                    //also calculate WPM
+                    $duration = textanalyser::fetch_duration_from_transcript($attempt->jsontranscript);
+                    if($stats->words && $duration) {
+                        $stats->wpm = round(( $stats->words / $duration ) * 60,0);
+                    }else{
+                        $stats->wpm=0;
+                    }
+
+                    //then we save them
                     self::save_stats($stats, $attempt);
                 }
 
@@ -512,7 +529,11 @@ class utils{
                 $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
                 //get text analyser
                 $textanalyser = new textanalyser($token, $attempt->selftranscript,$moduleinstance->region,$moduleinstance->ttslanguage);
-                list($grammarcorrection,$gcerrors,$gcmatches,$gcerrorcount) = $textanalyser->process_grammar_correction($attempt->selftranscript);;
+                $gcdata= $textanalyser->process_grammar_correction($attempt->selftranscript);
+                $grammarcorrection = $gcdata['gcorrections'];
+                $gcerrors= $gcdata['gcerrors'];
+                $gcmatches= $gcdata['gcmatches'];
+                $gcerrorcount= $gcdata['gcerrorcount'];
 
                 if ($grammarcorrection) {
                     //set grammar correction (GC)
@@ -1842,7 +1863,7 @@ class utils{
         $ret = array();
         $ret[constants::M_SEQ_PRTM] = get_string('seq_PRTM',constants::M_COMPONENT);
         $ret[constants::M_SEQ_PRM] =get_string('seq_PRM',constants::M_COMPONENT);
-        //$ret[constants::M_SEQ_PTRM]=get_string('seq_PTRM',constants::M_COMPONENT);
+        $ret[constants::M_SEQ_PTRM]=get_string('seq_PTRM',constants::M_COMPONENT);
         return $ret;
     }
     public static function fetch_step_no($moduleinstance, $type){
@@ -2488,6 +2509,12 @@ class utils{
         $mform->setType('nopasting', PARAM_INT);
         $mform->setDefault('nopasting',0);
         $mform->addHelpButton('nopasting', 'nopasting', constants::M_MODNAME);
+
+        //Preload automatic transcript
+        $mform->addElement('selectyesno', 'preloadtranscript', get_string('preloadtranscript', constants::M_MODNAME));
+        $mform->setType('preloadtranscript', PARAM_INT);
+        $mform->setDefault('preloadtranscript',1);
+        $mform->addHelpButton('preloadtranscript', 'preloadtranscript', constants::M_MODNAME);
 
         //Sequence of activities
         $options = self::fetch_options_sequences();

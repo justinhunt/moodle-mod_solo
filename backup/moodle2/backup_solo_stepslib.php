@@ -56,7 +56,7 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
             'ttslanguage','recorderskin','recordertype','enableai','enabletranscribe','expiredays','region','transcriber','multiattempts',
                 'enabletranscription','enablesharing','enableautograde','gradewordgoal','autogradeoptions','completionallsteps',
                 'postattemptedit','step2','step3','step4','step5','foriframe','timecreated','timemodified','viewstart','viewend',
-            'enablesuggestions','enabletts','nopasting','modelttsembedding','modelttsideacount'
+            'enablesuggestions','enabletts','nopasting','modelttsembedding','modelttsideacount','preloadtranscript'
 			));
 
         // attempt
@@ -74,7 +74,7 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
                 constants::M_MODNAME, 'userid', 'attemptid','turns','words','avturn', 'longestturn','targetwords','totaltargetwords',
                 'uniquewords','longwords', 'autospell','autogrammar','autospellscore','autospellerrors',
                 'autogrammarscore','autogrammarerrors','aiaccuracy','gcerrorcount','gcerrors','gcmatches' ,'timemodified',
-                'cefrlevel','ideacount','relevance','createdby','modifiedby'));
+                'cefrlevel','ideacount','relevance','wpm','createdby','modifiedby'));
 
         //airesults
         $airesults = new backup_nested_element('airesults');

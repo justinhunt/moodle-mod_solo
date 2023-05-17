@@ -55,15 +55,19 @@ class textanalyser {
     /** @var string $userlanguage The users L1 language. */
     protected $userlanguage;
 
+    /** @var string $targetembedding The vector for the 'correct'/model answer. */
+    protected $targetembedding;
+
         /**
          * The class constructor.
          *
          */
-    public function __construct($token,$passage, $region,  $language, $userlanguage=false){
+    public function __construct($token,$passage, $region,  $language,$targetembedding=false, $userlanguage=false){
         $this->token = $token;
         $this->region = $region;
         $this->passage = $passage;
         $this->language = $language;
+        $this->targetembedding = $targetembedding;
         $this->userlanguage = $userlanguage;
     }
 
@@ -108,7 +112,7 @@ class textanalyser {
         }
 
         //return values
-        return ['sentencetotal'=>$sentencecount,'sentenceaverage'=>$averagesentence,'sentencelongest'=>$longestsentence];
+        return ['sentences'=>$sentencecount,'sentenceavg'=>$averagesentence,'sentencelongest'=>$longestsentence];
     }
 
     public function is_english(){
@@ -147,7 +151,7 @@ class textanalyser {
         }
 
         //return results
-        return ['wordstotal'=>$totalwords,'wordsunique'=>$uniquewords,'wordslong'=>$longwords];
+        return ['words'=>$totalwords,'wordsunique'=>$uniquewords,'wordslong'=>$longwords];
     }
 
     /*
@@ -247,8 +251,8 @@ class textanalyser {
                 $stats['cefrlevel'] = $this->process_cefr_level();
                 $stats['relevance'] = $this->process_relevance();
                 $stats = array_merge($stats,$this->fetch_sentence_stats());
-                $stats = array_merge($stats,$this->fetch_word_stats($this->passage));
-                $stats = array_merge($stats,$this->calc_grammarspell_stats($stats['wordstotal']));
+                $stats = array_merge($stats,$this->fetch_word_stats());
+                $stats = array_merge($stats,$this->calc_grammarspell_stats($stats['words']));
                 $stats = (object)$stats;
             }
             return $stats;
@@ -267,9 +271,10 @@ class textanalyser {
                     //fetch and set GC Diffs
                     list($gcerrors,$gcmatches,$gcinsertioncount) = $this->fetch_grammar_correction_diff($passage, $grammarcorrection);
                     if(self::is_json($gcerrors)&& self::is_json($gcmatches)) {
-                        $ret['gcerrors'] = json_decode($gcerrors);
-                        $ret['gcmatches'] = json_decode($gcmatches);
-                        $ret['gcerrorcount']=count(get_object_vars($ret['gcerrors'])) +$gcinsertioncount;
+                        $ret['gcerrors'] = $gcerrors;
+                        $ret['gcmatches'] = $gcmatches;
+                        $gcerrorobject = json_decode($gcerrors);
+                        $ret['gcerrorcount']=count(get_object_vars($gcerrorobject)) +$gcinsertioncount;
                     }
                 }
 
@@ -281,6 +286,9 @@ class textanalyser {
 
         if(empty($passage)){
             $passage = $this->passage;
+        }
+        if(!$targetembedding){
+            $targetembedding = $this->targetembedding;
         }
 
         $relevance=false;//default is blank

@@ -391,11 +391,11 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023051300, 'solo');
     }
 
-    if($oldversion < 2023051301) {
+    if($oldversion < 2023051302) {
         //Preload transcript
         $table = new xmldb_table(constants::M_TABLE);
         $fields = [];
-        $fields[] =  new xmldb_field('preloadtranscript', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null,0);
+        $fields[] =  new xmldb_field('preloadtranscript', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null,1);
 
         // Add preload transcript fields
         foreach ($fields as $field) {
@@ -403,7 +403,19 @@ function xmldb_solo_upgrade($oldversion) {
                 $dbman->add_field($table, $field);
             }
         }
-        upgrade_mod_savepoint(true, 2023051301, 'solo');
+
+        $table = new xmldb_table(constants::M_STATSTABLE);
+        $fields=[];
+        $fields[] =  new xmldb_field('wpm', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null,0);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2023051302, 'solo');
     }
 
 

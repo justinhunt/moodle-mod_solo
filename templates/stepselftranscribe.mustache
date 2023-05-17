@@ -34,7 +34,11 @@
                 {{^audiofilename}}
                     <div class='mod_solo_maybereloadaudio'>{{#str}}prerecordtranscriptinstructions, mod_solo{{/str}}</div>
                 {{/audiofilename}}
-                <textarea name="selftranscript" id="{{uniqid}}_selftranscript" class="form-control" rows="5" cols="80">{{selftranscript}}</textarea>
+                <div class="solo-spinner-overlay">
+                    <textarea name="selftranscript" id="{{uniqid}}_selftranscript" class="form-control" rows="5" cols="80" disabled="true">{{selftranscript}}</textarea>
+                    <div class="solo-spinner" id="solo-spinner" style="display: none;"></div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -98,6 +102,48 @@
                        aplayer.paused ? aplayer.play() : aplayer.pause();
                     }
                 });
+
+                //this checks for the transcript becoming available and pops it into the text area
+                //we only do this if the text area has not been loaded, the
+                var selftranscriptarea = $('#' + '{{uniqid}}_selftranscript');
+                if('{{preloadtranscript}}'=='1' && '{{prerecording}}'!=='1' && '{{selftranscript}}'==='') {
+                    //first disable the text area, until we have our transcript back
+                    selftranscriptarea.prop('disabled', true);
+                    selftranscriptarea.attr('placeholder','{{#str}}fetching_auto_transcript, mod_solo{{/str}}');
+                    $('#solo-spinner').show();
+
+
+                    var xhr = new XMLHttpRequest();
+                    var retryTimer;
+                    var retryInterval = 2000;
+                    var autotranscripturl = '{{audiofilename}}.txt';
+                    var check_for_autotranscript = function () {
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState === 4) {
+                                if (xhr.status === 200) {
+                                    var autotranscript = xhr.responseText;
+
+                                    //enable the text area, and hide the spinner
+                                    selftranscriptarea.prop('disabled', false);
+                                    $('#solo-spinner').hide();
+                                    selftranscriptarea.attr('placeholder','');
+                                    //set the transcript
+                                    selftranscriptarea.val(autotranscript);
+
+                                } else {
+                                    retryTimer = setTimeout(check_for_autotranscript, retryInterval);
+                                }
+                            }
+                        };
+                        xhr.open('GET', autotranscripturl, true);
+                        xhr.send();
+                    }
+                    check_for_autotranscript();
+                }else{
+                    selftranscriptarea.prop('disabled', false);
+                }
+
+
 
                 //this prevents students pasting into the text area
                 if('{{nopasting}}'=='1')
