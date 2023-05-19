@@ -360,7 +360,7 @@ $string['step_posttranscriberecordinstructions']='Use the recorder below to reco
 //$string['step_typetitle']='Enter Text';
 //$string['step_typeinstructions']='Use the recorder below to record yourself. Try to use the target words. Good luck.';
 //$string['step_selftranscribetitle']='Transcribe';
-$string['step_selftranscribeinstructions']='Listen to your recording and enter/check what you said in the editor below. Do not change what you said.';
+$string['step_selftranscribeinstructions']='Listen to your recording and enter/check what you said in the editor below. Do not change what you said. You should fix any punctuation mistakes.';
 $string['step_prerecord_transcribeinstructions']='Check the instructions and speaking targets, then type your response in the text editor below.';
 
 //$string['step_modeltitle']='Model Answer';
