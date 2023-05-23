@@ -1,18 +1,28 @@
 
 {{! we set the title and instructions}}
 <div class="container">
-    <div class="row">
-        <div class="col-sm-6 mx-auto">
-            <div class="solo_introcontent">{{{introcontent}}}</div>
-        </div>
-    </div>
-    <div class="row">
+
+    <div class="solo_introcontent">{{{introcontent}}}</div>
+
+    <div class="mod_solo_activity_stepper">
+        <!-- TEMPORARY - This text shouldn't be static ↓ -->
+        <div class="mod_solo_activity_stepper_text">Step 1 of 4</div>
+        <div class="mod_solo_activity_stepper_buttons">
         {{#buttons}}
-        <div class="col-sm">
-            <div class="row solo_steptitle">
-                <a href="{{{url}}}" class="{{class}}">{{label}}</a>
+            <div class="solo_steptitle">
+                <!--a href="{{{url}}}" class="{{class}}">{{label}}aaa</a-->
             </div>
-        </div>
+        <!--div class="col-sm">
+            <div class="row solo_steptitle">
+                <a href="{{{url}}}" class="{{class}}">{{label}}aaa</a>
+            </div>
+        </div-->
         {{/buttons}}
+        </div>
+        <div class="mod_solo_activity_stepper_lines">
+            <div class="mod_solo_activity_stepper_line_behind"></div>
+            <div class="mod_solo_activity_stepper_line_front"></div>
+        </div>
     </div>
+
 </div>

@@ -1,36 +1,39 @@
-<div class="col-sm">
-    <div class="card">
-        <div class="card-header">
+
+<div class="time-words-goals">
+    {{! Target speaking time }}
+    <div class="mod_solo_step_card time-goal">
+        <div class="mod_solo_step_card_tag">
             {{#str}}targetspeakingtime, mod_solo{{/str}}
         </div>
-        <div class="card-body">
-            <div class="mod_solo_bordered mod_solo_readonly">
+        <div class="mod_solo_step_card_content mod_solo_readonly">
                 {{#str}}xmins, mod_solo, {{convlength}}{{/str}}
-            </div>
         </div>
+        <div class="mod_solo_timer_illustration"></div>
     </div>
-</div>
-<div class="col-sm">
-    <div class="card">
-        <div class="card-header">
+        
+
+    {{! Total words goal }}
+    <div class="mod_solo_step_card words-goal">
+        <div class="mod_solo_step_card_tag">
             {{#str}}gradewordgoal, mod_solo{{/str}}
         </div>
-        <div class="card-body">
+        <div class="mod_solo_step_card_content">
             <div class="solo_goals">
                 {{#str}}displaygradewordgoal, mod_solo, {{gradewordgoal}}{{/str}}
             </div>
         </div>
+        <div class="mod_solo_target_illustration"></div>
     </div>
 </div>
-<div class="col-sm">
-    <div class="card">
-        <div class="card-header">
-            {{#str}}targetwords, mod_solo{{/str}}
-        </div>
-        <div class="card-body">
-            <div id="mod_solo_targetwordsdisplay" class="solo_targetwords">
-                {{>mod_solo/targetwords}}
-            </div>
+
+{{! Target words }}
+<div class="mod_solo_step_card target-words">
+    <div class="mod_solo_step_card_tag">
+        {{#str}}targetwords, mod_solo{{/str}}
+    </div>
+    <div class="mod_solo_step_card_content">
+        <div id="mod_solo_targetwordsdisplay" class="solo_targetwords">
+            {{>mod_solo/targetwords}}
         </div>
     </div>
 </div>

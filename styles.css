@@ -35,7 +35,6 @@ div.mod_solo_mbuttons {
 	color: white; /* White text */
 	padding: 12px 16px; /* Some padding */
 	font-size: 16px; /* Set a font size */
-	margin: 5px;
 }
 
 .btn.mod_solo_deadmenubutton {
@@ -57,11 +56,13 @@ div.mod_solo_mbuttons {
 }
 
 .mod_solo_targetwordtag {
-	border: solid black 1px;
-	padding: 5px;
-	border-radius: 5px;
-	margin: 2px;
+	padding: 2px 12px;
 	display: inline-block;
+	border: 1px solid #DCE0E3;
+	border-radius: 4px;
+	color: #6F58DE;
+	margin-bottom: 6px;
+	margin-left: 2px;
 }
 
 .mod_solo_comparetranscripts{
@@ -994,6 +995,8 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 .mod_solo_activitycontent {
 	/* text-align: center; */
 	margin-bottom: 10px;
+	width: 100%;
+	height: 100%;
 }
 
 .mod_solo_activitycontent_image_cont,
@@ -1025,9 +1028,10 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 	/* margin-right: auto; */
 	width: 100%;
 	height: 100%;
+	/*
 	max-width: 600px;
 	max-height: 337px;
-
+	*/
 }
 
 .mod_solo_activitycontent_audio {
@@ -1049,11 +1053,13 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 
 
 .mod_solo_activitycontent_iframe_responsive {
-overflow:hidden;
-padding-bottom:56.25%;
-position:relative;
-height:0;
-margin: auto;
+	overflow:hidden;
+	padding-bottom:56.25%;
+	position:relative;
+	height:0;
+	margin: auto;
+	/* Pending: also target the rest of possible media elements */
+	border: 1px solid #DCE0E3;
 }
 
 
@@ -1063,8 +1069,8 @@ top:0;
 height:100%;
 width:100%;
 position: absolute;
-max-width: 600px;
-max-height: 337px;
+/* max-width: 600px;
+max-height: 337px; */
 }
 
 .mod_solo_summary_teachereval {
@@ -1230,16 +1236,38 @@ audio#mod_solo_passageaudioplayer {
 	width: 100%;
 }
 
-.solo_stepinstructions,
+.solo_stepinstructions {
+	margin-top: 36px;
+	margin-bottom: 36px;
+}
+
 .mod_solo_stepsubmit {
 	text-align: center;
-	padding: 8px
+	margin-top: 36px;
 }
+
+.mod_solo_stepsubmit .btn {
+	font-weight: 500;
+	font-size: 14px;
+	color: #FFFFFF;
+	background: #6F58DE;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.15);
+	border-radius: 6px;
+	padding: 14px 36px;
+}
+
+.mod_solo_stepsubmit .btn:hover {
+	color: #FFFFFF;
+	background: #5943c6;
+}
+
 .mod_solo_speakingtopic_readonly {
-	text-align: center;
+	text-align: left;
 }
 .mod_solo_activitycontent_container {
 	margin-top: 5px;
+	width: 100%;
+	height: 100%;
 }
 
 .mod_solo_corrections {
@@ -1274,4 +1302,505 @@ span.mod_solo_corrections_suggestedword {
 @keyframes solo-spin {
 	0% { transform: rotate(0deg); }
 	100% { transform: rotate(360deg); }
+}
+
+
+/* General */
+
+#page-mod-solo-attempt-manageattempts p,
+#page-mod-solo-attempt-manageattempts h1,
+#page-mod-solo-attempt-manageattempts h2,
+#page-mod-solo-attempt-manageattempts h3,
+#page-mod-solo-attempt-manageattempts h4,
+#page-mod-solo-attempt-manageattempts h5 {
+	color: #2D225D;
+}
+
+
+/* Prepare step */
+
+#page-mod-solo-attempt-manageattempts #page-content {
+	max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mod_solo_step_prepare .container {
+	margin-bottom: 36px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_step_prepare .container {
+		margin-bottom: 92px;
+	}
+}
+
+
+.mod_solo_step_title {
+	font-weight: 700;
+	font-size: 19px;
+	line-height: 23px;
+}
+	
+.mod_solo_step_title_eyebrow {
+	font-weight: 700;
+	font-size: 10px;
+	line-height: 12px;
+	letter-spacing: 0.4px;
+	text-transform: uppercase;
+	color: #7B5DFC;
+}
+
+.mod_solo_step_card {
+	background: #FAFBFD;
+	border: 1px solid #DCE0E3;
+	border-radius: 4px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 24px 18px;
+	position: relative;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_step_card {
+		padding: 36px;
+	}
+}
+
+.mod_solo_step_card_tag {
+	background: #E0E3FF;
+	border-radius: 5px;
+	font-weight: 700;
+	font-size: 9px;
+	line-height: 11px;
+	letter-spacing: 0.4px;
+	text-transform: uppercase;
+	color: #2D225D;
+	position: absolute;
+	padding: 7px 12px 6px;
+	text-align: center;
+	bottom: -18px;
+	top: auto;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_step_card_tag {
+		top: -12px;
+		bottom: auto;
+	}
+}
+
+.mod_solo_step_card.speaking_topic .mod_solo_step_card_tag {
+	top: -12px;
+	bottom: auto;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_step_card.speaking_topic .mod_solo_step_card_tag {
+		align-self: flex-start;
+		margin-left: -28px;
+	}
+}
+
+.mod_solo_step_card.target-words .mod_solo_step_card_tag {
+	top: -12px;
+	bottom: auto;
+	align-self: flex-start;
+	background-color: transparent;
+	padding: 12px 0;
+}
+
+
+.mod_solo_step_card.time-goal .mod_solo_step_card_tag, 
+.mod_solo_step_card.words-goal .mod_solo_step_card_tag {
+	max-width: 110px;
+}
+
+
+.mod_solo_step_card p {
+	font-size: 13px;
+	line-height: 16px;
+}
+
+.mod_solo_goals {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_goals {
+		display: flex;
+		flex-direction: row;
+	}
+}
+
+.mod_solo_goals .time-words-goals {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	width: 100%;
+	margin-bottom: 72px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_goals .time-words-goals {
+		width: 60%;
+		max-width: 360px;
+		margin-bottom: 0;
+	}
+}
+
+
+.mod_solo_step_card.time-goal,
+.mod_solo_step_card.words-goal {
+	width: 48%;
+	height: 126px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_step_card.time-goal,
+	.mod_solo_step_card.words-goal {
+		max-width: 150px;
+		margin-right: 12px;
+	}
+
+	.mod_solo_step_card.time-goal {
+		position: relative;
+    z-index: 2;
+	}
+}
+
+
+
+.mod_solo_step_card.target-words {
+	border: none;
+	background-color: transparent;
+	width: 100%;
+	align-items: flex-start;
+	padding-left: 0;
+	padding-right: 0;
+	padding-top: 30px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_step_card.target-words {
+		width: 40%;
+	}
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_step_card.target-words {
+		width: 50%;
+		margin-left: 48px;
+	}
+}
+
+.mod_solo_step_card.speaking_topic {
+	margin-bottom: 72px;
+}
+
+.mod_solo_timer_illustration {
+  background: url([[pix:mod_solo|poodll-solo-timer-illustration]]);
+  background-size: 55px 63px;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 55px;
+	height: 63px;
+	position: absolute;
+	text-align: center;
+	top: -36px;
+	bottom: auto;
+	right: auto;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_timer_illustration {
+		text-align: flex-end;
+		bottom: -27px;
+    top: auto;
+    right: -27px;
+	}
+}
+
+.mod_solo_target_illustration {
+  background: url([[pix:mod_solo|poodll-solo-target-illustration]]);
+  background-size: 65px 55.5px;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 65px;
+	height: 55.5px;
+	position: absolute;
+	text-align: center;
+	top: -27px;
+	bottom: auto;
+	right: auto;
+	margin-left: 12px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_target_illustration {
+		text-align: flex-end;
+		bottom: -27px;
+    top: auto;
+    right: -39px;
+	}
+}
+
+.mod_solo_step_card.target-words .mod_solo_step_card_content {
+	margin-top: -9px;
+}
+
+
+/* Recording step */
+
+.mod_solo_audio_player {
+		display: flex;
+    flex-direction: column;
+    align-items: center;
+		padding-top: 48px;
+		padding-bottom: 48px;
+		position: relative;
+		background-color: #f5f3ff;
+}
+
+.mod_solo_audio_player_counter { 
+	font-family: RobotoMono;
+	font-size: 15px;
+	letter-spacing: 0.4px;
+	border: 1px solid #6F58DE;
+	border-radius: 8px;
+	padding: 10px 22px;
+	display: inline-block;
+	margin-bottom: 36px;
+}
+
+.mod_solo_start_audio_player_button {
+	width: 64px;
+	height: 64px;
+	background-color: #6F58DE;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.15);
+	background-image: url([[pix:mod_solo|poodll-solo-microphone-icon]]);
+  background-repeat: no-repeat;
+  background-position: center;
+	border-radius: 100%;
+	margin-bottom: 36px;
+	cursor: pointer;
+	position: absolute;
+	z-index: 2;
+  top: 129px;
+}
+
+.mod_solo_start_audio_player_button:hover {
+	background: #5943c6;
+	background-image: url([[pix:mod_solo|poodll-solo-microphone-icon]]);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.mod_solo_start_audio_player_button:active {
+	background: #5943c6;
+	background-image: url([[pix:mod_solo|poodll-solo-microphone-icon]]);
+  background-repeat: no-repeat;
+  background-position: center;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0);
+}
+
+.mod_solo_start_audio_player_button.button_visible {
+	display: block;
+}
+
+.mod_solo_start_audio_player_button.button_hidden {
+	display: none;
+}
+
+.mod_solo_stop_audio_player_button {
+	width: 64px;
+	height: 64px;
+	background-color: #6F58DE;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.15);
+	background-image: url([[pix:mod_solo|poodll-solo-stop-recording-icon]]);
+  background-repeat: no-repeat;
+  background-position: center;
+	border-radius: 100%;
+	margin-bottom: 36px;
+	cursor: pointer;
+	position: relative;
+	z-index: 1;
+}
+
+.mod_solo_stop_audio_player_button.button_inactive {
+	background-color: #b5b2c4;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0);
+	background-image: url([[pix:mod_solo|poodll-solo-stop-recording-icon]]);
+}
+
+.mod_solo_audio_player_text {
+	font-style: italic;
+}
+
+#recording_ended_next_step.button_hidden {
+	visibility: hidden;
+}
+
+#recording_ended_next_step.button_visible {
+	visibility: visible;
+}
+
+
+.mod_solo_audio_player_animaton.animation_running {
+	width: 64px;
+	height: 64px;
+	background-color: #6F58DE;
+	position: absolute;
+  top: 129px;
+	animation-name: recording-waves;
+  animation-duration: 4s;
+}
+
+
+@keyframes recording-waves {
+  from {background-color: #6F58DE;}
+  to {background-color: yellow;}
+}
+
+/* Activity stepper */
+
+.mod_solo_activity_stepper {
+	display: flex;
+	flex-direction: column;
+	margin-top: 48px;
+	margin-bottom: 48px;
+}
+
+.mod_solo_activity_stepper_buttons {
+	display: flex;
+	justify-content: flex-start;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+}
+
+@media screen and (min-width: 576px) {
+	.mod_solo_activity_stepper_buttons {
+		justify-content: space-between;
+		width: 100%;
+		counter-reset: section;
+	}
+}
+
+.mod_solo_activity_stepper_lines {
+	position: relative;
+	display: none;
+}
+
+@media screen and (min-width: 576px) {
+	.mod_solo_activity_stepper_lines {
+		display: block;
+	}
+}
+
+.mod_solo_activity_stepper_line_front {
+	height: 2px;
+	background-color: #6F58DE;
+	width: 33%;
+	position: absolute;
+	top: -16px;
+}
+
+.mod_solo_activity_stepper_line_behind {
+	height: 2px;
+	background-color: #E0E3FF;
+	width: 100%;
+	position: absolute;
+	top: -16px;
+}
+
+.mod_solo_activity_stepper .solo_steptitle {
+	position: relative;
+	z-index: 2;
+	height: 4px;
+	width: 36px;
+	background-color: #E0E3FF;
+	border-radius: 4px;
+	margin-right: 6px;
+}
+
+@media screen and (min-width: 576px) {
+	.mod_solo_activity_stepper .solo_steptitle {
+		height: 32px;
+		width: 32px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 100%;
+		color: #4632A6;
+		font-weight: 700;
+		font-size: 14px;
+		margin-right: 0;
+	}
+}
+
+
+.mod_solo_activity_stepper .solo_steptitle:nth-child(1), 
+.mod_solo_activity_stepper .solo_steptitle:nth-child(2) {
+	position: relative;
+	z-index: 2;
+	height: 4px;
+	width: 36px;
+	background-color: #6F58DE;
+	border-radius: 4px;
+	margin-right: 6px;
+}
+
+@media screen and (min-width: 576px) {
+	/* The nth-child solution is merely for showing purposes; insted, this might be a class which get added to the affected elements, something like 'active-step'. */
+	.mod_solo_activity_stepper .solo_steptitle:nth-child(1), 
+	.mod_solo_activity_stepper .solo_steptitle:nth-child(2) {	
+		height: 32px;
+		width: 32px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 100%;
+		color: #fff;
+		font-weight: 700;
+		font-size: 14px;
+		margin-right: 0;
+	}
+}
+
+.mod_solo_activity_stepper .solo_steptitle::before {
+	counter-increment: section;
+}
+
+@media screen and (min-width: 576px) {
+	.mod_solo_activity_stepper .solo_steptitle::before {
+		content: counter(section);
+	}
+}
+
+.mod_solo_activity_stepper_text {
+	font-weight: 500;
+	font-size: 10px;
+	color: #6E678F;
+	margin-bottom: 3px;
+}
+
+@media screen and (min-width: 576px) {
+	.mod_solo_activity_stepper_text {
+		display: none;
+	}
+}
+
+
+
+/* Custom fonts */
+
+@font-face { /* where FontName and fontname represents the name of the font you want to add */
+	font-family: 'RobotoMono';
+	src: url([[font:mod_solo|RobotoMono-Medium.ttf]]) format('truetype');
+	font-weight: 500;
+	font-style: normal;
 }

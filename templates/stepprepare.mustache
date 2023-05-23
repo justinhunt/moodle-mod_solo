@@ -3,39 +3,99 @@
 {{>mod_solo/stepbase}}
 
 {{! we set the title and instructions}}
-<div class="container">
+<div class="container mod_solo_step_prepare">
 
     <div class="row">
-        <div class="col-sm-12 mx-auto">
+        <div class="col-sm mx-auto"> 
+            <span class="mod_solo_step_title_eyebrow">Step 1</span>
+            <h2 class="mod_solo_step_title">
+            {{#str}}attempt_prepare, mod_solo{{/str}}
+            </h2>
+        </div>
+    </div>
+
+    {{! Prepare step instructions }}
             <div class="solo_stepinstructions">
                 {{#str}}step_prepareinstructions, mod_solo{{/str}}
             </div>
+
+    {{! Speaking topic }}
+
+    <div class="mod_solo_step_card speaking_topic">
+        <div class="mod_solo_step_card_tag">
+            {{#str}}speakingtopic, mod_solo{{/str}}
         </div>
-    </div>
-
-    <!-- the topic and goals -->
-    {{>mod_solo/stepprompt}}
-
-    <!-- any media items associated with the topic -->
-    <div class="row">
-        <div class="col-sm-10 mx-auto">
-            <div class="mod_solo_activitycontent_container">
-                {{#contentitems}}
-                    {{>mod_solo/activitycontent}}
-                {{/contentitems}}
+        <div class="mod_solo_step_card_content mod_solo_readonly">
+            <div class="mod_solo_speakingtopic_readonly">
+                {{speakingtopic}}
             </div>
         </div>
     </div>
 
 
-
-    <div class="row">
-        <div class="col-sm-6 mx-auto mod_solo_stepsubmit">
-            <button class="btn btn-primary btn-lg" id="{{uniqid}}_button" type="button">{{#str}}next{{/str}}</button>
-        </div>
+    {{! Speaking goals }}
+    <div class="mod_solo_goals">
+        {{>mod_solo/snippetgoals}}
     </div>
 
-</div>
+
+    {{! Activity media }}
+    
+    <div class="mod_solo_activitycontent_container">
+        {{#contentitems}}
+            {{>mod_solo/activitycontent}}
+        {{/contentitems}}
+    </div>
+    
+
+    {{! Step main action button }}
+
+    <div class="mx-auto mod_solo_stepsubmit">
+        <button class="btn" id="{{uniqid}}_button" type="button">{{#str}}start, mod_solo{{/str}}</button>
+    </div>
+
+    {{! Step show player button }}
+    <!-- When clicking this button, the following actions take place: -->
+        
+        <!-- 1. (PENDING) In templates/activityintrobuttons.mustache, the element h2.mod_solo_step_title string content is switched by {{#str}}attempt_record, mod_solo{{/str}} -->
+        
+        <!-- 2. (PENDING) In templates/activityintrobuttons.mustache, the element span.mod_solo_step_title_eyebrow string content should be "Step 2" -->
+
+        <!-- 3. (PENDING) When the "Let's start!" button is clicked, the button element itself is hidden. -->
+
+
+
+        <div class="mx-auto mod_solo_stepsubmit">
+            <button class="btn" id="show_audio_player" type="button" data-toggle="collapse" data-target="#collapseAudioPlayer" aria-expanded="false" aria-controls="collapseAudioPlayer">{{#str}}start, mod_solo{{/str}}</button>
+        </div>
+
+        <div class="collapse" id="collapseAudioPlayer">
+            <div class="mod_solo_audio_player">
+                <!-- Temporary static content ↓ -->
+                <div class="mod_solo_audio_player_counter">00:02:00</div>
+                
+      
+
+                <!-- 2. (PENDING) When the Record button is clicked again (recording stops), the button visuals turns into inactive state. -->
+
+                <!-- 3. (PENDING) Also, when recording stops, a new button shows at the bottom of the page showing the text "Next". -->
+
+                
+                <div class="mod_solo_start_audio_player_button" class="button_visible"></div>
+                <div class="mod_solo_stop_audio_player_button" id="recording_button" class="button_visible"></div>
+                <div class="mod_solo_audio_player_animaton"></div>
+                <div class="mod_solo_audio_player_text">{{#str}}startrecording, mod_solo{{/str}}</div>
+            </div>
+            <div id="mod_solo_end_of_audio_player"></div>
+
+            <!-- (PENDING) When the Next button is clicked, the page corresponding to Step 3 renders. -->
+            <div class="mx-auto mod_solo_stepsubmit">
+                <button class="btn button_hidden" id="recording_ended_next_step" type="button">{{#str}}next, mod_solo{{/str}}</button>
+            </div>
+
+        </div>
+
+    </div>
 
 {{^element.frozen}}
     {{#js}}
@@ -66,5 +126,43 @@
                 });
             }
         );
+
+
+        /* When the record button (.mod_solo_start_audio_player_button) is clicked */
+        $("#show_audio_player").on("click", function() {
+            /* 1. The button itself (.mod_solo_start_audio_player_button) is hidden and the other button (.mod_solo_audio_player_button) which was hiding behind gets exposed. */
+
+            $("#show_audio_player").hide();
+
+            /* 2. (PENDING) Recording function is triggered and recording starts */
+
+            /* 3. (PENDING) The recording countdown starts so that the element taht contains it (.mod_solo_audio_player_counter) updates assynchronously every second. */
+
+
+        });
+
+        $(".mod_solo_start_audio_player_button").on("click", function() {
+            $(".mod_solo_start_audio_player_button").removeClass("button_visible").addClass("button_hidden");
+                        
+            /* 3. The element containing the animation (.mod_solo_audio_player_animaton), get its animation started. */
+
+            $(".mod_solo_audio_player_animaton").addClass("animation_running");
+        });
+
+
+        /* When the stop button (.mod_solo_start_audio_player_button) is clicked */
+        $(".mod_solo_stop_audio_player_button").on("click", function() {
+            
+            $(".mod_solo_stop_audio_player_button").addClass("button_inactive");
+            
+            /* 2. The element containing the animation (.mod_solo_audio_player_animaton), get its animation started. */
+
+            $(".mod_solo_audio_player_animaton").removeClass("animation_running");
+
+            $("#recording_ended_next_step").removeClass("button_hidden").addClass("button_visible");
+        });
+
+
+       
     {{/js}}
 {{/element.frozen}}
