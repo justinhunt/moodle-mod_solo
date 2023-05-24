@@ -39,7 +39,6 @@
 
 
     {{! Activity media }}
-    
     <div class="mod_solo_activitycontent_container">
         {{#contentitems}}
             {{>mod_solo/activitycontent}}
@@ -48,53 +47,11 @@
     
 
     {{! Step main action button }}
-
     <div class="mx-auto mod_solo_stepsubmit">
         <button class="btn" id="{{uniqid}}_button" type="button">{{#str}}start, mod_solo{{/str}}</button>
     </div>
 
-    {{! Step show player button }}
-    <!-- When clicking this button, the following actions take place: -->
-        
-        <!-- 1. (PENDING) In templates/activityintrobuttons.mustache, the element h2.mod_solo_step_title string content is switched by {{#str}}attempt_record, mod_solo{{/str}} -->
-        
-        <!-- 2. (PENDING) In templates/activityintrobuttons.mustache, the element span.mod_solo_step_title_eyebrow string content should be "Step 2" -->
-
-        <!-- 3. (PENDING) When the "Let's start!" button is clicked, the button element itself is hidden. -->
-
-
-
-        <div class="mx-auto mod_solo_stepsubmit">
-            <button class="btn" id="show_audio_player" type="button" data-toggle="collapse" data-target="#collapseAudioPlayer" aria-expanded="false" aria-controls="collapseAudioPlayer">{{#str}}start, mod_solo{{/str}}</button>
-        </div>
-
-        <div class="collapse" id="collapseAudioPlayer">
-            <div class="mod_solo_audio_player">
-                <!-- Temporary static content ↓ -->
-                <div class="mod_solo_audio_player_counter">00:02:00</div>
-                
-      
-
-                <!-- 2. (PENDING) When the Record button is clicked again (recording stops), the button visuals turns into inactive state. -->
-
-                <!-- 3. (PENDING) Also, when recording stops, a new button shows at the bottom of the page showing the text "Next". -->
-
-                
-                <div class="mod_solo_start_audio_player_button" class="button_visible"></div>
-                <div class="mod_solo_stop_audio_player_button" id="recording_button" class="button_visible"></div>
-                <div class="mod_solo_audio_player_animaton"></div>
-                <div class="mod_solo_audio_player_text">{{#str}}startrecording, mod_solo{{/str}}</div>
-            </div>
-            <div id="mod_solo_end_of_audio_player"></div>
-
-            <!-- (PENDING) When the Next button is clicked, the page corresponding to Step 3 renders. -->
-            <div class="mx-auto mod_solo_stepsubmit">
-                <button class="btn button_hidden" id="recording_ended_next_step" type="button">{{#str}}next, mod_solo{{/str}}</button>
-            </div>
-
-        </div>
-
-    </div>
+</div>
 
 {{^element.frozen}}
     {{#js}}

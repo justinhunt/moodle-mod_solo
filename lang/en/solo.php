@@ -92,6 +92,7 @@ $string['start'] = "Let's start!";
 $string['startrecording'] = 'Click to start recording';
 $string['stoprecording'] = 'Click again to stop recording';
 $string['finish'] = 'Finish';
+$string['done'] = 'Done';
 $string['reattempt'] = 'Try Again';
 $string['notgradedyet'] = 'Your submission has been received, but has not been graded yet';
 $string['enabletts'] = 'Enable TTS(experimental)';

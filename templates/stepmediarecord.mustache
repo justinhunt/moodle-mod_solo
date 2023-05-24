@@ -44,20 +44,16 @@
 
     {{#posttranscribing}}
         {{#selftranscript}}
-            <div class="row">
-                <div class="col-sm">
-                    <div class="card">
-                        <div class="card-header">
-                            {{#str}}selftranscript, mod_solo{{/str}}
-                        </div>
-                        <div class="card-body">
-                            <div class="mod_solo_audiorec_selftranscript_plain">
-                                {{selftranscript}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+        <div class="mod_solo_step_card selftranscript">
+            <div class="mod_solo_step_card_tag">
+                {{#str}}selftranscript, mod_solo{{/str}}
             </div>
+            <div class="mod_solo_step_card_content mod_solo_readonly">
+                {{selftranscript}}
+            </div>
+        </div>
+
         {{/selftranscript}}
 
         {{! Audio recorder }}

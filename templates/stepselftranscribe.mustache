@@ -37,7 +37,8 @@
             <div class='mod_solo_transcripteditor'>
                 {{#audiofilename}}
                     {{>mod_solo/audioplayer}}
-                    <div class='mod_solo_maybereloadaudio'>{{#str}}toggleplayinstructions, mod_solo{{/str}}</div>
+                    <!-- Only depending on the new player's characteristics -->
+                    <!--div class='mod_solo_maybereloadaudio'>{{#str}}toggleplayinstructions, mod_solo{{/str}}</div-->
                 {{/audiofilename}}
                 {{^audiofilename}}
                     <div class='mod_solo_maybereloadaudio'>{{#str}}prerecordtranscriptinstructions, mod_solo{{/str}}</div>
@@ -59,11 +60,10 @@
         </div>
     {{/prerecording}}
 
-    <div class="row">
-        <div class="col-sm-6 mx-auto mod_solo_stepsubmit">
-            <button class="btn btn-primary btn-lg" id="{{uniqid}}_button" type="button">Submit</button>
-        </div>
+    <div class="mx-auto mod_solo_stepsubmit">
+        <button class="btn" id="{{uniqid}}_button" type="button">Submit</button>
     </div>
+
 
 </div>
 {{^element.frozen}}
