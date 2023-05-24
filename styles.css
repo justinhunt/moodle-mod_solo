@@ -1563,6 +1563,7 @@ span.mod_solo_corrections_suggestedword {
 		padding-bottom: 48px;
 		position: relative;
 		background-color: #f5f3ff;
+    border-radius: 14px;
 }
 
 .mod_solo_audio_player_counter { 
@@ -1574,6 +1575,7 @@ span.mod_solo_corrections_suggestedword {
 	padding: 10px 22px;
 	display: inline-block;
 	margin-bottom: 36px;
+	background-color: #fff;
 }
 
 .mod_solo_start_audio_player_button {
@@ -1652,17 +1654,23 @@ span.mod_solo_corrections_suggestedword {
 .mod_solo_audio_player_animaton.animation_running {
 	width: 64px;
 	height: 64px;
-	background-color: #6F58DE;
+	background-color: #DCD4FF;
 	position: absolute;
   top: 129px;
+	border-radius: 100%;
 	animation-name: recording-waves;
-  animation-duration: 4s;
+  animation-duration: 2s;
+	animation-iteration-count:infinite;
+	transform: scale(1);
+	opacity: 1;
 }
 
 
 @keyframes recording-waves {
-  from {background-color: #6F58DE;}
-  to {background-color: yellow;}
+	0% 	{ transform: scale(1); opacity: 1;} 
+	45%	{ transform: scale(1.6); opacity: 1;} 
+	55% 	{ transform: scale(1.6); opacity: 1;} 
+	100%	{ transform: scale(2.3); opacity: 0;} 
 }
 
 /* Activity stepper */

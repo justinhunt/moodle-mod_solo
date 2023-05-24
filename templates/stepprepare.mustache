@@ -20,7 +20,6 @@
             </div>
 
     {{! Speaking topic }}
-
     <div class="mod_solo_step_card speaking_topic">
         <div class="mod_solo_step_card_tag">
             {{#str}}speakingtopic, mod_solo{{/str}}
@@ -126,43 +125,6 @@
                 });
             }
         );
-
-
-        /* When the record button (.mod_solo_start_audio_player_button) is clicked */
-        $("#show_audio_player").on("click", function() {
-            /* 1. The button itself (.mod_solo_start_audio_player_button) is hidden and the other button (.mod_solo_audio_player_button) which was hiding behind gets exposed. */
-
-            $("#show_audio_player").hide();
-
-            /* 2. (PENDING) Recording function is triggered and recording starts */
-
-            /* 3. (PENDING) The recording countdown starts so that the element taht contains it (.mod_solo_audio_player_counter) updates assynchronously every second. */
-
-
-        });
-
-        $(".mod_solo_start_audio_player_button").on("click", function() {
-            $(".mod_solo_start_audio_player_button").removeClass("button_visible").addClass("button_hidden");
-                        
-            /* 3. The element containing the animation (.mod_solo_audio_player_animaton), get its animation started. */
-
-            $(".mod_solo_audio_player_animaton").addClass("animation_running");
-        });
-
-
-        /* When the stop button (.mod_solo_start_audio_player_button) is clicked */
-        $(".mod_solo_stop_audio_player_button").on("click", function() {
-            
-            $(".mod_solo_stop_audio_player_button").addClass("button_inactive");
-            
-            /* 2. The element containing the animation (.mod_solo_audio_player_animaton), get its animation started. */
-
-            $(".mod_solo_audio_player_animaton").removeClass("animation_running");
-
-            $("#recording_ended_next_step").removeClass("button_hidden").addClass("button_visible");
-        });
-
-
-       
+ 
     {{/js}}
 {{/element.frozen}}

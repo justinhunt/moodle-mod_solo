@@ -1,0 +1,67 @@
+        {{! Audio recorder }}
+        <!-- div class="row">
+            <div class="col-sm-6 mx-auto">
+                <input type="hidden" id="{{rec.widgetid}}_filename"/>
+                {{#recordvideo}}
+                    <div class="mod_solo_audiorec_heading">{{#str}}audiorec_heading, mod_solo{{/str}}</div>
+                    {{>mod_solo/videorecordercontainer}}
+                {{/recordvideo}}
+                {{#recordaudio}}
+                    <div class="mod_solo_audiorec_heading">{{#str}}audiorec_heading, mod_solo{{/str}}</div>
+                    {{>mod_solo/audiorecordercontainer}}
+                {{/recordaudio}}
+            </div>
+        </div-->
+
+
+      {{! New recorder UI }}
+      <div class="mod_solo_audio_player">
+          <!-- Temporary static content ↓ -->
+          <div class="mod_solo_audio_player_counter">00:02:00</div>
+          
+
+
+
+          <!-- 3. (PENDING) Also, when recording stops, a new button shows at the bottom of the page showing the text "Next". -->
+
+          
+          <div class="mod_solo_start_audio_player_button" class="button_visible"></div>
+          <div class="mod_solo_stop_audio_player_button" id="recording_button" class="button_visible"></div>
+          <div class="mod_solo_audio_player_animaton"></div>
+          <div class="mod_solo_audio_player_text">{{#str}}startrecording, mod_solo{{/str}}</div>
+      </div>
+      <div id="mod_solo_end_of_audio_player"></div>
+
+      
+
+{{^element.frozen}}
+    {{#js}}
+
+
+        $(".mod_solo_start_audio_player_button").on("click", function() {
+            /* Start recording button hides */
+            $(".mod_solo_start_audio_player_button").removeClass("button_visible").addClass("button_hidden");
+                        
+            /* The element containing the animation (.mod_solo_audio_player_animaton), get its animation started. */
+            $(".mod_solo_audio_player_animaton").addClass("animation_running");
+
+            /* Text at the bottom changes accordingly */
+            $(".mod_solo_audio_player_text").html('{{#str}}stoprecording, mod_solo{{/str}}');
+        });
+
+
+        /* When the stop button (.mod_solo_start_audio_player_button) is clicked */
+        $(".mod_solo_stop_audio_player_button").on("click", function() {
+            
+            $(".mod_solo_stop_audio_player_button").addClass("button_inactive");
+            
+            /* 2. The element containing the animation (.mod_solo_audio_player_animaton), get its animation started. */
+
+            $(".mod_solo_audio_player_animaton").removeClass("animation_running");
+
+        });
+
+
+       
+    {{/js}}
+{{/element.frozen}}
