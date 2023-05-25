@@ -1480,7 +1480,7 @@ span.mod_solo_corrections_suggestedword {
 .mod_solo_step_card.time-goal,
 .mod_solo_step_card.words-goal {
 	width: 48%;
-	height: 126px;
+	height: 136px;
 }
 
 @media screen and (min-width: 768px) {
@@ -1985,6 +1985,22 @@ span.mod_solo_corrections_suggestedword {
 	position: absolute;
 	top: -1px;
 }
+
+.time-words-goals .mod_solo_step_card_content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 12px;
+	margin-bottom: -4px;
+}
+
+.time-words-goals .mod_solo_step_card_content span {
+	font-weight: 700;
+	font-size: 30px;
+	color: #A49AD0;
+	margin-bottom: -4px;
+}
+
 
 /* Custom fonts */
 
