@@ -6,7 +6,8 @@
 
     <div class="mod_solo_activity_stepper">
         <!-- TEMPORARY - This text shouldn't be static ↓ -->
-        <div class="mod_solo_activity_stepper_text">Step 1 of 4</div>
+        <div class="mod_solo_activity_stepper_text">Step {{stepdata.currentstep}} of {{stepdata.totalsteps}}</div>
+        <!-- {{stepdata.completedsteps}} of {{stepdata.totalsteps}}. Currently on {{stepdata.currentstep}}-->
         <div class="mod_solo_activity_stepper_buttons">
         {{#buttons}}
             <div class="solo_steptitle">
@@ -21,7 +22,7 @@
         </div>
         <div class="mod_solo_activity_stepper_lines">
             <div class="mod_solo_activity_stepper_line_behind"></div>
-            <div class="mod_solo_activity_stepper_line_front"></div>
+            <div class="mod_solo_activity_stepper_line_front" style="width: {{stepdata.percentcomplete}}%;"></div>
         </div>
     </div>
 
