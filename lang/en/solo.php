@@ -186,7 +186,7 @@ $string['ok']="OK";
 $string['notimelimit']='Unlimited';
 $string['xsecs']='{$a} seconds';
 $string['onemin']='1 minute';
-$string['xmins']='<span>{$a}</span> minutes';
+$string['xmins']='{$a} minutes';
 $string['oneminxsecs']='1 minutes {$a} seconds';
 $string['xminsecs']='{$a->minutes} minutes {$a->seconds} seconds';
 
@@ -406,7 +406,10 @@ $string['TW']= 'TW';
 $string['idnumber']= 'ID-number';
 
 $string['audiorecording']= 'Audio Recording';
-$string['summaryuserattemptheadertitle']= '(Attempt: {$a}) Speech Details';
+$string['attemptnumberheader']= 'Attempt Number';
+$string['attemptnumber']= '{$a}';
+//$string['summaryuserattemptheadertitle']= '(Attempt: {$a}) Speech Details';
+$string['summaryuserattemptheadertitle']= 'Speech Details';
 $string['summaryuserattemptheaderintro']= '';
 $string['summaryheadertitle']= 'Your Speech Details';
 $string['summaryheaderintro']= 'Check the details and the results of your speech below. What do you think? You should be getting better each time.';

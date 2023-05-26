@@ -1,5 +1,6 @@
 
-    <div class='mod_solo_sr_left'>
+    {{! Transcript evaluation }}
+    <div>
         {{#autotranscriptready}}
         <div class='mod_solo_sr_title'>{{#str}}transcriptevaluation, mod_solo{{/str}}</div>
         <div class='mod_solo_sr_details'>{{#str}}transcriptevaluationdetails, mod_solo{{/str}}</div>
@@ -19,26 +20,26 @@
         <hr>
     {{/grammarcorrection}}
 
-    <p class="mod_solo_attemptdetailscontainer">
-        <a class="btn btn-primary mod_solo_attemptdetailsbutton" data-toggle="collapse" href="#attemptdetails" role="button" aria-expanded="false" aria-controls="attemptdetails">
-            {{#str}}moreattemptdetails, mod_solo{{/str}}
-        </a>
+    <div class="mod_solo_attemptdetailscontainer">
+        <div id="attemptdetails">
+            <div>
+                <div class='mod_solo_sr_title'>{{#str}}stats, mod_solo{{/str}}</div>
+                {{>mod_solo/summarystats}}
+            </div>
+        
+        {{! Spelling evaluation }}
+        {{#selftranscribe}}
+            <div>
+                <div class='mod_solo_sr_title'>{{#str}}spellingeval, mod_solo{{/str}}</div>
+                {{>mod_solo/summaryspellingeval}}
+            </div>
+        {{/selftranscribe}}
 
-    </p>
-    <div class="collapse" id="attemptdetails">
-        <div class='mod_solo_sr_left'>
-            <div class='mod_solo_sr_title'>{{#str}}stats, mod_solo{{/str}}</div>
-            {{>mod_solo/summarystats}}
-        </div>
-    {{#selftranscribe}}
-        <div class='mod_solo_sr_left'>
-            <div class='mod_solo_sr_title'>{{#str}}spellingeval, mod_solo{{/str}}</div>
-            {{>mod_solo/summaryspellingeval}}
-        </div>
-    {{/selftranscribe}}
-        <div class='mod_solo_sr_left'>
-            <div class='mod_solo_sr_title'>{{#str}}grammareval, mod_solo{{/str}}</div>
-            {{>mod_solo/summarygrammareval}}
+        {{! Grammar evaluation }}
+            <div>
+                <div class='mod_solo_sr_title'>{{#str}}grammareval, mod_solo{{/str}}</div>
+                {{>mod_solo/summarygrammareval}}
+            </div>
         </div>
     </div>
 

@@ -1,25 +1,36 @@
-<div class="mod_solo_summarychoices">
-    <div class="summarybox summarytopic">
-        <div class="summaryboxtitle">{{#str}}topic , mod_solo{{/str}}</div>
-        <div class="summaryboxcontent">
-        {{speakingtopic}}
-        </div>
+{{! The opening of the section element is both at the summaryheader.mustache file and the summaryuserattemptheader.mustache}}   
+    <div class="mod_solo_report_card_content">
+        <div class="mod_solo_summarychoices">
 
-   </div>
-    <div class="summarybox summarytargetwords">
-        <div class="summaryboxtitle">{{#str}}targetwords , mod_solo{{/str}}</div>
-        <div class="summaryboxcontent targetwords">
-        {{#targetwords}}
-           {{.}}<br/>
-        {{/targetwords}}
-        </div>
+            <div class="mod_solo_summarychoices_group">
+                <div>
+                    <h5>{{#str}}attemptnumberheader, mod_solo, {{id}}{{/str}}</h5>
+                    <p>{{#str}}attemptnumber, mod_solo, {{id}}{{/str}}</p>
+                </div>
 
+                <div>
+                    <h5>{{#str}}targetspeakingtime, mod_solo{{/str}}</h5>
+                    <p>{{#str}}xminutes , mod_solo, {{convlength}}{{/str}}</p>
+                </div>
+
+                <div class="mod_solo_summarychoices_group_target_words">
+                    <h5>{{#str}}targetwords , mod_solo{{/str}}</h5>
+                    <div>
+                        {{#targetwords}}
+                        <span>{{.}}</span>
+                        {{/targetwords}}
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="mod_solo_summarychoices_group">
+                <div>
+                    <h5>{{#str}}topic , mod_solo{{/str}}</h5>
+                    <p>{{speakingtopic}}</p>
+                </div>
+            </div>
+
+        </div>
     </div>
-    <div class="summarybox summaryconvlength">
-        <div class="summaryboxtitle">{{#str}}targetspeakingtime, mod_solo{{/str}}</div>
-        <div class="summaryboxcontent">
-            {{#str}}xminutes , mod_solo, {{convlength}}{{/str}}
-        </div>
-
-    </div>
-</div>
+</section> 

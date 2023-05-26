@@ -100,6 +100,14 @@ div.mod_solo_mbuttons {
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 1000px;
+	flex-direction: column;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_summarychoices {
+		flex-direction: row;
+		justify-content: space-between;
+	}
 }
 
 .mod_solo_summarychoices .summaryboxtitle {
@@ -115,14 +123,14 @@ div.mod_solo_mbuttons {
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
 }
-.mod_solo_summaryresults {
-	margin-bottom: 15px;
-	max-width: 750px;
-	min-width: 280px;
-	margin-left: auto;
-	margin-right: auto;
 
+@media screen and (min-width: 768px) {
+	.mod_solo_summarychoices_group {
+		width: 48%;
+	}
 }
+
+
 .mod_solo_sr_title{
 	margin: auto;
 	text-align: center;
@@ -135,11 +143,7 @@ div.mod_solo_mbuttons {
 	border-radius: 5px;
 	margin: 7px;
 }
-.mod_solo_sr_right,
-.mod_solo_sr_left {
-	min-width: 250px;
-	max-width: 750px;
-}
+
 
 .mod_solo_grading_passagecont {
     padding: 5px;
@@ -184,9 +188,11 @@ div.mod_solo_mbuttons {
 	margin-bottom: 15px;
 }
 
+/*
 .mod_solo_summaryheader .summaryheadertitle{
 	font-weight: bold;
 }
+*/
 
 .mod_solo_summaryheader .summaryheaderintro{
 	/*something*/
@@ -1074,8 +1080,9 @@ max-height: 337px; */
 }
 
 .mod_solo_summary_teachereval {
-	flex-grow: 1;
-	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .mod_solo_grammareval_label,
@@ -1851,6 +1858,7 @@ span.mod_solo_corrections_suggestedword {
 	align-items: center;
 	padding: 42px 12px 32px 12px;
 	margin-bottom: 48px;
+	position: relative;
 }
 
 @media screen and (min-width: 576px) {
@@ -2000,6 +2008,119 @@ span.mod_solo_corrections_suggestedword {
 	color: #A49AD0;
 	margin-bottom: -4px;
 }
+
+/* Reports */
+
+.mod_solo_report_card {
+	background: #FFFFFF;
+	box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.08);
+	border-radius: 14px;
+	margin-bottom: 36px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.mod_solo_report_card_header {
+	background: none;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border-top-right-radius: 14px;
+	border-top-left-radius: 14px;
+	height: 78px;
+	position: relative;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card_header {
+		background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
+	}
+}
+
+.mod_solo_report_card_content {
+	padding: 36px 24px;
+}
+
+.mod_solo_automatic_evaluation_illustration {
+	background: url([[pix:mod_solo|poodll-solo-grade-illustration]]);
+  background-size: 81px 32px;
+  background-repeat: no-repeat;
+  background-position: center;
+	width: 81px; 
+	height: 32px;
+	position: relative;
+}
+
+.mod_solo_report_card h5 {
+	font-size: 13px;
+}
+
+/* Report - Details */
+
+.mod_solo_report_card.mod_solo_activity_details .mod_solo_summaryheader {
+	font-size: 13px;
+	position: relative;
+	top: 104px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_activity_details .mod_solo_summaryheader {
+		font-size: 22px;
+		position: absolute;
+    left: 36px;
+		top: 136px;
+	}
+}
+
+.mod_solo_report_card.mod_solo_activity_details .mod_solo_report_card_content {
+	padding-top: 72px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_activity_details .mod_solo_report_card_content {
+		padding-top: 122px;
+		padding-left: 36px;
+		padding-right: 36px;
+	}
+}
+
+.mod_solo_activity_details_illustration {
+	background: url([[pix:mod_solo|poodll-solo-target-illustration]]);
+  background-size: 65px 55px;
+  background-repeat: no-repeat;
+  background-position: center;
+	width: 65px; 
+	height: 55px;
+	margin-top: 36px;
+	margin-bottom: 12px;
+	position: absolute;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_activity_details_illustration {
+		background-size: 120px 102px;
+		width: 120px; 
+		height: 102px;
+		top: -8px;
+	}
+}
+
+.mod_solo_summarychoices_group_target_words span {
+	color: #6C6684;
+	background: #F0F4FC;
+	border-radius: 4px;
+	padding: 3px 10px 3px 9px;
+	margin-left: 2px;
+	margin-bottom: 5px;
+	display: inline-block;
+}
+
+
+/* Report - Automatic Evaluation */
+
+
 
 
 /* Custom fonts */
