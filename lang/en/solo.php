@@ -186,7 +186,7 @@ $string['ok']="OK";
 $string['notimelimit']='Unlimited';
 $string['xsecs']='{$a} seconds';
 $string['onemin']='1 minute';
-$string['xmins']='{$a} minutes';
+$string['xmins']='<span>{$a}</span> minutes';
 $string['oneminxsecs']='1 minutes {$a} seconds';
 $string['xminsecs']='{$a->minutes} minutes {$a->seconds} seconds';
 
