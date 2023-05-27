@@ -2018,7 +2018,14 @@ span.mod_solo_corrections_suggestedword {
 	margin-bottom: 36px;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	align-items: stretch;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.side_heading_left,
+	.mod_solo_report_card.side_heading_right {
+		flex-direction: row;
+	}
 }
 
 .mod_solo_report_card_header {
@@ -2027,30 +2034,41 @@ span.mod_solo_corrections_suggestedword {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	border-top-right-radius: 14px;
-	border-top-left-radius: 14px;
+	border-radius: 14px 14px 0 0;
 	height: 78px;
 	position: relative;
 }
 
 @media screen and (min-width: 768px) {
-	.mod_solo_report_card_header {
-		background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
+	.mod_solo_report_card.side_heading_left .mod_solo_report_card_header {
+		width: 50%;
+		border-radius: 14px 0 0 14px;
+		min-height: 300px;
+		justify-content: center;
 	}
 }
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.side_heading_right .mod_solo_report_card_header {
+		width: 50%;
+		border-radius: 0 14px 14px 0;
+		min-height: 300px;
+		justify-content: center;
+		order: 1;
+	}
+}
+
 
 .mod_solo_report_card_content {
 	padding: 36px 24px;
 }
 
-.mod_solo_automatic_evaluation_illustration {
-	background: url([[pix:mod_solo|poodll-solo-grade-illustration]]);
-  background-size: 81px 32px;
-  background-repeat: no-repeat;
-  background-position: center;
-	width: 81px; 
-	height: 32px;
-	position: relative;
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.side_heading_right .mod_solo_report_card_content {
+		width: 50%;
+		min-height: 300px;
+		order: 0;
+	}
 }
 
 .mod_solo_report_card h5 {
@@ -2058,6 +2076,12 @@ span.mod_solo_corrections_suggestedword {
 }
 
 /* Report - Details */
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_activity_details	.mod_solo_report_card_header {
+		background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
+	}
+}
 
 .mod_solo_report_card.mod_solo_activity_details .mod_solo_summaryheader {
 	font-size: 13px;
@@ -2100,10 +2124,10 @@ span.mod_solo_corrections_suggestedword {
 
 @media screen and (min-width: 768px) {
 	.mod_solo_activity_details_illustration {
-		background-size: 120px 102px;
-		width: 120px; 
-		height: 102px;
-		top: -8px;
+		background-size: 102px 88px;
+    width: 102px;
+    height: 88px;
+    top: -2px;
 	}
 }
 
@@ -2120,7 +2144,230 @@ span.mod_solo_corrections_suggestedword {
 
 /* Report - Automatic Evaluation */
 
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_automatic_evaluation	.mod_solo_report_card_header {
+		background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
+	}
+}
 
+.mod_solo_report_card.mod_solo_automatic_evaluation .mod_solo_summaryheader {
+	font-size: 13px;
+	position: relative;
+	top: 104px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_automatic_evaluation .mod_solo_summaryheader {
+		font-size: 22px;
+		position: static;
+		/*
+		position: absolute;
+    left: 36px;
+		top: 136px;
+		*/
+	}
+}
+
+.mod_solo_report_card.mod_solo_automatic_evaluation .mod_solo_report_card_content {
+	padding-top: 72px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_automatic_evaluation .mod_solo_report_card_content {
+		padding-top: 122px;
+		padding-left: 36px;
+		padding-right: 36px;
+	}
+}
+
+.mod_solo_automatic_evaluation_illustration {
+	background: url([[pix:mod_solo|poodll-solo-grade-illustration]]);
+  background-size: 81px 32px;
+  background-repeat: no-repeat;
+  background-position: center;
+	width: 81px; 
+	height: 32px;
+	margin-top: 36px;
+	margin-bottom: 12px;
+	position: absolute;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_automatic_evaluation_illustration {
+		background-size: 102px 88px;
+    width: 102px;
+    height: 88px;
+    position: static;
+		margin-top: 0;
+	}
+}
+
+/* Report - Transcript Evaluation */
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_transcript_evaluation .mod_solo_report_card_header {
+		background: linear-gradient(256.4deg, #FFDD85 -17.99%, #FFE5A0 77.58%);
+	}
+}
+
+.mod_solo_report_card.mod_solo_transcript_evaluation .mod_solo_summaryheader {
+	font-size: 13px;
+	position: relative;
+	top: 104px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_transcript_evaluation .mod_solo_summaryheader {
+		font-size: 22px;
+		position: absolute;
+    left: 36px;
+		top: 136px;
+	}
+}
+
+.mod_solo_report_card.mod_solo_transcript_evaluation .mod_solo_report_card_content {
+	padding-top: 72px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_transcript_evaluation .mod_solo_report_card_content {
+		padding-top: 122px;
+		padding-left: 36px;
+		padding-right: 36px;
+	}
+}
+
+.mod_solo_transcript_evaluation_illustration {
+	background: url([[pix:mod_solo|poodll-solo-transcript-illustration]]);
+  background-size: 64px 60px;
+  background-repeat: no-repeat;
+  background-position: center;
+	width: 64px; 
+	height: 60px;
+	margin-top: 36px;
+	margin-bottom: 12px;
+	position: absolute;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_transcript_evaluation_illustration {
+		background-size: 108px 92px;
+		width: 108px; 
+		height: 92px;
+    top: -13px;
+	}
+}
+
+
+/* Report - Spelling Evaluation */
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_spelling_evaluation .mod_solo_report_card_header {
+		background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
+	}
+}
+
+.mod_solo_report_card.mod_solo_spelling_evaluation .mod_solo_summaryheader {
+	font-size: 13px;
+	position: relative;
+	top: 104px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_spelling_evaluation .mod_solo_summaryheader {
+		font-size: 22px;
+		position: static;
+	}
+}
+
+.mod_solo_report_card.mod_solo_spelling_evaluation .mod_solo_report_card_content {
+	padding-top: 72px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_spelling_evaluation .mod_solo_report_card_content {
+		padding-top: 122px;
+		padding-left: 36px;
+		padding-right: 36px;
+	}
+}
+
+.mod_solo_spelling_evaluation_illustration {
+	background: url([[pix:mod_solo|poodll-solo-spelling-illustration]]);
+  background-size: 64px 60px;
+  background-repeat: no-repeat;
+  background-position: center;
+	width: 64px; 
+	height: 60px;
+	margin-top: 36px;
+	margin-bottom: 12px;
+	position: absolute;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_spelling_evaluation_illustration {
+		background-size: 108px 92px;
+		width: 108px; 
+		height: 92px;
+    position: static;
+		margin-top: 0;
+	}
+}
+
+/* Report - Grammar Evaluation */
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_grammar_evaluation .mod_solo_report_card_header {
+		background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
+	}
+}
+
+.mod_solo_report_card.mod_solo_grammar_evaluation .mod_solo_summaryheader {
+	font-size: 13px;
+	position: relative;
+	top: 104px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_grammar_evaluation .mod_solo_summaryheader {
+		font-size: 22px;
+		position: static;
+	}
+}
+
+.mod_solo_report_card.mod_solo_grammar_evaluation .mod_solo_report_card_content {
+	padding-top: 72px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_grammar_evaluation .mod_solo_report_card_content {
+		padding-top: 112px;
+		padding-left: 36px;
+		padding-right: 36px;
+	}
+}
+
+.mod_solo_grammar_evaluation_illustration {
+	background: url([[pix:mod_solo|poodll-solo-grammar-illustration]]);
+  background-size: 64px 60px;
+  background-repeat: no-repeat;
+  background-position: center;
+	width: 64px; 
+	height: 60px;
+	margin-top: 36px;
+	margin-bottom: 12px;
+	position: absolute;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_grammar_evaluation_illustration {
+		background-size: 108px 92px;
+		width: 108px; 
+		height: 92px;
+    position: static;
+		margin-top: 0;
+	}
+}
 
 
 /* Custom fonts */

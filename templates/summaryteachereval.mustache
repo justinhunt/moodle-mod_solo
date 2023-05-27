@@ -1,12 +1,14 @@
 
 {{! Automatic evaluation }}
-<section class="mod_solo_report_card mod_solo_automatic_evaluation">
-    <div class='mod_solo_summary_teachereval'>
+<section class="mod_solo_report_card side_heading_left mod_solo_automatic_evaluation">
+    <div class="mod_solo_report_card_header">
         <div class="mod_solo_automatic_evaluation_illustration"></div>  
-        <div class='mod_solo_sr_title'>{{evaluator}}</div>
-        <div class='mod_solo_ct_body'>
-            <div class='mod_solo_rubric_results'>{{{rubricresults}}}</div>
-            <div class='mod_solo_teacherfeedback'>{{feedback}}</div>
+        <div class="mod_solo_summaryheader">
+            <h3 class="summaryheadertitle">{{evaluator}}</h3>
         </div>
+    </div>    
+    <div class="mod_solo_report_card_content">
+        <div>{{{rubricresults}}}</div>
+        <div>{{feedback}}</div>
     </div>
 </section>
