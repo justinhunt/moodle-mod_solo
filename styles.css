@@ -2176,13 +2176,18 @@ span.mod_solo_corrections_suggestedword {
 
 .mod_solo_report_card.mod_solo_automatic_evaluation .mod_solo_report_card_content {
 	padding-top: 72px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_automatic_evaluation .mod_solo_report_card_content {
-		padding-top: 36px;
+		padding-top: 18px;
 		padding-left: 36px;
 		padding-right: 36px;
+		width: 50%;
 	}
 }
 
@@ -2209,10 +2214,29 @@ span.mod_solo_corrections_suggestedword {
 }
 
 .mod_solo_automatic_evaluation_chart {
-	height: 220px;
-	width: 220px;
-	border: 1px dashed Tomato;
+	height: 180px;
+	width: 180px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
 }
+
+.mod_solo_automatic_evaluation_chart_grade_header {
+	position: absolute;
+	top: 75px;
+	color: #6C6684;
+	font-style: italic;
+	font-size: 13px;
+}
+
+.mod_solo_automatic_evaluation_chart_grade_percent {
+	position: absolute;
+	top: 92px;
+	font-weight: 700;
+	font-size: 20px;
+}
+
 
 /* Report - Transcript Evaluation */
 

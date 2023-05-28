@@ -463,7 +463,8 @@ $string['gradesubmissions'] = 'Grade submissions';
 $string['gradesgrader'] = 'Graded By';
 $string['humangraded'] = 'Teacher';
 $string['autograded'] = 'Auto';
-$string['gradelabel']= 'Grade: {$a}%';
+$string['gradeheader']= 'Grade';
+$string['gradelabel']= '{$a}%';
 
 
 $string['gradeitem:solo'] = 'Poodll Solo';
