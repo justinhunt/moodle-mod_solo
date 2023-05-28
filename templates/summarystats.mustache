@@ -1,24 +1,55 @@
 <div>
     <div class='mod_solo_summarystats'>
-        <table class="table">
+      <section class='mod_solo_main_stats'>
+        <table class="mod_solo_words_table">
+          <thead>
+            <tr><th>{{#str}}stats_words_title, mod_solo{{/str}}</th></tr>
+          </thead>
           <tbody>
+              <tr><td>{{#str}}stats_words, mod_solo{{/str}}</td><td>{{s.words}}</td> </tr>
+              <tr><td>{{#str}}stats_uniquewords, mod_solo{{/str}}</td><td>{{s.uniquewords}}</td> </tr>
+              <tr><td>{{#str}}stats_longwords, mod_solo{{/str}}</td><td>{{s.longwords}}</td> </tr>
+          </tbody>
+        </table>
 
-          <tr> <td>{{#str}}stats_words, mod_solo{{/str}}</td><td>{{s.words}}</td> </tr>
-          <tr> <td>{{#str}}stats_uniquewords, mod_solo{{/str}}</td><td>{{s.uniquewords}}</td> </tr>
-          <tr> <td>{{#str}}stats_longwords, mod_solo{{/str}}</td><td>{{s.longwords}}</td> </tr>
-          <tr><td>{{#str}}stats_turns, mod_solo{{/str}}</td><td>{{s.turns}}</td></tr>
-          <tr><td>{{#str}}stats_avturn, mod_solo{{/str}}</td><td>{{s.avturn}}</td></tr>
-          <tr><td>{{#str}}stats_longestturn, mod_solo{{/str}}</td><td>{{s.longestturn}}</td></tr>
-          <!-- <tr><td>{{#str}}stats_autogrammarscore, mod_solo{{/str}}</td><td>{{s.autogrammarscore}}%</td></tr> -->
-          <!-- <tr><td>{{#str}}stats_autospellscore, mod_solo{{/str}}</td><td>{{s.autospellscore}}%</td></tr> -->
-          <tr> <td>{{#str}}stats_targetwords, mod_solo{{/str}}</td><td>{{s.targetwords}}/{{s.totaltargetwords}}</td></tr>
-          <!-- <tr> <td>{{#str}}stats_ideacount, mod_solo{{/str}}</td><td>{{s.ideacount}}</td></tr> -->
-          <tr> <td>{{#str}}stats_cefrlevel, mod_solo{{/str}}</td><td>{{s.cefrlevel}}</td></tr>
-          <tr> <td>{{#str}}stats_relevance, mod_solo{{/str}}</td><td>{{s.relevance}}</td></tr>
-          <tr> <td>{{#str}}stats_wpm, mod_solo{{/str}}</td><td>{{s.wpm}}</td></tr>
-          {{#selftranscribe}}
-            <tr><td>{{#str}}stats_aiaccuracy, mod_solo{{/str}}</td><td>{{s.aiaccuracy}}%</td></tr>
-          {{/selftranscribe}}
+        <table class="mod_solo_turns_table">
+          <thead>
+            <tr><th>{{#str}}stats_turns_title, mod_solo{{/str}}</th></tr>
+          </thead>
+          <tbody>
+              <tr><td>{{#str}}stats_turns, mod_solo{{/str}}</td><td>{{s.turns}}</td></tr>
+              <tr><td>{{#str}}stats_avturn, mod_solo{{/str}}</td><td>{{s.avturn}}</td></tr>
+              <tr><td>{{#str}}stats_longestturn, mod_solo{{/str}}</td><td>{{s.longestturn}}</td></tr>
+          </tbody>
+        </table>
+    </section>
+
+    <section class='mod_solo_visual_stats'>
+
+        <div class='mod_solo_visual_stats_target_words'>
+          <div>{{s.targetwords}}/{{s.totaltargetwords}}</div>
+          <h5>{{#str}}stats_targetwords, mod_solo{{/str}}</h5>
+        </div>
+        
+        {{#selftranscribe}}
+          <div class='mod_solo_visual_stats_speaking_clarity'>
+              <div>{{s.aiaccuracy}}%</div>
+              <h5>{{#str}}stats_aiaccuracy, mod_solo{{/str}}</h5>
+          <div>
+        {{/selftranscribe}}
+    </section>
+
+        <table class="mod_solo_more_stats_table">
+          <thead>
+            <tr><th colspan="2">{{#str}}more_stats, mod_solo{{/str}}</th></tr>
+          </thead>
+            <tbody>
+            <!-- <tr><td>{{#str}}stats_autogrammarscore, mod_solo{{/str}}</td><td>{{s.autogrammarscore}}%</td></tr> -->
+            <!-- <tr><td>{{#str}}stats_autospellscore, mod_solo{{/str}}</td><td>{{s.autospellscore}}%</td></tr> -->
+            <!-- <tr> <td>{{#str}}stats_ideacount, mod_solo{{/str}}</td><td>{{s.ideacount}}</td></tr> -->
+            <tr> <td>{{#str}}stats_cefrlevel, mod_solo{{/str}}</td><td>{{s.cefrlevel}}</td></tr>
+            <tr> <td>{{#str}}stats_relevance, mod_solo{{/str}}</td><td>{{s.relevance}}</td></tr>
+            <tr> <td>{{#str}}stats_wpm, mod_solo{{/str}}</td><td>{{s.wpm}}</td></tr>
           </tbody>
         </table>
     </div>

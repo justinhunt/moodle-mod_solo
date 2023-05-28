@@ -1,7 +1,11 @@
 <div>
     <div class='mod_solo_spellingeval_label'>
-        {{#hasspellingerrors}}{{#str}}possiblespellingerrors, mod_solo{{/str}}{{/hasspellingerrors}}
-        {{^hasspellingerrors}}{{#str}}nospellingerrors, mod_solo{{/str}}{{/hasspellingerrors}}
+        {{#hasspellingerrors}}
+            <h5>{{#str}}possiblespellingerrors, mod_solo{{/str}}<h5>
+        {{/hasspellingerrors}}
+        {{^hasspellingerrors}}
+            <p class="mod_solo_secondary_message">{{#str}}nospellingerrors, mod_solo{{/str}}</p>
+        {{/hasspellingerrors}}
     </div>
     {{#spellingerrors}}
     <span class='mod_solo_spellingerror'>{{.}}</span>&nbsp;

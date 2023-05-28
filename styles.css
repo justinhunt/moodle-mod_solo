@@ -144,30 +144,30 @@ div.mod_solo_mbuttons {
 	margin: 7px;
 }
 
-
+/*
 .mod_solo_grading_passagecont {
-    padding: 5px;
-    border: darkgrey solid 1px;
+
 }
+*/
 
 .mod_solo_summarytranscript .summarytranscriptpart {
-	background-color: lightgreen;
-	padding: 5px;
-	border-radius: 5px;
-	border: 1px solid green;
-	width: fit-content;
-	margin: 5px 2px;
+
 }
 
+
 .mod_solo_summarytranscript {
-	background-color: lightblue;
-	display: flex;
-	flex-direction: column;
-	horiz-align: right;
+	margin-top: 24px;
+	margin-bottom: 24px;
+	background: #FAFBFD;
+	border: 1px solid #DCE0E3;
+	border-radius: 4px;
+	padding: 12px 18px;
 }
+
+
 .mod_solo_summarytranscriptplaceholder {
     display: block;
-    padding: 5px;
+    /* padding: 5px; */
 }
 
 .summaryboxcontent.targetwords {
@@ -971,8 +971,8 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 }
 
 .mod_solo_grading_unreadword {
-    font-style: italic;
-    text-decoration: underline;
+	color: #F13B3B;
+	font-weight: 700;
 }
 
 .mod_solo_grading_passageword.mod_solo_aiunmatched {
@@ -1089,9 +1089,7 @@ max-height: 337px; */
 .mod_solo_spellingeval_label {
 	text-align: center;
 }
-.mod_solo_grammarerror {
-	background-color: beige;
-}
+
 .mod_solo_grammaradvice {
 	font-style: italic;
 }
@@ -1287,7 +1285,6 @@ audio#mod_solo_passageaudioplayer {
 .mod_solo_corrections {
 	text-align: left;
 	font-style: normal;
-	padding: 5px;
 }
 
 span.mod_solo_corrections_suggestedword {
@@ -2022,6 +2019,12 @@ span.mod_solo_corrections_suggestedword {
 }
 
 @media screen and (min-width: 768px) {
+	.mod_solo_report_card {
+		margin-bottom: 48px;
+	}
+}
+
+@media screen and (min-width: 768px) {
 	.mod_solo_report_card.side_heading_left,
 	.mod_solo_report_card.side_heading_right {
 		flex-direction: row;
@@ -2058,7 +2061,6 @@ span.mod_solo_corrections_suggestedword {
 	}
 }
 
-
 .mod_solo_report_card_content {
 	padding: 36px 24px;
 }
@@ -2072,7 +2074,11 @@ span.mod_solo_corrections_suggestedword {
 }
 
 .mod_solo_report_card h5 {
-	font-size: 13px;
+	font-size: 14px;
+}
+
+.mod_solo_secondary_message {
+	font-style: italic;
 }
 
 /* Report - Details */
@@ -2132,7 +2138,7 @@ span.mod_solo_corrections_suggestedword {
 }
 
 .mod_solo_summarychoices_group_target_words span {
-	color: #6C6684;
+	color: #524d68;
 	background: #F0F4FC;
 	border-radius: 4px;
 	padding: 3px 10px 3px 9px;
@@ -2174,7 +2180,7 @@ span.mod_solo_corrections_suggestedword {
 
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_automatic_evaluation .mod_solo_report_card_content {
-		padding-top: 122px;
+		padding-top: 36px;
 		padding-left: 36px;
 		padding-right: 36px;
 	}
@@ -2200,6 +2206,12 @@ span.mod_solo_corrections_suggestedword {
     position: static;
 		margin-top: 0;
 	}
+}
+
+.mod_solo_automatic_evaluation_chart {
+	height: 220px;
+	width: 220px;
+	border: 1px dashed Tomato;
 }
 
 /* Report - Transcript Evaluation */
@@ -2258,6 +2270,131 @@ span.mod_solo_corrections_suggestedword {
 	}
 }
 
+.mod_solo_corrections_cont {
+	margin-bottom: 48px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_corrections_cont {
+		margin-bottom: 72px;
+	}
+}
+
+.mod_solo_main_stats {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+@media screen and (min-width: 768px) { 
+	.mod_solo_main_stats {
+		flex-direction: row;
+		justify-content: space-between;
+	}
+}
+
+.mod_solo_main_stats table {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	font-size: 13px;
+	margin-bottom: 24px;
+}
+
+@media screen and (min-width: 768px) { 
+	.mod_solo_main_stats table {
+		width: 48%;
+		margin-bottom: 36px;
+	}
+}
+
+.mod_solo_main_stats thead {
+	background-color: #F0EDFF;
+  width: 100%;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+.mod_solo_main_stats thead tr {
+	display: flex;
+  justify-content: center;
+	padding: 8px;
+}
+
+.mod_solo_main_stats tbody {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	padding: 18px;
+	border-bottom: 1px solid #DCE0E3;
+	border-left: 1px solid #DCE0E3;
+	border-right: 1px solid #DCE0E3;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+}
+
+.mod_solo_main_stats tbody tr {
+	display: flex;
+	justify-content: space-between;
+	padding: 5px 13px;
+}
+
+.mod_solo_main_stats tbody tr td:last-child{
+	font-weight: 700;
+}
+
+.mod_solo_visual_stats {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 24px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_visual_stats {
+		display: flex;
+		flex-direction: row;
+		margin-bottom: 36px;
+	}
+}
+
+.mod_solo_visual_stats_target_words,
+.mod_solo_visual_stats_speaking_clarity {
+	height: 240px;
+	border: 1px dashed Tomato;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_visual_stats_target_words,
+	.mod_solo_visual_stats_speaking_clarity {
+		width: 50%;
+	}
+}
+
+
+.mod_solo_more_stats_table {
+	border: 1px solid #DCE0E3;
+	display: flex;
+	flex-direction: column;
+	padding: 24px 36px;
+	font-size: 13px;
+	border-radius: 5px;
+}
+
+.mod_solo_more_stats_table td {
+	text-align: left;
+}
+
+.mod_solo_more_stats_table thead tr th {
+	padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.mod_solo_more_stats_table tbody tr {
+	display: flex;
+  justify-content: space-between;
+	padding-top: 5px;
+  padding-bottom: 5px;
+}
 
 /* Report - Spelling Evaluation */
 
@@ -2281,14 +2418,16 @@ span.mod_solo_corrections_suggestedword {
 }
 
 .mod_solo_report_card.mod_solo_spelling_evaluation .mod_solo_report_card_content {
-	padding-top: 72px;
+	padding-top: 96px;
 }
 
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_spelling_evaluation .mod_solo_report_card_content {
-		padding-top: 122px;
-		padding-left: 36px;
-		padding-right: 36px;
+		padding-top: 36px;
+    padding-left: 36px;
+    padding-right: 36px;
+    display: flex;
+    align-items: center;
 	}
 }
 
@@ -2314,6 +2453,27 @@ span.mod_solo_corrections_suggestedword {
 	}
 }
 
+.mod_solo_spellingeval_label {
+	text-align: left;
+	margin-bottom: 18px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_spellingeval_label {
+		margin-bottom: 24px;
+	}
+}
+
+.mod_solo_spellingerror {
+	color: #524d68;
+	background: #F0F4FC;
+	border-radius: 4px;
+	padding: 3px 10px 3px 9px;
+	margin-left: 2px;
+	margin-bottom: 5px;
+	display: inline-block;
+}
+
 /* Report - Grammar Evaluation */
 
 @media screen and (min-width: 768px) {
@@ -2336,14 +2496,16 @@ span.mod_solo_corrections_suggestedword {
 }
 
 .mod_solo_report_card.mod_solo_grammar_evaluation .mod_solo_report_card_content {
-	padding-top: 72px;
+	padding-top: 96px;
 }
 
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_grammar_evaluation .mod_solo_report_card_content {
-		padding-top: 112px;
-		padding-left: 36px;
-		padding-right: 36px;
+		padding-top: 36px;
+    padding-left: 36px;
+    padding-right: 36px;
+    display: flex;
+    align-items: center;
 	}
 }
 
@@ -2369,6 +2531,25 @@ span.mod_solo_corrections_suggestedword {
 	}
 }
 
+.mod_solo_grammareval_label {
+	text-align: left;
+	margin-bottom: 18px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_grammareval_label {
+		margin-bottom: 24px;
+	}
+}
+
+.mod_solo_grammarerror {
+	margin-top: 24px;
+	margin-bottom: 24px;
+	background: #FAFBFD;
+	border: 1px solid #DCE0E3;
+	border-radius: 4px;
+	padding: 12px 18px;
+}
 
 /* Custom fonts */
 
