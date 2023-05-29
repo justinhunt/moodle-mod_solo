@@ -1,0 +1,44 @@
+<div class='mod_solo_visual_stats_speaking_clarity'>
+  <div class='mod_solo_visual_stats_speaking_clarity_chart'>
+    <canvas id="chart_canvas_speaking_clarity"></canvas>
+    <div class="mod_solo_speaking_clarity_chart_percent">{{s.aiaccuracy}}%</div>
+    <div class="mod_solo_speaking_clarity_chart_header">{{#str}}stats_aiaccuracy, mod_solo{{/str}}</div>
+    </div>
+</div>
+
+
+{{^element.frozen}}
+    {{#js}}
+        //<script>
+        require(['jquery', 'core/log','https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.js'],
+        function($, log, chartjs) {
+            var make_chart =function(thedata){
+                var ctx = document.getElementById("chart_canvas_speaking_clarity").getContext("2d");
+                var labels=  ['Filled', 'Unfilled'];
+                var dataset = {label: 'Speaking Clarity', fill: false, backgroundColor: ['#7573F5','#E3E3FD'],};
+                dataset.data= [thedata.filled,thedata.unfilled];
+                var usedata = {datasets: [dataset]};
+                var cjoptions = {
+                    type: 'doughnut',
+                    data: usedata,
+                    options: {
+                        plugins: {
+                            tooltip: {
+                                enabled: false // Disable tooltips
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            intersect: false
+                        },
+                        hover: {
+                            mode: null // Disable hover
+                        },
+                    },
+                };
+                var theRadarChart = new Chart(ctx,cjoptions);
+            }
+            make_chart({filled: 56, unfilled: 44});
+        });
+    {{/js}}
+{{/element.frozen}}

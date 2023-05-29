@@ -26,16 +26,10 @@
 
     <section class='mod_solo_visual_stats'>
 
-        <div class='mod_solo_visual_stats_target_words'>
-          <div>{{s.targetwords}}/{{s.totaltargetwords}}</div>
-          <h5>{{#str}}stats_targetwords, mod_solo{{/str}}</h5>
-        </div>
-        
+        {{>mod_solo/summarystatstargetwords}}
+
         {{#selftranscribe}}
-          <div class='mod_solo_visual_stats_speaking_clarity'>
-              <div>{{s.aiaccuracy}}%</div>
-              <h5>{{#str}}stats_aiaccuracy, mod_solo{{/str}}</h5>
-          <div>
+            {{>mod_solo/summarystatsspeakingclarity}}
         {{/selftranscribe}}
     </section>
 

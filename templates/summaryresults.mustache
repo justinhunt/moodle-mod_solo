@@ -16,7 +16,18 @@
 
         <div class="mod_solo_report_card_content">
 
-            <div>{{>mod_solo/audioplayer}}</div>
+        
+            <p>
+                <a data-toggle="collapse" href="#collapseAudioPlayer" role="button" aria-expanded="false" aria-controls="collapseAudioPlayer">
+                    Replay the transcription
+                </a>
+            </p>
+            
+            <div class="collapse" id="collapseAudioPlayer">
+                <div>{{>mod_solo/audioplayer}}</div>
+            </div>
+
+            
 
             {{#autotranscriptready}}
                 <div>{{#str}}transcriptevaluationdetails, mod_solo{{/str}}</div>

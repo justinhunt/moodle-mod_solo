@@ -130,6 +130,16 @@ div.mod_solo_mbuttons {
 	}
 }
 
+.mod_solo_summarychoices_group:first-of-type {
+	margin-bottom: 24px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_summarychoices_group:first-of-type {
+		margin-bottom: 0;
+	}
+}
+
 
 .mod_solo_sr_title{
 	margin: auto;
@@ -2016,6 +2026,7 @@ span.mod_solo_corrections_suggestedword {
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
+	margin-top: 48px;
 }
 
 @media screen and (min-width: 768px) {
@@ -2063,6 +2074,10 @@ span.mod_solo_corrections_suggestedword {
 
 .mod_solo_report_card_content {
 	padding: 36px 24px;
+}
+
+.mod_solo_report_card_content a {
+	color: #8362c7;
 }
 
 @media screen and (min-width: 768px) {
@@ -2180,13 +2195,15 @@ span.mod_solo_corrections_suggestedword {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	padding-bottom: 72px;
 }
 
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_automatic_evaluation .mod_solo_report_card_content {
-		padding-top: 18px;
+		padding-top: 0;
 		padding-left: 36px;
 		padding-right: 36px;
+		padding-bottom: 36px;
 		width: 50%;
 	}
 }
@@ -2223,16 +2240,13 @@ span.mod_solo_corrections_suggestedword {
 }
 
 .mod_solo_automatic_evaluation_chart_grade_header {
-	position: absolute;
-	top: 75px;
-	color: #6C6684;
+	margin-top: 18px;
 	font-style: italic;
-	font-size: 13px;
 }
 
 .mod_solo_automatic_evaluation_chart_grade_percent {
 	position: absolute;
-	top: 92px;
+	top: 80px;
 	font-weight: 700;
 	font-size: 20px;
 }
@@ -2381,17 +2395,109 @@ span.mod_solo_corrections_suggestedword {
 	}
 }
 
-.mod_solo_visual_stats_target_words,
-.mod_solo_visual_stats_speaking_clarity {
-	height: 240px;
-	border: 1px dashed Tomato;
+
+
+
+
+
+.mod_solo_visual_stats_target_words {
+	height: 190px;
 }
 
 @media screen and (min-width: 768px) {
-	.mod_solo_visual_stats_target_words,
+	.mod_solo_visual_stats_target_words {
+		height: 240px;
+		width: 50%;
+		display: flex;
+    justify-content: center;
+    align-items: center;
+		flex-direction: column;
+	}
+}	
+
+.mod_solo_visual_stats_target_words_chart {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+	height: 180px;
+	justify-content: center;
+}
+
+.mod_solo_target_words_front_bar_container {
+	display: flex;
+	justify-content: flex-start;
+	flex-direction: column;
+	position: relative;
+	margin-top: 18px;
+	margin-bottom: 12px;
+}
+
+.mod_solo_target_words_behind_bar {
+	background-color: #FFD79B;
+	height: 40px;
+	width: 220px;
+	border-radius: 4px;
+}
+
+.mod_solo_target_words_front_bar {
+	background-color: #FF9900;
+	height: 40px;
+	width: 180px;
+	position: absolute;
+	top: 0;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+	border-right: 2px solid #fff;
+}
+
+.mod_solo_visual_stats_target_words_chart_title {
+	font-style: italic;
+	max-width: 96px;
+	line-height: 1;
+}
+
+.mod_solo_visual_stats_target_words_chart_fraction {
+	font-weight: 700;
+	font-size: 20px;
+}
+
+.mod_solo_visual_stats_speaking_clarity_chart {
+	height: 180px;
+	width: 180px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+}
+
+.mod_solo_visual_stats_speaking_clarity {
+	height: 240px;
+	display: flex;
+	justify-content: center;
+} 
+
+@media screen and (min-width: 768px) {
 	.mod_solo_visual_stats_speaking_clarity {
 		width: 50%;
+		display: flex;
+    justify-content: center;
+    align-items: center;
+		flex-direction: column;
 	}
+}
+
+.mod_solo_speaking_clarity_chart_header {
+	position: absolute;
+	top: 194px;
+	font-style: italic;
+}
+
+.mod_solo_speaking_clarity_chart_percent {
+	position: absolute;
+	top: 80px;
+	font-weight: 700;
+	font-size: 20px;
 }
 
 
