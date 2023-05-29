@@ -378,6 +378,7 @@ $string['step_modelinstructions']='Check the model answer below.';
 //$string['playpause'] = 'Play/pause';
 //$string['now'] = 'Now';
 //$string['cancel'] = 'Cancel';
+$string['replay'] = 'Replay the transcription';
 $string['selftranscript'] = 'Self Transcript';
 //$string['autotranscript'] = 'Auto Transcript';
 $string['stats'] = 'Stats';
