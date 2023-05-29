@@ -1,46 +1,92 @@
+ 
+    {{! Transcript evaluation }}
+    <section class="mod_solo_report_card mod_solo_transcript_evaluation">
 
-    <div class='mod_solo_sr_left'>
-        {{#autotranscriptready}}
-        <div class='mod_solo_sr_title'>{{#str}}transcriptevaluation, mod_solo{{/str}}</div>
-        <div class='mod_solo_sr_details'>{{#str}}transcriptevaluationdetails, mod_solo{{/str}}</div>
-        {{/autotranscriptready}}
-        {{^autotranscriptready}}
-            <div class='mod_solo_sr_title'>{{#str}}selftranscript, mod_solo{{/str}}</div>
-        {{/autotranscriptready}}
-        <div class='mod_solo_ct_body'>
-            <div class="mod_solo_ct_audioplayer">{{>mod_solo/audioplayer}}</div>
+        <div class="mod_solo_report_card_header">
+            <div class="mod_solo_transcript_evaluation_illustration"></div> 
+            {{#autotranscriptready}}
+            <div class="mod_solo_summaryheader">
+                <h3 class="summaryheadertitle">{{#str}}transcriptevaluation, mod_solo{{/str}}</h3>
+            {{/autotranscriptready}}
+            {{^autotranscriptready}}
+                <h3 class="summaryheadertitle">{{#str}}selftranscript, mod_solo{{/str}}</h3>
+            {{/autotranscriptready}}
+            </div>
+        </div>
+
+        <div class="mod_solo_report_card_content">
+
+        
+            <p>
+                <a data-toggle="collapse" href="#collapseAudioPlayer" role="button" aria-expanded="false" aria-controls="collapseAudioPlayer">
+                    {{#str}}replay, mod_solo{{/str}}
+                </a>
+            </p>
+            
+            <div class="collapse" id="collapseAudioPlayer">
+                <div>{{>mod_solo/audioplayer}}</div>
+            </div>
+
+            
+
+            {{#autotranscriptready}}
+                <div>{{#str}}transcriptevaluationdetails, mod_solo{{/str}}</div>
+            {{/autotranscriptready}}
+
             {{{markedpassage}}}
-        </div>
-    </div>
-    <hr>
-    {{#grammarcorrection}}
-        <div class='mod_solo_sr_title'>{{#str}}grammarcorrection, mod_solo{{/str}}</div>
-        <div class='mod_solo_sr_details mod_solo_corrections_cont'>{{{grammarcorrection}}}</div>
-        <hr>
-    {{/grammarcorrection}}
+        
+            {{#grammarcorrection}}
+                <h5>{{#str}}grammarcorrection, mod_solo{{/str}}</h5>
+                <div class='mod_solo_corrections_cont'>{{{grammarcorrection}}}</div>
+            {{/grammarcorrection}}
 
-    <p class="mod_solo_attemptdetailscontainer">
-        <a class="btn btn-primary mod_solo_attemptdetailsbutton" data-toggle="collapse" href="#attemptdetails" role="button" aria-expanded="false" aria-controls="attemptdetails">
-            {{#str}}moreattemptdetails, mod_solo{{/str}}
-        </a>
-
-    </p>
-    <div class="collapse" id="attemptdetails">
-        <div class='mod_solo_sr_left'>
-            <div class='mod_solo_sr_title'>{{#str}}stats, mod_solo{{/str}}</div>
-            {{>mod_solo/summarystats}}
+            <div class="mod_solo_attemptdetailscontainer">
+                <div id="attemptdetails">
+                    <div>
+                        <!--div>{{#str}}stats, mod_solo{{/str}}</div-->
+                        {{>mod_solo/summarystats}}
+                    </div>
+                </div>
+            </div>
         </div>
-    {{#selftranscribe}}
-        <div class='mod_solo_sr_left'>
-            <div class='mod_solo_sr_title'>{{#str}}spellingeval, mod_solo{{/str}}</div>
+
+
+
+
+</section>
+
+
+{{! Spelling evaluation }}
+{{#selftranscribe}}
+
+    <section class="mod_solo_report_card side_heading_left mod_solo_spelling_evaluation">
+        <div class="mod_solo_report_card_header">
+            <div class="mod_solo_spelling_evaluation_illustration"></div> 
+            <div class="mod_solo_summaryheader">
+                <h3 class="summaryheadertitle">{{#str}}spellingeval, mod_solo{{/str}}</h3>
+            </div>
+        </div>
+        <div class="mod_solo_report_card_content">
             {{>mod_solo/summaryspellingeval}}
         </div>
-    {{/selftranscribe}}
-        <div class='mod_solo_sr_left'>
-            <div class='mod_solo_sr_title'>{{#str}}grammareval, mod_solo{{/str}}</div>
-            {{>mod_solo/summarygrammareval}}
+    </section>
+    
+{{/selftranscribe}}
+
+
+{{! Grammar evaluation }}
+<section class="mod_solo_report_card side_heading_right mod_solo_grammar_evaluation">
+    <div class="mod_solo_report_card_header">
+        <div class="mod_solo_grammar_evaluation_illustration"></div> 
+        <div class="mod_solo_summaryheader">
+            <h3 class="summaryheadertitle">{{#str}}grammareval, mod_solo{{/str}}</h3>
         </div>
     </div>
+
+    <div class="mod_solo_report_card_content">
+        {{>mod_solo/summarygrammareval}}
+    </div>
+</section>
 
 
 

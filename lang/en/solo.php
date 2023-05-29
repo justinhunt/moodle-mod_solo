@@ -186,7 +186,7 @@ $string['ok']="OK";
 $string['notimelimit']='Unlimited';
 $string['xsecs']='{$a} seconds';
 $string['onemin']='1 minute';
-$string['xmins']='<span>{$a}</span> minutes';
+$string['xmins']='{$a} minutes';
 $string['oneminxsecs']='1 minutes {$a} seconds';
 $string['xminsecs']='{$a->minutes} minutes {$a->seconds} seconds';
 
@@ -378,11 +378,14 @@ $string['step_modelinstructions']='Check the model answer below.';
 //$string['playpause'] = 'Play/pause';
 //$string['now'] = 'Now';
 //$string['cancel'] = 'Cancel';
+$string['replay'] = 'Replay the transcription';
 $string['selftranscript'] = 'Self Transcript';
 //$string['autotranscript'] = 'Auto Transcript';
 $string['stats'] = 'Stats';
-$string['stats_words'] = 'Words';
-$string['stats_turns'] = 'Sentences';
+$string['stats_words_title'] = 'Words';
+$string['stats_words'] = 'Total Words';
+$string['stats_turns_title'] = 'Sentences';
+$string['stats_turns'] = 'Total Sentences';
 $string['stats_avturn'] = 'Av. Sentence Length';
 $string['stats_longestturn'] = 'Longest Sentence Length';
 $string['stats_targetwords'] = 'Target Words';
@@ -393,6 +396,7 @@ $string['stats_ideacount'] = 'Concepts';
 $string['stats_cefrlevel'] = 'CEFR Level';
 $string['stats_relevance'] = 'Relevance'; //AKA similarity
 $string['stats_wpm'] = 'Words per Min.';
+$string['more_stats'] = 'More stats';
 
 //$string['transcripteditor']= 'Transcript Editor';
 $string['multiattempts'] = 'Allow Multiple Attempts';
@@ -406,7 +410,10 @@ $string['TW']= 'TW';
 $string['idnumber']= 'ID-number';
 
 $string['audiorecording']= 'Audio Recording';
-$string['summaryuserattemptheadertitle']= '(Attempt: {$a}) Speech Details';
+$string['attemptnumberheader']= 'Attempt Number';
+$string['attemptnumber']= '{$a}';
+//$string['summaryuserattemptheadertitle']= '(Attempt: {$a}) Speech Details';
+$string['summaryuserattemptheadertitle']= 'Speech Details';
 $string['summaryuserattemptheaderintro']= '';
 $string['summaryheadertitle']= 'Your Speech Details';
 $string['summaryheaderintro']= 'Check the details and the results of your speech below. What do you think? You should be getting better each time.';
@@ -457,7 +464,8 @@ $string['gradesubmissions'] = 'Grade submissions';
 $string['gradesgrader'] = 'Graded By';
 $string['humangraded'] = 'Teacher';
 $string['autograded'] = 'Auto';
-$string['gradelabel']= 'Grade: {$a}%';
+$string['gradeheader']= 'Grade';
+$string['gradelabel']= '{$a}%';
 
 
 $string['gradeitem:solo'] = 'Poodll Solo';
@@ -493,8 +501,8 @@ $string['autoeval'] = 'Automatic Evaluation';
 $string['spellingeval'] = 'Spelling Evaluation';
 $string['grammareval'] = 'Grammar Evaluation';
 $string['nogrammarerrors'] = 'No grammar mistakes.';
-$string['possiblegrammarerrors'] = 'Possible grammar mistakes.';
-$string['possiblespellingerrors'] = 'Possible spelling mistakes.';
+$string['possiblegrammarerrors'] = 'Possible grammar mistakes:';
+$string['possiblespellingerrors'] = 'Possible spelling mistakes:';
 $string['nospellingerrors'] = 'No spelling mistakes.';
 
 $string['completionallsteps']='Complete when all steps completed';
@@ -581,7 +589,7 @@ $string['notgradedyet'] = 'Your submission has been received, but has not been g
 $string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';
 $string['moreattemptdetails'] = "More Attempt Details";
 $string['transcriptevaluation']= "Transcript Evaluation";
-$string['transcriptevaluationdetails']= "Underlined, or italic words show differences between your transcript and the automatic transcript.";
+$string['transcriptevaluationdetails']= "Bold red words show differences between your transcript and the automatic transcript.";
 $string['uploading']=' ... uploading ... ';
 
 //media toggles
@@ -641,7 +649,7 @@ $string['modelanswerheader'] = "Model Answer";
 $string['modelanswerinstructions'] = "The model answer can be read aloud to students using text-to-speech if 'Add TTS audio' is selected below. It can also be used as a 'good answer', against which similarity (relevance) scores are calculated for automatic grading.";
 $string['audiorec_heading'] = "Audio Recorder";
 $string['videorec_heading'] = "Video Recorder";
-$string['grammarcorrection'] = "Suggested Corrections";
+$string['grammarcorrection'] = "Suggested Corrections:";
 $string['step_none'] = 'None';
 $string['step_record'] = 'Record';
 $string['step_transcribe'] = 'Self Transcribe';
