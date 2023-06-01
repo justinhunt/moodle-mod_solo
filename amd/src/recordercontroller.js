@@ -101,12 +101,15 @@ log.debug('updateid', dd.updatecontrolid);
                 xhr.send(params);
             };
 
+
+
             //originates from the recording:ended event
             //contains no meaningful data
             //See https://api.poodll.com
            var on_recording_end= function(eventdata){
                $("button.mod_solo_step2_btn").attr("disabled",true);
            };
+
 
             //data sent here originates from the awaiting_processing event
             //See https://api.poodll.com
@@ -121,17 +124,18 @@ log.debug('updateid', dd.updatecontrolid);
                     var streamingresults = $('#' + dd.streamingresultsid);
                     streamingresults.val(JSON.stringify(dd.streamingresults));
                 }
-                recordingcontainer.hide();
+               // recordingcontainer.hide();
             };
 
             //data sent here originates from the file_submitted event
             //See https://api.poodll.com
             var on_file_submitted= function(){
                 uploadwarning.hide();
-                /* disable cancel button because users can try to leave too soon */
+                //disable cancel button because users can try to leave too soon
                 $("button.mod_solo_step2_btn").attr("disabled",false);
-                $("button.mod_solo_step2_btn").trigger('click');
+               // $("button.mod_solo_step2_btn").trigger('click');
             };
+
 
             //init the recorder
             recorderhelper.init(dd.activitydata,

@@ -61,16 +61,8 @@
     {{/posttranscribing}}
 
 
-    {{! Submit }}
-    <div class="mx-auto">
-        <!-- upload warning -->
-        <div class="mod_solo_uploadwarning" style="display: none">
-            {{#str}}uploading, mod_solo{{/str}}<br>
-            <i class="fa fa-spinner fa-spin fa-3x"></i>
-        </div>
-
-        {{! Submit button is no needed as when the recorder is stopped by the user the audio file uploads and the router automatically sends him to the next step. }}
-        <!--button class="btn btn-primary btn-lg mod_solo_step2_btn" id="{{uniqid}}_button" type="button">Submit</button-->
+    <div class="mx-auto mod_solo_stepsubmit">
+        <button class="btn" id="{{uniqid}}_button" type="button">{{#str}}next, mod_solo{{/str}}</button>
     </div>
 
 </div>
@@ -81,6 +73,8 @@
         require(['jquery', 'core/log','core/notification' ,'core/ajax','core/templates'],
             function($, log, Notification, Ajax, Templates) {
                 $('#' + '{{uniqid}}_button').click(function(){
+
+
                     var data = {};
                     data.filename = $('#' + '{{rec.widgetid}}_filename').val();
                     data.attemptid ={{attemptid}};

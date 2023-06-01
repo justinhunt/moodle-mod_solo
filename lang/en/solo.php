@@ -555,6 +555,7 @@ $string['skinbmr'] = 'Burnt Rose';
 $string['skinfresh'] = 'Fresh (audio only)';
 $string['skin123'] = 'One Two Three';
 $string['skinonce'] = 'Once';
+$string['skinsolo'] = 'Solo';
 $string['skinupload'] = 'Upload';
 
 $string['totalunique'] = 'Unique word total';

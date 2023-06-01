@@ -1173,6 +1173,19 @@ audio#mod_solo_passageaudioplayer {
 	position: absolute;
 	max-width: 400px;
 }
+
+.solo_audiorec_cont[data-type="minimal"] .solo_audiorec_iframe {
+	min-height: 430px;
+}
+
+.solo_audiorec_cont[data-type="minimal"] {
+	overflow: visible;
+}
+
+.mod_solo_rec_outer {
+	margin-bottom: 40px;
+}
+
 .solo_videorec_iframe {
 	left:0;
 	top:0;
