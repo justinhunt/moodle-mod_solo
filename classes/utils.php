@@ -1439,7 +1439,8 @@ class utils{
                 constants::SKIN_123 => get_string("skin123", constants::M_COMPONENT),
                 constants::SKIN_FRESH => get_string("skinfresh", constants::M_COMPONENT),
                 constants::SKIN_ONCE => get_string("skinonce", constants::M_COMPONENT),
-                constants::SKIN_UPLOAD => get_string("skinupload", constants::M_COMPONENT));
+                constants::SKIN_UPLOAD => get_string("skinupload", constants::M_COMPONENT),
+                constants::SKIN_SOLO => get_string("skinsolo", constants::M_COMPONENT));
         return $rec_options;
     }
 
@@ -1991,6 +1992,9 @@ class utils{
                 }elseif($rec->recorderskin==constants::SKIN_UPLOAD){
                     $rec->width = "360";
                     $rec->height = "150";
+                }elseif($rec->recorderskin==constants::SKIN_SOLO){
+                    $rec->width = "330";
+                    $rec->height = "330";
 
                     //bmr 123 once standard
                 }else {

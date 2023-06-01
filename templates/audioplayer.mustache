@@ -100,13 +100,13 @@
                     if(this.hplayer.currentTime < skipinterval) {
                         $(this.backbutton).css('opacity', '50%');
                     }else{
-                        $(this.backbutton).css('opacity', '0%');
+                        $(this.backbutton).css('opacity', '100%');
                     }
 
                     if(this.hplayer.currentTime > (this.duration - skipinterval)) {
                         $(this.forwardbutton).css('opacity', '50%');
                     }else{
-                        $(this.forwardbutton).css('opacity', '0%');
+                        $(this.forwardbutton).css('opacity', '100%');
                     }
                 },
                 skip_back: function(){
