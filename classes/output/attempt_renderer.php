@@ -148,7 +148,8 @@ class attempt_renderer extends \plugin_renderer_base {
          $stepdata->completedsteps =(($latestattempt && $latestattempt->completedsteps) ?  $latestattempt->completedsteps : 0);
          $stepdata->currentstep =  1 + $stepdata->completedsteps;
          //this is not exactly "percentagecomplete", it actually is the number of lines between steps, eg 1 -- 2 -- 3 -- 4
-         $stepdata->percentcomplete= $stepdata->completedsteps ==0  ? 0 : round(($stepdata->completedsteps / ($stepdata->totalsteps-1)) * 100,0);
+         $stepdata->percentcomplete= $stepdata->completedsteps ==0  ? 0 : round(($stepdata->completedsteps  +1 / ($stepdata->totalsteps)) * 100,0);
+         if($stepdata->percentcomplete > 100){$stepdata->percentcomplete = 100;}
          return $this->output->render_from_template( constants::M_COMPONENT . '/activityintrobuttons', ['introcontent'=>$introcontent,'stepdata'=>$stepdata, 'buttons'=>$buttons]);
         //$buttonsdiv = \html_writer::div(implode($glue, $parts),constants::M_COMPONENT .'_mbuttons');
         // return $this->output->box($output . $buttonsdiv, 'generalbox firstpageoptions');

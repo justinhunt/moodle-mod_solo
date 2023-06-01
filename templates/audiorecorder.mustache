@@ -3,11 +3,9 @@
             <div class="col-sm-6 mx-auto">
                 <input type="hidden" id="{{rec.widgetid}}_filename"/>
                 {{#recordvideo}}
-                    <div class="mod_solo_audiorec_heading">{{#str}}audiorec_heading, mod_solo{{/str}}</div>
                     {{>mod_solo/videorecordercontainer}}
                 {{/recordvideo}}
                 {{#recordaudio}}
-                    <div class="mod_solo_audiorec_heading">{{#str}}audiorec_heading, mod_solo{{/str}}</div>
                     {{>mod_solo/audiorecordercontainer}}
                 {{/recordaudio}}
             </div>
