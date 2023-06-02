@@ -1360,13 +1360,18 @@ span.mod_solo_corrections_suggestedword {
 	box-shadow: 0 0 0 0.2rem #BFC6FF;
 }
 
-/* Prepare step */
+/* Assigning central column max-width to display pages (not setting ones) to match Moodle 4 new boundaries */
 
-#page-mod-solo-attempt-manageattempts #page-content {
+#page-mod-solo-attempt-manageattempts #page-content,
+#page-mod-solo-view #page-content,
+#page-mod-solo-reports .mod_solo_report_card {
 	max-width: 800px;
   margin-left: auto;
   margin-right: auto;
 }
+
+
+/* Prepare step */
 
 .mod_solo_step_prepare .container {
 	margin-bottom: 36px;
@@ -2052,6 +2057,7 @@ span.mod_solo_corrections_suggestedword {
 	.mod_solo_report_card.side_heading_left,
 	.mod_solo_report_card.side_heading_right {
 		flex-direction: row;
+		min-height: 300px;
 	}
 }
 
@@ -2066,11 +2072,12 @@ span.mod_solo_corrections_suggestedword {
 	position: relative;
 }
 
+
+
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.side_heading_left .mod_solo_report_card_header {
 		width: 50%;
 		border-radius: 14px 0 0 14px;
-		min-height: 300px;
 		justify-content: center;
 	}
 }
@@ -2079,7 +2086,6 @@ span.mod_solo_corrections_suggestedword {
 	.mod_solo_report_card.side_heading_right .mod_solo_report_card_header {
 		width: 50%;
 		border-radius: 0 14px 14px 0;
-		min-height: 300px;
 		justify-content: center;
 		order: 1;
 	}
@@ -2096,7 +2102,6 @@ span.mod_solo_corrections_suggestedword {
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.side_heading_right .mod_solo_report_card_content {
 		width: 50%;
-		min-height: 300px;
 		order: 0;
 	}
 }
@@ -2118,17 +2123,35 @@ span.mod_solo_corrections_suggestedword {
 }
 
 .mod_solo_report_card.mod_solo_activity_details .mod_solo_summaryheader {
-	font-size: 13px;
+	font-size: inherit;
 	position: relative;
 	top: 104px;
+	line-height: 1.4;
+	text-align: left;
+	padding-left: 24px;
+	padding-right: 24px;
 }
 
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_activity_details .mod_solo_summaryheader {
-		font-size: 22px;
-		position: absolute;
-    left: 36px;
-		top: 136px;
+    font-size: 16px;
+    position: absolute;
+    left: 0;
+    top: 136px;
+    padding-left: 36px;
+    padding-right: 36px;
+	}
+}
+
+.mod_solo_report_card.mod_solo_activity_details .mod_solo_summaryheader .summaryheadertitle {
+	text-align: center;
+	margin-bottom: 24px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_activity_details .mod_solo_summaryheader .summaryheadertitle {
+    margin-bottom: 18px;
+		text-align: left;
 	}
 }
 
@@ -2138,11 +2161,20 @@ span.mod_solo_corrections_suggestedword {
 
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_activity_details .mod_solo_report_card_content {
-		padding-top: 122px;
+		padding-top: 116px;
 		padding-left: 36px;
 		padding-right: 36px;
 	}
 }
+
+.mod_solo_report_card.mod_solo_activity_details .mod_solo_report_card_content .mod_solo_summarychoices {
+	margin-top: 86px;
+}
+
+#page-mod-solo-reports .mod_solo_report_card.mod_solo_activity_details .mod_solo_report_card_content .mod_solo_summarychoices {
+	margin-top: 14px;
+}
+
 
 .mod_solo_activity_details_illustration {
 	background: url([[pix:mod_solo|poodll-solo-target-illustration]]);
@@ -2181,6 +2213,8 @@ span.mod_solo_corrections_suggestedword {
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_automatic_evaluation	.mod_solo_report_card_header {
 		background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
+		position: static;
+		height: auto;
 	}
 }
 
@@ -2244,17 +2278,21 @@ span.mod_solo_corrections_suggestedword {
 }
 
 .mod_solo_automatic_evaluation_chart {
-	height: 180px;
-	width: 180px;
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	position: relative;
 }
 
-.mod_solo_automatic_evaluation_chart_grade_header {
-	margin-top: 18px;
-	font-style: italic;
+#chart_container {
+	height: 180px;
+	width: 180px;
+}
+
+@media screen and (min-width: 768px) {
+	#chart_container {
+		margin-top: 22px;
+	}
 }
 
 .mod_solo_automatic_evaluation_chart_grade_percent {
@@ -2264,6 +2302,74 @@ span.mod_solo_corrections_suggestedword {
 	font-size: 20px;
 }
 
+@media screen and (min-width: 768px) {
+	.mod_solo_automatic_evaluation_chart_grade_percent {
+		top: 102px;
+	}
+}
+
+/* Grade chart will not display in the reports view page (intended for teachers) yet will be still visible in any other page (which will actually be the #page-mod-solo-view page, intended for students). */
+body:not(#page-mod-solo-reports) #chart_container,
+body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_header {
+	display: none;
+}
+
+/* This rule affects both the percentage number in the #page-mod-solo-reports (intended for teachers) view and the success message in the #page-mod-solo-view (intended for students); so here we "destylize" the first to style the second */
+body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_percent {
+	position: static;
+	top: 0;
+	font-weight: normal;
+	font-size: 17px;
+	color: #423c49;
+}
+
+@media screen and (min-width: 768px) {
+	body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_percent {
+		font-size: 20px;
+	}
+}
+
+.mod_solo_evalstars {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin-top: 18px;
+}
+
+.mod_solo_reports_stars_content {
+	display: flex;
+	flex-direction: row;
+	margin-top: 12px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_reports_stars_content {
+		margin-top: 18px;
+	}
+}
+
+.mod_solo_reports_star_on {
+	width: 48px;
+	height: 46px;
+	background: url([[pix:mod_solo|poodll-solo-reports-star-on]]);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+	margin-left: 2px;
+  margin-right: 2px;
+}
+
+.mod_solo_reports_star_off {
+	width: 48px;
+	height: 46px;
+	background: url([[pix:mod_solo|poodll-solo-reports-star-off]]);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+	margin-left: 2px;
+	margin-right: 2px;
+}
 
 /* Report - Transcript Evaluation */
 
@@ -2544,6 +2650,8 @@ span.mod_solo_corrections_suggestedword {
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_spelling_evaluation .mod_solo_report_card_header {
 		background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
+		position: static;
+		height: auto;
 	}
 }
 
@@ -2622,6 +2730,8 @@ span.mod_solo_corrections_suggestedword {
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_grammar_evaluation .mod_solo_report_card_header {
 		background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
+		position: static;
+		height: auto;
 	}
 }
 
