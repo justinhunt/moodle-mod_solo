@@ -1776,12 +1776,15 @@ class utils{
                 $displaystars ='';
                 for($i=0;$i<5;$i++){
                     if($i<$stars){
-                        $displaystars .= '<i class="fa fa-3x fa-star"></i>';
+                        $displaystars .= '<div class="mod_solo_reports_star_on"></div>';
                     }else{
-                        $displaystars .= '<i class="fa fa-3x fa-star-o"></i>';
+                        $displaystars .= '<div class="mod_solo_reports_star_off"></div>';
                     }
                 }
-                $gradefordisplay = \html_writer::span($message . '<br>' . $displaystars,'mod_solo_evalstars');
+                $gradefordisplay = \html_writer::div(
+                    \html_writer::div($message . '<div class="mod_solo_reports_stars_content">' . $displaystars . '</div>','mod_solo_evalstars'),
+                    'mod_solo_reports_stars_container'
+                );
             }else {
                 $gradefordisplay = get_string('gradelabel', constants::M_COMPONENT, $attempt->grade);
             }
