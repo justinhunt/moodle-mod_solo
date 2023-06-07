@@ -1868,6 +1868,7 @@ class utils{
         $ret[constants::M_SEQ_PRTM] = get_string('seq_PRTM',constants::M_COMPONENT);
         $ret[constants::M_SEQ_PRM] =get_string('seq_PRM',constants::M_COMPONENT);
         $ret[constants::M_SEQ_PTRM]=get_string('seq_PTRM',constants::M_COMPONENT);
+        $ret[constants::M_SEQ_PRMT]=get_string('seq_PRMT',constants::M_COMPONENT);
         return $ret;
     }
     public static function fetch_step_no($moduleinstance, $type){

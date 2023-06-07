@@ -68,10 +68,39 @@ class attempt_renderer extends \plugin_renderer_base {
         //because of the way attemot/data are managed in form handler (manageattempts.php) the true attemptid is at 'attemptid' not 'id'
         if($latestattempt){$attemptid = $latestattempt->id;}
 
-        //init buttons
-        $buttons = [];
+      //stepdata
+     $stepdata=new \stdClass();
+     //get total steps
+     $stepdata->totalsteps = 1;//we always have a prepare step (and a finished step but we dont count that)
+     $steps = [2,3,4,5];
+     foreach($steps as $step) {
+         if ($solo->{'step' . $step} != constants::M_STEP_NONE) {
+             $stepdata->totalsteps++;
+         }
+     }
 
+
+     $stepdata->completedsteps =(($latestattempt && $latestattempt->completedsteps) ?  $latestattempt->completedsteps : 0);
+     $stepdata->currentstep =  1 + $stepdata->completedsteps;
+     //this is not exactly "percentagecomplete", it actually is the number of lines between steps, eg 1 -- 2 -- 3 -- 4
+     $stepdata->percentcomplete= $stepdata->completedsteps ==0  ? 0 : round(($stepdata->completedsteps  +1 / ($stepdata->totalsteps)) * 100,0);
+     if($stepdata->percentcomplete > 100){$stepdata->percentcomplete = 100;}
+
+
+        //init buttons
+     $buttons = [];
+     $steps = [1,2,3,4];
+     foreach($steps as $step) {
+        $button = new \stdClass();
+        if($step <= $stepdata->currentstep ) {
+            $button->class = 'activeordone';
+        }else{
+            $button->class = '';
+        }
+         $buttons[] =$button;
+     }
      //Prepare Menu Button / We need this but its always number one and not a part of the steps kept in db sequence fields
+     /*
      $pbutton = new \stdClass();
      $pbutton->label = get_string('attempt_prepare', constants::M_COMPONENT);
      $pbutton->url = new \moodle_url(constants::M_URL . '/attempt/manageattempts.php',
@@ -133,23 +162,9 @@ class attempt_renderer extends \plugin_renderer_base {
                     }
             }//end of switch
         }//end of for each
-
-         $stepdata=new \stdClass();
-        //get total steps
-         $stepdata->totalsteps = 1;//we always have a prepare step (and a finished step but we dont count that)
-         $steps = [2,3,4,5];
-         foreach($steps as $step) {
-             if ($solo->{'step' . $step} != constants::M_STEP_NONE) {
-                 $stepdata->totalsteps++;
-             }
-         }
+     */
 
 
-         $stepdata->completedsteps =(($latestattempt && $latestattempt->completedsteps) ?  $latestattempt->completedsteps : 0);
-         $stepdata->currentstep =  1 + $stepdata->completedsteps;
-         //this is not exactly "percentagecomplete", it actually is the number of lines between steps, eg 1 -- 2 -- 3 -- 4
-         $stepdata->percentcomplete= $stepdata->completedsteps ==0  ? 0 : round(($stepdata->completedsteps  +1 / ($stepdata->totalsteps)) * 100,0);
-         if($stepdata->percentcomplete > 100){$stepdata->percentcomplete = 100;}
          return $this->output->render_from_template( constants::M_COMPONENT . '/activityintrobuttons', ['introcontent'=>$introcontent,'stepdata'=>$stepdata, 'buttons'=>$buttons]);
         //$buttonsdiv = \html_writer::div(implode($glue, $parts),constants::M_COMPONENT .'_mbuttons');
         // return $this->output->box($output . $buttonsdiv, 'generalbox firstpageoptions');

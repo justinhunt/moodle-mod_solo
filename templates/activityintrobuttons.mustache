@@ -7,17 +7,10 @@
     <div class="mod_solo_activity_stepper">
         <!-- TEMPORARY - This text shouldn't be static ↓ -->
         <div class="mod_solo_activity_stepper_text">Step {{stepdata.currentstep}} of {{stepdata.totalsteps}}</div>
-        <!-- {{stepdata.completedsteps}} of {{stepdata.totalsteps}}. Currently on {{stepdata.currentstep}}-->
         <div class="mod_solo_activity_stepper_buttons">
         {{#buttons}}
-            <div class="solo_steptitle">
-                <!--a href="{{{url}}}" class="{{class}}">{{label}}aaa</a-->
+            <div class="solo_steptitle {{class}}">
             </div>
-        <!--div class="col-sm">
-            <div class="row solo_steptitle">
-                <a href="{{{url}}}" class="{{class}}">{{label}}aaa</a>
-            </div>
-        </div-->
         {{/buttons}}
         </div>
         <div class="mod_solo_activity_stepper_lines">

@@ -1811,8 +1811,8 @@ span.mod_solo_corrections_suggestedword {
 }
 
 
-.mod_solo_activity_stepper .solo_steptitle:nth-child(1), 
-.mod_solo_activity_stepper .solo_steptitle:nth-child(2) {
+.mod_solo_activity_stepper .solo_steptitle.activeordone,
+.mod_solo_activity_stepper .solo_steptitle.activeordone {
 	position: relative;
 	z-index: 2;
 	height: 4px;
@@ -1823,9 +1823,8 @@ span.mod_solo_corrections_suggestedword {
 }
 
 @media screen and (min-width: 576px) {
-	/* The nth-child solution is merely for showing purposes; insted, this might be a class which get added to the affected elements, something like 'active-step'. */
-	.mod_solo_activity_stepper .solo_steptitle:nth-child(1), 
-	.mod_solo_activity_stepper .solo_steptitle:nth-child(2) {	
+	.mod_solo_activity_stepper .solo_steptitle.activeordone,
+	.mod_solo_activity_stepper .solo_steptitle.activeordone{
 		height: 32px;
 		width: 32px;
 		display: flex;
