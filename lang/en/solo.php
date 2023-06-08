@@ -712,9 +712,11 @@ $string['fetching_auto_transcript']='Fetching the transcript. Please wait ...';
 $string['no_grammar_corrections']='No grammar corrections. Well done!';
 $string['showallcorrections']='Show all corrections';
 $string['hidecrossouts']='Hide crossouts';
-$string['pushdone']='Push complete. {$a} records updated.';
+
 $string['pushpage']='Push page';
+$string['pushinstructions']='On this page you can select an activity setting, the value of that setting will be pushed to all other activities in this course. You can widen the scope to the whole site, if you are an admin. You can narrow the scope to only activities of the same name. <BR> <b>Be very very careful</b> there is no confirm step. It will just push immediately when you press save. Be sure that you want to do this.';
 $string['pushformheading']='Push Settings to other activities';
 $string['pushaction']='The setting to push';
 $string['pushsitelevel']='Apply Site Wide (else course wide)';
 $string['pushsamename']='Apply only to activities with the same name';
+$string['pushdone']='Push complete. {$a} records updated.';

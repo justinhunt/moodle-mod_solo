@@ -164,6 +164,10 @@ $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
 
 
 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('pushpage', constants::M_COMPONENT));
+echo $renderer->box_start(constants::M_CLASS . '_pushinstructions');
+echo get_string('pushinstructions', constants::M_COMPONENT);
+echo $renderer->box_end();
+
 if($data){
     $pushform->set_data($data);
 }else{
