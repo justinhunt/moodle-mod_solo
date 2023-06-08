@@ -11,15 +11,9 @@ define(['jquery', 'core/log'], function ($, log) {
         //class definitions
         cd: {
             correctionscontainer: 'mod_solo_corrections_cont',
-            wordclass: 'mod_solo_grading_correctionsword',
-            suggestionclass: 'mod_solo_corrections_suggestedword',
-            aiunmatched: 'mod_solo_aiunmatched',
+            insertclass: 'mod_solo_finediffinsertion',
         },
 
-        options: {
-            errorwords: {},
-            grammarmatches: {},
-        },
 
 
         init: function (config) {

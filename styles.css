@@ -2811,3 +2811,6 @@ body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_perc
 	font-weight: 500;
 	font-style: normal;
 }
+.msft_finetune_correction {
+	background-color: #fbe8cd;
+}

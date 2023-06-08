@@ -99,75 +99,8 @@ class attempt_renderer extends \plugin_renderer_base {
         }
          $buttons[] =$button;
      }
-     //Prepare Menu Button / We need this but its always number one and not a part of the steps kept in db sequence fields
-     /*
-     $pbutton = new \stdClass();
-     $pbutton->label = get_string('attempt_prepare', constants::M_COMPONENT);
-     $pbutton->url = new \moodle_url(constants::M_URL . '/attempt/manageattempts.php',
-         array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_PREPARE));
-     $pbutton->class = $buttonclass . ($thisstep == 1 ? '_activemenubutton' : '_completemenubutton');
-     $buttons[] = $pbutton;
-
-     $steps = [2,3,4,5];
-     foreach($steps as $step) {
-            switch($solo->{'step' . $step}) {
-                case constants::M_STEP_RECORD:
-                //Mediarecord Menu Button
-                    $rbutton = new \stdClass();
-                    $rbutton->label = get_string('attempt_record', constants::M_COMPONENT);
-                    if ($latestattempt && ($latestattempt->completedsteps+1) >= $step) {
-                        $recordstep = utils::fetch_step_no($solo,constants::M_STEP_RECORD);
-                        $rbutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                        array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_MEDIARECORDING,'stepno'=>$recordstep));
-                        $rbutton->class = $buttonclass . ($thisstep == $step ? '_activemenubutton' : '_completemenubutton');
-                    }
-                    else {
-                            $rbutton->url = "#";
-                            $rbutton->class = $buttonclass . '_deadmenubutton';
-                    }
-                    $buttons[] = $rbutton;
-                    break;
-
-                case constants::M_STEP_TRANSCRIBE:
-                    //Self Transcribe Menu Button
-                    $stbutton = new \stdClass();
-                    $stbutton->label = get_string('attempt_transcribe', constants::M_COMPONENT);
-                    if ($latestattempt && ($latestattempt->completedsteps +1) >=  $step) {
-                        $transcribestep = utils::fetch_step_no($solo,constants::M_STEP_TRANSCRIBE);
-                        $stbutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                            array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_SELFTRANSCRIBE,'stepno'=>$transcribestep));
-                        $stbutton->class = $buttonclass . ($thisstep == $step ? '_activemenubutton' : '_completemenubutton');
-                    } else {
-                        $stbutton->url = "#";
-                        $stbutton->class = $buttonclass . '_deadmenubutton';
-                    }
-                    $buttons[] = $stbutton;
-                    break;
-
-                case constants::M_STEP_MODEL:
-                    //Model Answer Menu Button
-                    if (utils::has_modelanswer($solo, $context)) {
-                        $mabutton = new \stdClass();
-                        $mabutton->label = get_string('attempt_model', constants::M_COMPONENT);
-                        if ($latestattempt && ($latestattempt->completedsteps+1) >=  $step) {
-                            $modelstep = utils::fetch_step_no($solo,constants::M_STEP_MODEL);
-                            $mabutton->url = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                                array('id' => $this->page->cm->id, 'attemptid' => $attemptid, 'type' => constants::STEP_MODEL,'stepno'=>$modelstep));
-                            $mabutton->class = $buttonclass . ($thisstep == $step ? '_activemenubutton' : '_completemenubutton');
-                        } else {
-                            $mabutton->url = "#";
-                            $mabutton->class = $buttonclass . '_deadmenubutton';
-                        }
-                        $buttons[] = $mabutton;
-                    }
-            }//end of switch
-        }//end of for each
-     */
-
 
          return $this->output->render_from_template( constants::M_COMPONENT . '/activityintrobuttons', ['introcontent'=>$introcontent,'stepdata'=>$stepdata, 'buttons'=>$buttons]);
-        //$buttonsdiv = \html_writer::div(implode($glue, $parts),constants::M_COMPONENT .'_mbuttons');
-        // return $this->output->box($output . $buttonsdiv, 'generalbox firstpageoptions');
     }
 
     function show_userattemptsummary($moduleinstance,$attempt,$aidata, $stats){
@@ -267,11 +200,24 @@ class attempt_renderer extends \plugin_renderer_base {
 
         //if we have a correction, send that out too
         if(!empty($attempt->grammarcorrection)){
+            /*
             list($grammarerrors,$grammarmatches,$insertioncount) = utils::fetch_grammar_correction_diff($simpleselftranscript, $attempt->grammarcorrection);
             $js_opts_html = \mod_solo\aitranscriptutils::prepare_corrections_amd($grammarerrors,$grammarmatches);
             $markedupcorrections = \mod_solo\aitranscriptutils::render_passage($attempt->grammarcorrection,'corrections');
             $markedupcorrections .= $js_opts_html;
             $tdata['grammarcorrection']=$markedupcorrections;
+*/
+
+
+                if(diff::cleanText($simpleselftranscript)==diff::cleanText($attempt->grammarcorrection)) {
+                    $tdata['grammarcorrection'] = get_string('no_grammar_corrections', constants::M_COMPONENT);
+                }else{
+                    $differer = new \mod_solo\FineDiff($simpleselftranscript, $attempt->grammarcorrection, \mod_solo\FineDiff::$wordGranularity);
+                    $diff_html = $differer->renderDiffToHTML();
+                    $toggle_diff = $this->output->render_from_template( constants::M_COMPONENT . '/summary_togglecorrections', []);
+                    $tdata['grammarcorrection']= $diff_html . $toggle_diff;
+                }
+
         }
 
         //send data to template

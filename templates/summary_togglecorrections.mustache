@@ -1,0 +1,26 @@
+
+    <div class="mod_solo_toggle_finedifferences" id="{{uniqid}}_finedifftoggle">
+        <a href="#" class="mstfd_showall" id="{{uniqid}}_mstfd_showall" style="display: none">{{#str}}showallcorrections, mod_solo{{/str}}</a>
+        <a href="#" class="mstfd_hidecrossouts" id="{{uniqid}}_mstfd_hidecrossouts">{{#str}}hidecrossouts, mod_solo{{/str}}</a>
+    </div>
+
+{{#js}}
+        //<script>
+            require(['jquery','core/log'], function($, log) {
+                  $("#{{uniqid}}_finedifftoggle").on('click',function(){
+                      log.debug('clicked');
+                      $("#{{uniqid}}_mstfd_showall").toggle();
+                      $("#{{uniqid}}_mstfd_hidecrossouts").toggle();
+                      var crossoutshidden = $("#{{uniqid}}_mstfd_hidecrossouts").css('display') === 'none';
+
+                      if (crossoutshidden) {
+                          // Hide text within <del> tags , highlight inserted text
+                          $('.mod_solo_corrections_cont del').hide();
+                          $('.mod_solo_corrections_cont ins').addClass('msft_finetune_correction');
+                      } else {
+                          $('.mod_solo_corrections_cont del').show(); // Show hidden <del> tags
+                          $('.mod_solo_corrections_cont ins').removeClass('msft_finetune_correction');
+                      }
+                  });
+            });
+{{/js}}

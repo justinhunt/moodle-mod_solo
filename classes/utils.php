@@ -815,30 +815,21 @@ class utils{
         global $DB;
         //if we have stats in the database, lets use those
         $stats = $DB->get_record(constants::M_STATSTABLE,array('attemptid'=>$attempt->id));
-        if(!$moduleinstance) {
-            $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $attempt->solo));
-        }
 
-        // We dont want to calc stats outside of process_attempt 2023-02-20
-        //the transcripts may not be back yet and they just get stuck on 0
-        /*
-        if(!$stats){
-            $stats = self::calculate_stats($attempt->selftranscript, $attempt,$moduleinstance->ttslanguage);
-
-            //if that worked, and why wouldn't it, lets save them too.
-            if ($stats) {
-                //get the AI stats
-                $stats->ideacount = self::process_idea_count($moduleinstance,$attempt,$stats);
-                $stats->cefrlevel = self::process_cefr_level($moduleinstance,$attempt,$stats);
-                $stats->relevance = self::process_relevance($moduleinstance,$attempt,$stats);
-                $stats = utils::fetch_sentence_stats($attempt->selftranscript,$stats,$moduleinstance->ttslanguage);
-                $stats = utils::fetch_word_stats($attempt->selftranscript,$moduleinstance->ttslanguage,$stats);
-                $stats = self::calc_grammarspell_stats($attempt->selftranscript,
-                        $moduleinstance->region,$moduleinstance->ttslanguage,$stats);
-                self::save_stats($stats, $attempt);
+        //target words ratio - for visual chart
+        if($stats){
+            if($stats->totaltargetwords > 0) {
+                $stats->targetwordsratio = round($stats->targetwords / $stats->totaltargetwords, 2) * 100;
+            }else{
+                $stats->targetwordsratio = 0;
             }
         }
-        */
+
+        //AI inaccuracy -  for visual chart
+        if($stats) {
+            $stats->aiinaccuracy = 100 - $stats->aiaccuracy;
+        }
+
         //0 aiaccuracy means absolutely nothing was matched
         //-1 means we do not have ai data
         if($stats && $stats->aiaccuracy < 0){
@@ -2606,9 +2597,9 @@ class utils{
 
         $options = utils::get_skin_options();
         $mform->addElement('select','recorderskin',get_string('recorderskin', constants::M_COMPONENT), $options,array());
-        $mform->setDefault('recorderskin',constants::SKIN_ONCE);
+        $mform->setDefault('recorderskin',constants::SKIN_SOLO);
 
-        //Enable Manual Transcription [for now lets foprce this ]
+        //Enable Manual Transcription [for now lets force this ]
         $mform->addElement('hidden', 'enabletranscription', 1);
         $mform->setType('enabletranscription',PARAM_BOOL);
         //$mform->addElement('advcheckbox', 'enabletranscription', get_string('enabletranscription', constants::M_COMPONENT), get_string('enabletranscription_details', constants::M_COMPONENT));

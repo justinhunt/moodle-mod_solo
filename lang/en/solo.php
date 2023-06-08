@@ -393,8 +393,8 @@ $string['stats_aiaccuracy'] = 'Speaking clarity';
 $string['stats_uniquewords'] = 'Unique Words';
 $string['stats_longwords'] = 'Long Words';
 $string['stats_ideacount'] = 'Concepts';
-$string['stats_cefrlevel'] = 'CEFR Level';
-$string['stats_relevance'] = 'Relevance'; //AKA similarity
+$string['stats_cefrlevel'] = 'CEFR Level (est.)';
+$string['stats_relevance'] = 'Relevance (est.)'; //AKA similarity
 $string['stats_wpm'] = 'Words per Min.';
 $string['more_stats'] = 'More stats';
 
@@ -709,3 +709,6 @@ $string['suggestionsgrade_use'] = 'Suggested corrections reduce grade';
 $string['suggestionsgrade_details'] = 'If suggested corrections affect the grade, then the percentage difference between the transcript and suggestions text reduces the grade proportionally.';
 $string['suggestionsgrade_help'] = 'If suggested corrections affect the grade, then the percentage difference between the transcript and suggestions text reduces the grade proportionally.';
 $string['fetching_auto_transcript']='Fetching the transcript. Please wait ...';
+$string['no_grammar_corrections']='No grammar corrections. Well done!';
+$string['showallcorrections']='Show all corrections';
+$string['hidecrossouts']='Hide crossouts';

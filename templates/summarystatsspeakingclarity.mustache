@@ -38,7 +38,7 @@
                 };
                 var theRadarChart = new Chart(ctx,cjoptions);
             }
-            make_chart({filled: 56, unfilled: 44});
+            make_chart({filled: {{s.aiaccuracy}}, unfilled: {{s.aiinaccuracy}} });
         });
     {{/js}}
 {{/element.frozen}}
