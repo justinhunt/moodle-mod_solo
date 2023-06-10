@@ -1,5 +1,5 @@
 <div class='mod_solo_hiddenaudioplayer_cont'>
-    <audio id='{{UNIQID}}_mod_solo_hiddenaudioplayer' src='{{audiofilename}}'></audio>
+    <audio id='{{UNIQID}}_mod_solo_hiddenaudioplayer' src='{{audiofilename}}' class="nomediaplugin nopoodll" crossorigin="anonymous"></audio>
 </div>
 
 <div id="{{UNIQID}}_mod_solo_audioplayer" class="mod_solo_audioplayer">
@@ -45,7 +45,10 @@
                     log.debug('duration is '+this.duration);
 
                     this.register_events();
-                    this.update_time();
+                    //update time if audio duration is known, if not wait for loadedmetadata event
+                    if(!isNaN(this.duration)){
+                        this.update_time();
+                    }
                 },
                 register_events: function(){
                     var that = this;
@@ -63,6 +66,11 @@
                     });
                     $(this.hplayer).on('ended',function(){
                         $(that.ppbutton).css('background-image', play_icon_url);
+                    });
+                    $(this.hplayer).on('loadedmetadata',function(){
+                        that.duration = that.hplayer.duration;
+                        log.debug('duration is '+that.duration);
+                        that.update_time();
                     });
                 },
                 toggle_play: function(){
