@@ -545,11 +545,13 @@ class utils{
                     if(self::is_json($gcerrors)&& self::is_json($gcmatches)) {
                         $stats = $DB->get_record(constants::M_STATSTABLE,
                             array('solo' => $attempt->solo, 'attemptid' => $attempt->id, 'userid' => $attempt->userid));
-                        $DB->update_record(constants::M_STATSTABLE,
-                            array('id' => $stats->id,
-                                'gcerrorcount' => $gcerrorcount,
-                                'gcerrors' => $gcerrors,
-                                'gcmatches' => $gcmatches));
+                        if($stats) {
+                            $DB->update_record(constants::M_STATSTABLE,
+                                array('id' => $stats->id,
+                                    'gcerrorcount' => $gcerrorcount,
+                                    'gcerrors' => $gcerrors,
+                                    'gcmatches' => $gcmatches));
+                        }
                     }
                 }
             }
@@ -1989,7 +1991,7 @@ class utils{
                     $rec->height = "150";
                 }elseif($rec->recorderskin==constants::SKIN_SOLO){
                     $rec->width = "330";
-                    $rec->height = "330";
+                    $rec->height = "250";
 
                     //bmr 123 once standard
                 }else {

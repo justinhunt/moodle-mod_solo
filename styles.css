@@ -75,11 +75,15 @@ div.mod_solo_mbuttons {
 }
 
 .mod_solo_ct_body{
+	/*
 	border: 1px solid gray;
 	padding: 5px;
 	border-radius: 5px;
-	margin: 7px;
 	background-color: floralwhite;
+	*/
+
+	margin: 7px;
+
 }
 .mod_solo_ct_right, .mod_solo_ct_left {
 	flex-grow: 1;
@@ -1175,11 +1179,11 @@ audio#mod_solo_passageaudioplayer {
 }
 
 .solo_audiorec_cont[data-type="minimal"] .solo_audiorec_iframe {
-	min-height: 430px;
+	min-height: 250px;
 }
 
 .solo_audiorec_cont[data-type="minimal"] {
-	overflow: visible;
+	overflow: hidden;
 }
 
 .mod_solo_rec_outer {
@@ -1897,12 +1901,15 @@ span.mod_solo_corrections_suggestedword {
 	background-color: #6F58DE;
 	color: #fff;
 	background-image: url([[pix:mod_solo|poodll-solo-audioplayer-play-icon]]);
-  background-repeat: no-repeat;
-  background-position: center;
+  	background-repeat: no-repeat;
+  	background-position: center;
 	border-radius: 100%;
 	border: none;
 	position: absolute;
   top: 36px;
+}
+.mod_solo_audioplayer_play_button[data-state="playing"] {
+	background-image: url([[pix:mod_solo|poodll-solo-audioplayer-pause-icon]]);
 }
 
 .mod_solo_audioplayer_skip_buttons {
@@ -2012,7 +2019,7 @@ span.mod_solo_corrections_suggestedword {
 
 .mod_solo_audioplayer_bar_front {
 	height: 4px;
-	width: 45%;
+	width: 0%;
 	background-color: #2D225D;
 	position: absolute;
 	top: -1px;
