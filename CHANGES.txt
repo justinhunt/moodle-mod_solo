@@ -1,3 +1,9 @@
+Version 1.0.29 (Build 2023061400)
+ - tweaks to  model audio (Slowed it down)
+ - failsafes for when audio or transcript is submitted empty
+ - stopped lower casing passage before sent for spell check
+ - moved audio recorder below prompt
+
 Version 1.0.28 (Build 2023060800)
  - New UI 
 
