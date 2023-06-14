@@ -386,15 +386,18 @@ class utils{
     }
 
 
-    public static function fetch_targetwords($attempt){
-        $targetwords = explode(PHP_EOL,$attempt->topictargetwords);
-        $mywords = explode(PHP_EOL,$attempt->mywords);
-        //Do new lines and commas
-        $allwords = array_merge($targetwords, $mywords);
-        //remove any duplicates or blanks
-        $alltargetwords = array_filter(array_unique($allwords));
+    public static function fetch_targetwords($targetwords){
 
-        return $alltargetwords;
+        //if no target words just exit
+        if(empty($targetwords)){
+            return array();
+        }
+        //split on PHP_EOL or comma
+        $separator = "/(,|" . PHP_EOL . ")/"; // Regular expression to match a comma or PHP_EOL
+        $result = preg_split($separator, $targetwords, -1, PREG_SPLIT_NO_EMPTY);
+        $targetwordsarray = array_unique($result);
+
+        return $targetwordsarray;
     }
 
     /*
@@ -455,9 +458,7 @@ class utils{
         $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
 
         //get target words
-        $topictargetwords = utils::fetch_targetwords($attempt);
-        $mywords = explode(PHP_EOL,$attempt->mywords);
-        $targetwords = array_filter(array_unique(array_merge($topictargetwords, $mywords)));
+        $targetwords = utils::fetch_targetwords($attempt->topictargetwords);
 
         //get text analyser
         $passage = $attempt->selftranscript;
@@ -899,9 +900,7 @@ class utils{
             return false;
         }
         $stats->avturn= round($totalturnlengths  / $stats->turns);
-        $topictargetwords = utils::fetch_targetwords($attempt);
-        $mywords = explode(PHP_EOL,$attempt->mywords);
-        $targetwords = array_filter(array_unique(array_merge($topictargetwords, $mywords)));
+        $targetwords = utils::fetch_targetwords($attempt->topictargetwords);
         $stats->totaltargetwords = count($targetwords);
 
 

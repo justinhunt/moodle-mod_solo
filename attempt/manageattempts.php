@@ -151,7 +151,7 @@ $stepcontent->stepno = $stepno;
 $stepcontent->cmid = $cm->id;
 $stepcontent->nexturl = $redirecturl;
 if(!empty($moduleinstance->targetwords)) {
-    $stepcontent->targetwords = explode(PHP_EOL, $moduleinstance->targetwords);
+    $stepcontent->targetwords = utils::fetch_targetwords($moduleinstance->targetwords);
 }
 //steps "prepare" and "record" use the same media prompt, prepare that here
 $topicmedia = [];

@@ -144,10 +144,11 @@ class attempt_renderer extends \plugin_renderer_base {
     }
 
     function show_summary($moduleinstance,$attempt,$aidata, $stats,$userheader=false){
-        $attempt->targetwords = utils::fetch_targetwords($attempt);
+        $attempt->targetwords = utils::fetch_targetwords($attempt->topictargetwords);
         $attempt->convlength = $moduleinstance->convlength;
         $attempt->speakingtopic = $moduleinstance->speakingtopic;
-        $attempt->selftranscriptparts = utils::fetch_selftranscript_parts($attempt);
+        //$attempt->selftranscriptparts = utils::fetch_selftranscript_parts($attempt);
+
         if($userheader){
             $ret = $this->output->render_from_template( constants::M_COMPONENT . '/summaryuserattemptheader', $attempt);
         }else{
