@@ -1,3 +1,6 @@
+Version 1.0.30 (Build 2023061401)
+ - targetwords now separated by commas or new lines
+
 Version 1.0.29 (Build 2023061400)
  - tweaks to  model audio (Slowed it down)
  - failsafes for when audio or transcript is submitted empty
