@@ -28,8 +28,6 @@
     </div>
 
     {{^posttranscribing}}
-        {{! Audio recorder }}
-        {{>mod_solo/audiorecorder}}
 
         <!-- the topic and goals -->
         {{>mod_solo/stepprompt}}
@@ -40,6 +38,10 @@
                 {{>mod_solo/activitycontent}}
             {{/contentitems}}
         </div>
+
+        {{! Audio recorder }}
+        {{>mod_solo/audiorecorder}}
+
     {{/posttranscribing}}
 
     {{#posttranscribing}}
