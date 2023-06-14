@@ -42,6 +42,10 @@
                     var step={{stepno}};
                     var action = 'submitstep';
 
+                    //turn the caption into a spinner
+                    $(this).html('<i class="fa fa-spinner fa-spin "></i>');
+                    $(this).prop('disabled',true);
+
                    var ret = Ajax.call([{
                         methodname: 'mod_solo_submit_step',
                         args: {
@@ -51,7 +55,12 @@
                             data: JSON.stringify(data)
                         },
                         done:  function(a){window.location='{{{nexturl}}}';},
-                        fail: Notification.exception,
+                        fail: function(e){
+                                Notification.exception(e);
+                                var btn = $('#' + '{{uniqid}}_button');
+                                btn.html('{{#str}}done, mod_solo{{/str}}');
+                                btn.prop('disabled',true);
+                            }
                    }]);
 
                 });

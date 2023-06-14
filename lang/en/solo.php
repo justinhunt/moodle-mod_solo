@@ -74,6 +74,7 @@ $string['deletealluserdata'] = 'Delete all user data';
 //$string['solotask'] ='Poodll Solo Task';
 $string['gotnosound'] = 'We could not hear you. Please check the permissions and settings for microphone and try again.';
 $string['done'] = 'Done';
+$string['submit'] = 'Submit';
 $string['processing'] = 'Processing';
 $string['feedbackheader'] = 'Finished';
 //$string['beginreading'] = 'Begin Reading';
