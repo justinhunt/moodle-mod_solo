@@ -317,7 +317,7 @@ switch($type) {
         if(!empty(trim($moduleinstance->modeltts))){
             //slowspeed
             $slowpassage = utils::fetch_speech_ssml($moduleinstance->modeltts,constants::TTSSPEED_SLOW);
-            $topicmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$slowpassage,'ssml',$moduleinstance->modelttsvoice);
+            $modelmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$slowpassage,'ssml',$moduleinstance->modelttsvoice);
 
             //normal speed
             //$modelmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$moduleinstance->modeltts,'text',$moduleinstance->modelttsvoice);
