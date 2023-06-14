@@ -250,6 +250,10 @@ class textanalyser {
                 $stats['ideacount'] = $this->process_idea_count();
                 $stats['cefrlevel'] = $this->process_cefr_level();
                 $stats['relevance'] = $this->process_relevance();
+                //something went wrong, but it might be used for grading. Lets give them 100, though it sucks
+                if ( $stats['relevance']==0 || $stats['relevance']==false) {
+                    $stats['relevance'] = 100;
+                }
                 $stats = array_merge($stats,$this->fetch_sentence_stats());
                 $stats = array_merge($stats,$this->fetch_word_stats());
                 $stats = array_merge($stats,$this->calc_grammarspell_stats($stats['words']));
