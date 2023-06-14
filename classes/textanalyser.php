@@ -383,7 +383,7 @@ class textanalyser {
 
         //fetch spell stats
         $spellcheck_url = self::fetch_lang_server_url('spellcheck');
-        $spelltranscript = self::cleanText($passage);
+        $spelltranscript = self::preserveCaseCleanText($passage);
         $postdata =array('passage'=>$spelltranscript,'lang'=>$targetlanguage);
         $autospell = self::curl_fetch($spellcheck_url,$postdata,'post');
         //default spell score
@@ -825,6 +825,49 @@ class textanalyser {
         $thetext = implode(' ',$textbits);
         return $thetext;
     }
+
+    /*
+* Clean word of things that might prevent a match
+* i) remove html characters
+* ii) replace any line ends with spaces (so we can "split" later)
+* iii) remove punctuation
+*
+*/
+    public static function preserveCaseCleanText($thetext){
+
+        //remove any html
+        $thetext = strip_tags($thetext);
+
+        //replace all line ends with empty strings
+        $thetext = preg_replace('#\R+#', '', $thetext);
+
+        //remove punctuation
+        //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
+        // $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
+        //https://stackoverflow.com/questions/5689918/php-strip-punctuation
+        $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
+
+        //remove bad chars
+        $b_open="“";
+        $b_close="”";
+        $b_sopen='‘';
+        $b_sclose='’';
+        $bads= array($b_open,$b_close,$b_sopen,$b_sclose);
+        foreach($bads as $bad){
+            $thetext=str_replace($bad,'',$thetext);
+        }
+
+        //remove double spaces
+        //split on spaces into words
+        $textbits = explode(' ',$thetext);
+        //remove any empty elements
+        $textbits = array_filter($textbits, function($value) { return $value !== ''; });
+        $thetext = implode(' ',$textbits);
+        return $thetext;
+    }
+
+
+
 
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
     //this is our helper
