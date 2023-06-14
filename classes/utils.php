@@ -2319,6 +2319,36 @@ class utils{
         }
     }
 
+    //fetch slightly slower version of speech
+    public static function fetch_speech_ssml($text, $ttsspeed){
+
+        switch($ttsspeed){
+            case constants::TTSSPEED_SLOW:
+                $speed='slow';
+                break;
+            case constants::TTSSPEED_XSLOW:
+                $speed='x-slow';
+                break;
+            case constants::TTSSPEED_MEDIUM:
+            default:
+                $speed='medium';
+        }
+
+        //deal with SSML reserved characters
+        $text = str_replace('&','&amp;',$text);
+        $text = str_replace("'",'&apos;',$text);
+        $text = str_replace('"','&quot;',$text);
+        $text = str_replace('<','&lt;',$text);
+        $text = str_replace('>','&gt;',$text);
+
+        $slowtemplate='<speak><break time="1000ms"></break><prosody rate="@@speed@@">@@text@@</prosody></speak>';
+        $slowtemplate = str_replace('@@text@@',$text,$slowtemplate);
+        $slowtemplate = str_replace('@@speed@@',$speed,$slowtemplate);
+
+        return $slowtemplate;
+    }
+
+
     //fetch the MP3 URL of the text we want read aloud
     public static function fetch_polly_url($token,$region,$speaktext,$texttype, $voice) {
         global $USER;

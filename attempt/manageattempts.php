@@ -167,7 +167,13 @@ if(!empty(trim($moduleinstance->topiciframe))){
 
 //Prepare TTS prompt
 if(!empty(trim($moduleinstance->topictts))){
-    $topicmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$moduleinstance->topictts,'text',$moduleinstance->topicttsvoice);
+
+    //slowspeed
+    $slowpassage = utils::fetch_speech_ssml($moduleinstance->topictts,constants::TTSSPEED_SLOW);
+    $topicmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$slowpassage,'ssml',$moduleinstance->topicttsvoice);
+
+    //normal speed
+    //$topicmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$moduleinstance->topictts,'text',$moduleinstance->topicttsvoice);
 }
 
 //Prepare YT Clip
@@ -309,7 +315,12 @@ switch($type) {
 
         //Prepare TTS prompt
         if(!empty(trim($moduleinstance->modeltts))){
-            $modelmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$moduleinstance->modeltts,'text',$moduleinstance->modelttsvoice);
+            //slowspeed
+            $slowpassage = utils::fetch_speech_ssml($moduleinstance->modeltts,constants::TTSSPEED_SLOW);
+            $topicmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$slowpassage,'ssml',$moduleinstance->modelttsvoice);
+
+            //normal speed
+            //$modelmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$moduleinstance->modeltts,'text',$moduleinstance->modelttsvoice);
         }
 
         //Prepare YT Clip

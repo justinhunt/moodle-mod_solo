@@ -50,6 +50,11 @@ const ACCMETHOD_AUTO =1;
 const ACCMETHOD_FIXED =2;
 const ACCMETHOD_NOERRORS =3;
 
+//TTS Speed
+const TTSSPEED_MEDIUM = 0;
+const TTSSPEED_SLOW = 1;
+const TTSSPEED_XSLOW = 2;
+
 
 const M_RECORDERID='solo_audio_recorder';
 const M_WIDGETID='solo_audio_recorder_9999';
