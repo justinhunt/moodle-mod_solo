@@ -47,6 +47,10 @@
                     <textarea name="selftranscript" id="{{uniqid}}_selftranscript" class="form-control" rows="5" cols="80" disabled="true">{{selftranscript}}</textarea>
                     <div class="solo-spinner" id="solo-spinner" style="display: none;"></div>
                 </div>
+                <div id="{{uniqid}}_checkboxholder" style="display: none;">
+                    <input type="checkbox" id="{{uniqid}}_dontwaitfortranscript">
+                    <label for="{{uniqid}}_dontwaitfortranscript">{{#str}}donotwaitfortranscript, mod_solo{{/str}}</label>
+                </div>
 
             </div>
         </div>
@@ -129,12 +133,28 @@
                     selftranscriptarea.attr('placeholder','{{#str}}fetching_auto_transcript, mod_solo{{/str}}');
                     $('#solo-spinner').show();
 
+                    //show our "just let me type checkbox"
+                    $('#{{uniqid}}_checkboxholder').show();
+                    $('#{{uniqid}}_dontwaitfortranscript').change(function() {
+                        if ($(this).is(':checked')) {
+                            //enable the text area, and hide the spinner
+                            selftranscriptarea.prop('disabled', false);
+                            $('#solo-spinner').hide();
+                            selftranscriptarea.attr('placeholder','');
+                        }
+                    });
+
 
                     var xhr = new XMLHttpRequest();
                     var retryTimer;
                     var retryInterval = 2000;
                     var autotranscripturl = '{{audiofilename}}.txt';
                     var check_for_autotranscript = function () {
+                        //cancel if the user has checked the "just let me type" box
+                        if($('#{{uniqid}}_dontwaitfortranscript').is(':checked')) {
+                            return;
+                        }
+
                         xhr.onreadystatechange = function () {
                             if (xhr.readyState === 4) {
                                 if (xhr.status === 200) {

@@ -55,6 +55,7 @@
 
 {{^element.frozen}}
     {{#js}}
+        //<script>
         //this submits the form data by ajax
         require(['jquery', 'core/log','core/notification' ,'core/ajax','core/templates'],
             function($, log, Notification, Ajax, Templates) {
@@ -81,11 +82,11 @@
                         },
                         done:  function(a){window.location='{{{nexturl}}}';},
                         fail: function(e){
-                                Notification.exception(e);
-                                var btn = $('#' + '{{uniqid}}_button');
-                                btn.html('{{#str}}start, mod_solo{{/str}}');
-                                btn.prop('disabled',true);
-                                }
+                            Notification.exception(e);
+                            var btn = $('#' + '{{uniqid}}_button');
+                            btn.html('{{#str}}start, mod_solo{{/str}}');
+                            btn.prop('disabled',true);
+                        },
                    }]);
 
                 });

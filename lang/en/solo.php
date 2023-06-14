@@ -89,7 +89,7 @@ $string['timecreated'] = 'Time Created';
 $string['nodataavailable'] = 'No Data Available Yet';
 $string['saveandnext'] = 'Save .... and next';
 $string['next'] = 'Next';
-$string['start'] = "Let's start!";
+$string['start'] = "Start";
 $string['startrecording'] = 'Click to start recording';
 $string['stoprecording'] = 'Click again to stop recording';
 $string['finish'] = 'Finish';
@@ -690,6 +690,8 @@ $string['nosuggestions'] = "No suggestions.";
 $string['checkgrammarandspelling'] = 'Check grammar and spelling';
 $string['important'] = 'Important';
 $string['noemptyselftranscript'] = 'Please enter something in the textbox before leaving this page.';
+$string['noemptyrecording'] = 'Please record and upload before leaving this page.';
+$string['donotwaitfortranscript'] = 'I do not want to wait for the transcript.';
 
 $string['enablelocalpost']="Enable Local Post";
 $string['enablelocalpost_details']="This is an experimental setting for users in mainland China. Local post will send audio recording submissions to the Moodle server, which will relay them onto our cloud servers. It *might* improve reliability for users with slow connections.";

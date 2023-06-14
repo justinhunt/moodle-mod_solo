@@ -70,6 +70,7 @@
 </div>
 {{^element.frozen}}
     {{#js}}
+        //<script>
         //this submits the form data by ajax
 
         require(['jquery', 'core/log','core/notification' ,'core/ajax','core/templates'],
@@ -79,6 +80,13 @@
 
                     var data = {};
                     data.filename = $('#' + '{{rec.widgetid}}_filename').val();
+
+                    //lets not let people leave the page with an empty recording
+                    if(data.filename.trim()===''){
+                        Notification.alert('{{#str}}important, mod_solo{{/str}}',"{{#str}}noemptyrecording, mod_solo{{/str}}");
+                        return false;
+                    }
+
                     data.attemptid ={{attemptid}};
                     data.activitytype = 2; // {{type}}
                     var cmid={{rec.cmid}};
