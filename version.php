@@ -29,9 +29,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   =  2023061401;
+$plugin->version   =  2023061402;
 $plugin->requires  = 2016052300;      // Requires Moodle 3.1
 $plugin->component = 'mod_solo';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.0.30 (Build 2023061401)';
+$plugin->release = '1.0.31 (Build 2023061402)';
 

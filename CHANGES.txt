@@ -1,3 +1,7 @@
+Version 1.0.31 (Build 2023061402)
+ - fixed issue when duplicate target words were used
+ - preserve case and punctuation in text sent for spellcheck
+
 Version 1.0.30 (Build 2023061401)
  - targetwords now separated by commas or new lines
 

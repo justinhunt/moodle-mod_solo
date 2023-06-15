@@ -383,7 +383,7 @@ class textanalyser {
 
         //fetch spell stats
         $spellcheck_url = self::fetch_lang_server_url('spellcheck');
-        $spelltranscript = self::preserveCaseCleanText($passage);
+        $spelltranscript = self::spellSafeCleanText($passage);
         $postdata =array('passage'=>$spelltranscript,'lang'=>$targetlanguage);
         $autospell = self::curl_fetch($spellcheck_url,$postdata,'post');
         //default spell score
@@ -830,22 +830,15 @@ class textanalyser {
 * Clean word of things that might prevent a match
 * i) remove html characters
 * ii) replace any line ends with spaces (so we can "split" later)
-* iii) remove punctuation
 *
 */
-    public static function preserveCaseCleanText($thetext){
+    public static function spellSafeCleanText($thetext){
 
         //remove any html
         $thetext = strip_tags($thetext);
 
         //replace all line ends with empty strings
         $thetext = preg_replace('#\R+#', '', $thetext);
-
-        //remove punctuation
-        //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
-        // $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
-        //https://stackoverflow.com/questions/5689918/php-strip-punctuation
-        $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
 
         //remove bad chars
         $b_open="“";

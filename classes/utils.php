@@ -387,15 +387,18 @@ class utils{
 
 
     public static function fetch_targetwords($targetwords){
-
+        $targetwordsarray =array();
         //if no target words just exit
         if(empty($targetwords)){
-            return array();
+            return $targetwordsarray;
         }
         //split on PHP_EOL or comma
         $separator = "/(,|" . PHP_EOL . ")/"; // Regular expression to match a comma or PHP_EOL
         $result = preg_split($separator, $targetwords, -1, PREG_SPLIT_NO_EMPTY);
-        $targetwordsarray = array_unique($result);
+        if($result && count($result)>0){
+            //remove duplicates and reindex array so there are no gaps
+            $targetwordsarray = array_values(array_unique($result));
+        }
 
         return $targetwordsarray;
     }
