@@ -1,3 +1,6 @@
+Version 1.0.32 (Build 2023072400)
+- added attempt submitted and step submitted events
+
 Version 1.0.31 (Build 2023061402)
  - fixed issue when duplicate target words were used
  - preserve case and punctuation in text sent for spellcheck

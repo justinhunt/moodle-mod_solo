@@ -68,6 +68,12 @@ if($config->enablesetuptab){
 }
 $PAGE->force_settings_menu(true);
 
+if($config->layout==constants::M_LAYOUT_NARROW) {
+    $PAGE->add_body_class('mod-solo-layout-narrow');
+}else{
+    $PAGE->add_body_class('mod-solo-layout-standard');
+}
+
 //Set up the attempt type specific parts of the form data
 $renderer = $PAGE->get_renderer('mod_solo');
 $attempt_renderer = $PAGE->get_renderer('mod_solo','attempt');

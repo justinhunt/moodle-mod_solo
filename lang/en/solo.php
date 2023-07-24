@@ -723,3 +723,9 @@ $string['pushaction']='The setting to push';
 $string['pushsitelevel']='Apply Site Wide (else course wide)';
 $string['pushsamename']='Apply only to activities with the same name';
 $string['pushdone']='Push complete. {$a} records updated.';
+$string['eventsolostepsubmitted'] = 'Solo step submitted';
+$string['eventsoloattemptsubmitted'] = 'Solo attempt submitted';
+$string['layout'] = 'Layout';
+$string['layout_standard'] = 'Standard';
+$string['layout_narrow'] = 'Narrow';
+

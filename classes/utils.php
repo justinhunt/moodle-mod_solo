@@ -1561,6 +1561,14 @@ class utils{
         return $options;
     }
 
+    public static function get_layout_options() {
+        return array(
+            constants::M_LAYOUT_NARROW => get_string('layout_narrow', constants::M_COMPONENT),
+            constants::M_LAYOUT_STANDARD => get_string('layout_standard', constants::M_COMPONENT)
+        );
+
+    }
+
     public static function get_lang_options() {
 
         //we decided to limit this to what we can process and use langtool for:

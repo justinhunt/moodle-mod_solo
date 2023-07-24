@@ -76,6 +76,12 @@ if($config->enablesetuptab){
     $PAGE->set_pagelayout('course');
 }
 
+if($config->layout==constants::M_LAYOUT_NARROW) {
+    $PAGE->add_body_class('mod-solo-layout-narrow');
+}else{
+    $PAGE->add_body_class('mod-solo-layout-standard');
+}
+
 if($config->enablesetuptab && empty($moduleinstance->speakingtopic)){
     echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
     if (has_capability('mod/solo:manage', $context)) {

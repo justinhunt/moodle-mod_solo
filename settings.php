@@ -124,6 +124,10 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
             $label, $details, $default, $options));
 
+    $layoutoptions = \mod_solo\utils::get_layout_options();
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/layout',
+        get_string('layout', constants::M_COMPONENT), '',
+        constants::M_LAYOUT_NARROW, $layoutoptions));
 
     $settings->add(new admin_setting_confightmleditor(constants::M_COMPONENT . '/speakingtips',get_string('speakingtips', constants::M_COMPONENT),
             get_string('speakingtips_details', constants::M_COMPONENT),get_string('speakingtips_default', constants::M_COMPONENT)));

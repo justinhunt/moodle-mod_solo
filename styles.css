@@ -1366,9 +1366,9 @@ span.mod_solo_corrections_suggestedword {
 
 /* Assigning central column max-width to display pages (not setting ones) to match Moodle 4 new boundaries */
 
-#page-mod-solo-attempt-manageattempts #page-content,
-#page-mod-solo-view #page-content,
-#page-mod-solo-reports .mod_solo_report_card {
+#page-mod-solo-attempt-manageattempts.mod-solo-layout-narrow #page-content,
+#page-mod-solo-view.mod-solo-layout-narrow #page-content,
+#page-mod-solo-reports.mod-solo-layout-narrow .mod_solo_report_card {
 	max-width: 800px;
   margin-left: auto;
   margin-right: auto;
