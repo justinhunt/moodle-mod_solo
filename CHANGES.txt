@@ -1,3 +1,6 @@
+Version 1.0.33 (Build 2023072401)
+- bug fix for events restoring
+
 Version 1.0.32 (Build 2023072400)
 - added attempt submitted and step submitted events
 

@@ -122,7 +122,7 @@ class attempt_submitted extends \core\event\base {
     }
 
     public static function get_objectid_mapping() {
-        return array('db' => constants::M_ATTEMPTSTABLE, 'restore' => 'solo_progress');
+        return array('db' => constants::M_ATTEMPTSTABLE, 'restore' => 'attempts');
     }
 
     public static function get_other_mapping() {
