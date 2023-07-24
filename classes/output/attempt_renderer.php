@@ -55,9 +55,12 @@ class attempt_renderer extends \plugin_renderer_base {
  public function add_edit_page_links($solo, $latestattempt, $thisstep, $cm, $context) {
 		global $CFG;
 
-     //instructions /intro
-        $output = '';
-        $introcontent = $this->show_intro($solo, $cm);
+     //instructions /intro if less then Moodle 4.0 show
+     if($CFG->version<2022041900) {
+         $introcontent = $this->show_intro($solo, $cm);
+     }else {
+         $introcontent = '';
+     }
 
         $parts = array();
         $buttonclass = 'btn ' . constants::M_COMPONENT .'_menubutton ' . constants::M_COMPONENT;
