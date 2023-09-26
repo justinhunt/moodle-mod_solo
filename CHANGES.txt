@@ -1,3 +1,6 @@
+Version 1.0.35 (Build 2023092600)
+- fix for incorrect language-locale for Norwegian
+
 Version 1.0.34 (Build 2023072402)
 - fix for activity description on < M4.0 versions Moodle
 

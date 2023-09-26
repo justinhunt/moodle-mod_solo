@@ -418,6 +418,11 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023051302, 'solo');
     }
 
+    if($oldversion < 2023092600){
+        //The norwegian language-locale code nb-no is not supported by all STT engines in Poodll, and no-no is. So updating
+        $DB->set_field(constants::M_TABLE,'ttslanguage',constants::M_LANG_NONO,['ttslanguage'=>constants::M_LANG_NBNO]);
+        upgrade_mod_savepoint(true, 2023092600, 'solo');
+    }
 
 
 
