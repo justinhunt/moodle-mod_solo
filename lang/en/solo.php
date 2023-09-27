@@ -624,6 +624,7 @@ $string['content_media'] ='Image, audio or video content';
 $string['content_iframe'] ='Embed iframe code';
 $string['content_tts'] ='TTS text';
 $string['content_ttsvoice'] ='Speaker\'s voice';
+$string['content_ttsspeed'] ='Speaker speed';
 $string['content_ytid'] = "Youtube Video ID";
 $string['content_ytstart'] = "Start Secs";
 $string['content_ytend'] = "End Secs";
@@ -728,4 +729,9 @@ $string['eventsoloattemptsubmitted'] = 'Solo attempt submitted';
 $string['layout'] = 'Layout';
 $string['layout_standard'] = 'Standard';
 $string['layout_narrow'] = 'Narrow';
+$string['showgrammmar']="Show grammar eval.";
+$string['showspelling']="Show spelling eval.";
+$string['showopts_no']="Don't show.";
+$string['showopts_yes']="Show.";
+
 

@@ -58,7 +58,7 @@
 
 {{! Spelling evaluation }}
 {{#selftranscribe}}
-
+{{#showspelling}}
     <section class="mod_solo_report_card side_heading_left mod_solo_spelling_evaluation">
         <div class="mod_solo_report_card_header">
             <div class="mod_solo_spelling_evaluation_illustration"></div> 
@@ -70,11 +70,12 @@
             {{>mod_solo/summaryspellingeval}}
         </div>
     </section>
-    
+{{/showspelling}}
 {{/selftranscribe}}
 
 
 {{! Grammar evaluation }}
+{{#showgrammar}}
 <section class="mod_solo_report_card side_heading_right mod_solo_grammar_evaluation">
     <div class="mod_solo_report_card_header">
         <div class="mod_solo_grammar_evaluation_illustration"></div> 
@@ -87,6 +88,6 @@
         {{>mod_solo/summarygrammareval}}
     </div>
 </section>
-
+{{/showgrammar}}
 
 

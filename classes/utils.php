@@ -1569,6 +1569,20 @@ class utils{
 
     }
 
+    public static function get_show_options(){
+        return array(
+            0 => get_string('showopts_no', constants::M_COMPONENT),
+            1 => get_string('showopts_yes', constants::M_COMPONENT)
+        );
+    }
+
+    public static function get_ttsspeed_options() {
+        return array(
+            constants::TTSSPEED_MEDIUM => get_string("mediumspeed", constants::M_COMPONENT),
+            constants::TTSSPEED_SLOW => get_string("slowspeed", constants::M_COMPONENT),
+            constants::TTSSPEED_XSLOW => get_string("extraslowspeed", constants::M_COMPONENT)
+        );
+    }
     public static function get_lang_options() {
 
         //we decided to limit this to what we can process and use langtool for:
@@ -2351,11 +2365,11 @@ class utils{
         $text = str_replace('<','&lt;',$text);
         $text = str_replace('>','&gt;',$text);
 
-        $slowtemplate='<speak><break time="1000ms"></break><prosody rate="@@speed@@">@@text@@</prosody></speak>';
-        $slowtemplate = str_replace('@@text@@',$text,$slowtemplate);
-        $slowtemplate = str_replace('@@speed@@',$speed,$slowtemplate);
+        $speedtemplate='<speak><break time="1000ms"></break><prosody rate="@@speed@@">@@text@@</prosody></speak>';
+        $speedtemplate = str_replace('@@text@@',$text,$speedtemplate);
+        $speedtemplate = str_replace('@@speed@@',$speed,$speedtemplate);
 
-        return $slowtemplate;
+        return $speedtemplate;
     }
 
 
@@ -2424,19 +2438,23 @@ class utils{
         }
     }
 
-    public static function process_modeltts_stats($moduleinstance){
-        if(empty($moduleinstance->modeltts) || !self::is_english($moduleinstance->ttslanguage)) {
+    public static function process_modelanswer_stats($moduleinstance){
+        if(empty($moduleinstance->modelanswer) || !self::is_english($moduleinstance->ttslanguage)) {
             return $moduleinstance;
         }
         $siteconfig = get_config(constants::M_COMPONENT);
         $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-        $textanalyser = new textanalyser($token,$moduleinstance->modeltts,$moduleinstance->region,$moduleinstance->ttslanguage);
+        $textanalyser = new textanalyser($token,$moduleinstance->modelanswer,$moduleinstance->region,$moduleinstance->ttslanguage);
         $embedding = $textanalyser->fetch_embedding();
         $ideacount = $textanalyser->fetch_idea_count();
         if($embedding){
+            //the modelanswer field was originally modeltts, so the field name is out of date.
+            // TO DO: change it
             $moduleinstance->modelttsembedding = $embedding;
         }
         if($ideacount){
+            //the modelanswer field was originally modeltts, so the field name is out of date.
+            // TO DO: change it
             $moduleinstance->modelttsideacount = $ideacount;
         }
         return $moduleinstance;
@@ -2617,6 +2635,16 @@ class utils{
         $mform->setType('enablesuggestions', PARAM_INT);
         $mform->setDefault('enablesuggestions',1);
         $mform->addHelpButton('enablesuggestions', 'enablesuggestions', constants::M_MODNAME);
+
+        //Grammar options
+        $grammaroptions = \mod_solo\utils::get_show_options();
+        $mform->addElement('select', 'showgrammar', get_string('showgrammar', constants::M_COMPONENT), $grammaroptions);
+        $mform->setDefault('showgrammar',$config->showgrammar);
+
+        //Spelling options
+        $spellingoptions = \mod_solo\utils::get_show_options();
+        $mform->addElement('select', 'showspelling', get_string('showspelling', constants::M_COMPONENT), $spellingoptions);
+        $mform->setDefault('showspelling',$config->showspelling);
 
         //TTS on pre-audio transcribe
         $mform->addElement('selectyesno', 'enabletts', get_string('enabletts', constants::M_MODNAME));
@@ -2828,6 +2856,17 @@ class utils{
         }else {
             $mform->disabledIf($cp . 'ttsvoice', $cp . 'addttsaudio', 'neq', 1);
         }
+
+        $speedoptions = \mod_solo\utils::get_ttsspeed_options();
+        $mform->addElement('select', $cp .'ttsspeed', get_string('content_ttsspeed', constants::M_COMPONENT), $speedoptions);
+        $mform->setDefault($cp .'ttsspeed', constants::TTSSPEED_SLOW);
+       // $mform->addHelpButton($cp . 'ttsspeed', $cp . 'ttsspeed', constants::M_COMPONENT);
+        if($m35){
+            $mform->hideIf($cp . 'ttsspeed', $cp . 'addttsaudio', 'neq', 1);
+        }else {
+            $mform->disabledIf($cp . 'ttsspeed', $cp . 'addttsaudio', 'neq', 1);
+        }
+
 
         //Question YouTube Clip
         $ytarray=array();

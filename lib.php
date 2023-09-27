@@ -195,7 +195,7 @@ function solo_add_instance(stdClass $moduleinstance, mod_solo_mod_form $mform = 
     $moduleinstance = solo_process_filemanagers($moduleinstance,$mform);
     $moduleinstance = solo_process_autogradeoptions($moduleinstance,$mform);
     $moduleinstance = utils::sequence_to_steps($moduleinstance);
-    $moduleinstance = utils::process_modeltts_stats($moduleinstance);
+    $moduleinstance = utils::process_modelanswer_stats($moduleinstance);
     $moduleinstance->id = $DB->insert_record(constants::M_TABLE, $moduleinstance);
     solo_grade_item_update($moduleinstance);
 	return $moduleinstance->id;
@@ -282,7 +282,7 @@ function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform
     $moduleinstance = solo_process_autogradeoptions($moduleinstance,$mform);
     $moduleinstance = utils::sequence_to_steps($moduleinstance);
     if( isset($moduleinstance->modeltts) && ($oldmodeltts !== $moduleinstance->modeltts)) {
-        $moduleinstance =  utils::process_modeltts_stats($moduleinstance);
+        $moduleinstance =  utils::process_modelanswer_stats($moduleinstance);
     }
 	$success = $DB->update_record(constants::M_TABLE, $moduleinstance);
     solo_grade_item_update($moduleinstance);
