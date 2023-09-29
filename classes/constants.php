@@ -187,6 +187,7 @@ const M_LANG_UKUA ='uk-UA';
 const M_LANG_EUES ='eu-ES';
 const M_LANG_FIFI ='fi-FI';
 const M_LANG_HUHU ='hu-HU';
+const M_LANG_MINZ ='mi-NZ';
 
 const M_HIDDEN_PLAYER = 'mod_solo_hidden_player';
 const M_HIDDEN_PLAYER_BUTTON = 'mod_solo_hidden_player_button';

@@ -1613,6 +1613,7 @@ class utils{
                 constants::M_LANG_ITIT => get_string('it-it', constants::M_COMPONENT),
                 constants::M_LANG_JAJP => get_string('ja-jp', constants::M_COMPONENT),
                 constants::M_LANG_KOKR => get_string('ko-kr', constants::M_COMPONENT),
+                constants::M_LANG_MINZ => get_string('mi-nz',constants::M_COMPONENT),
                 constants::M_LANG_MSMY => get_string('ms-my', constants::M_COMPONENT),
                 constants::M_LANG_NONO => get_string('no-no', constants::M_COMPONENT),
                 constants::M_LANG_NLNL => get_string('nl-nl', constants::M_COMPONENT),
@@ -1942,6 +1943,7 @@ class utils{
                 constants::M_LANG_FILPH => ['fil-PH-Wavenet-A'=>'Darna_g','fil-PH-Wavenet-B'=>'Reyna_g','fil-PH-Wavenet-C'=>'Bayani_g','fil-PH-Wavenet-D'=>'Ernesto_g'],
                 constants::M_LANG_FIFI => ['fi-FI-Wavenet-A'=>'Kaarina_g'],
                 constants::M_LANG_HUHU => ['hu-HU-Wavenet-A'=>'Eszter_g']
+            ////constants::M_LANG_MINZ => [],
 
 
         );

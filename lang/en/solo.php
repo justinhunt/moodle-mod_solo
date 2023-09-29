@@ -173,6 +173,7 @@ $string['no-no'] = 'Norwegian';
 $string['nb-no'] = 'Norwegian';//unused
 $string['pl-pl'] = 'Polish';
 $string['ro-ro'] = 'Romanian';
+$string['mi-nz'] = 'Maori';
 
 $string['awsregion']='AWS Region';
 $string['region']='AWS Region';
