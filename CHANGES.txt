@@ -1,3 +1,9 @@
+Version 1.0.36 (Build 2023092700)
+- add speed fields for TTS
+- added a separate Model Answer field for relevance
+- added ability to hide and show grammar/spelling check
+- added text analysis features for more languages
+
 Version 1.0.35 (Build 2023092600)
 - fix for incorrect language-locale for Norwegian
 

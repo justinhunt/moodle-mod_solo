@@ -263,16 +263,4 @@ class attempthelper
 
     }
 
-    public function has_modelanswer(){
-        if(!empty(trim($this->mod->modelytid))) {return true;}
-        if(!empty(trim($this->mod->modeliframe))) {return true;}
-        if(!empty(trim($this->mod->modeltts))) {return true;}
-        $itemid=0;
-        $filearea='modelmedia';
-        $mediaurls = utils::fetch_media_urls($this->context->id,$filearea,$itemid);
-        if($mediaurls && count($mediaurls)>0) {
-            return true;
-        }
-        return false;
-    }
 }//end of class

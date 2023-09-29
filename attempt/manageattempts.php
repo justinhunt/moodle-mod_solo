@@ -175,7 +175,7 @@ if(!empty(trim($moduleinstance->topiciframe))){
 if(!empty(trim($moduleinstance->topictts))){
 
     //slowspeed
-    $slowpassage = utils::fetch_speech_ssml($moduleinstance->topictts,constants::TTSSPEED_SLOW);
+    $slowpassage = utils::fetch_speech_ssml($moduleinstance->topictts,$moduleinstance->topicttsspeed);
     $topicmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$slowpassage,'ssml',$moduleinstance->topicttsvoice);
 
     //normal speed
@@ -322,7 +322,7 @@ switch($type) {
         //Prepare TTS prompt
         if(!empty(trim($moduleinstance->modeltts))){
             //slowspeed
-            $slowpassage = utils::fetch_speech_ssml($moduleinstance->modeltts,constants::TTSSPEED_SLOW);
+            $slowpassage = utils::fetch_speech_ssml($moduleinstance->modeltts,$moduleinstance->modelttsspeed);
             $modelmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$slowpassage,'ssml',$moduleinstance->modelttsvoice);
 
             //normal speed

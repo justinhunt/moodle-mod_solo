@@ -114,6 +114,14 @@ if ($ADMIN->fulltree) {
              get_string('ttslanguage', constants::M_COMPONENT), '',
              constants::M_LANG_ENUS, $langoptions));
 
+    $showopts = \mod_solo\utils::get_show_options();
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/showgrammar',
+        get_string('showgrammar', constants::M_COMPONENT), '',
+        0, $showopts));
+
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/showspelling',
+        get_string('showspelling', constants::M_COMPONENT), '',
+        0, $showopts));
 
     // Transcriber options
     $name = 'transcriber';
