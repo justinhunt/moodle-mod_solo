@@ -646,7 +646,7 @@ class FineDiff {
 	private static function extractFragments($text, $delimiters) {
 		// special case: split into characters
 		if ( empty($delimiters) ) {
-			$chars = str_split($text, 1);
+			$chars = mb_str_split($text, 1);
 			$chars[strlen($text)] = '';
 			return $chars;
 			}
