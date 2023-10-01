@@ -418,8 +418,33 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023051302, 'solo');
     }
 
+    if($oldversion < 2023092600){
+        //The norwegian language-locale code nb-no is not supported by all STT engines in Poodll, and no-no is. So updating
+        $DB->set_field(constants::M_TABLE,'ttslanguage',constants::M_LANG_NONO,['ttslanguage'=>constants::M_LANG_NBNO]);
+        upgrade_mod_savepoint(true, 2023092600, 'solo');
+    }
 
+    if($oldversion < 2023092700) {
 
+        $table = new xmldb_table(constants::M_TABLE);
+        $fields = [];
+        $fields[] =  new xmldb_field('showspelling', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null,0);
+        $fields[] =  new xmldb_field('showgrammar', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null,0);
+        $fields[] =  new xmldb_field('modelanswer', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] =  new xmldb_field('modelttsspeed', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null,0);
+        $fields[] =  new xmldb_field('topicttsspeed', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null,0);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        $DB->execute("UPDATE {" . constants::M_TABLE. "} SET modelanswer = modeltts", array());
+
+        upgrade_mod_savepoint(true, 2023092700, 'solo');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

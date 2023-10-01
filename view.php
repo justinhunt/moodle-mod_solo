@@ -76,6 +76,12 @@ if($config->enablesetuptab){
     $PAGE->set_pagelayout('course');
 }
 
+if($config->layout==constants::M_LAYOUT_NARROW) {
+    $PAGE->add_body_class('mod-solo-layout-narrow');
+}else{
+    $PAGE->add_body_class('mod-solo-layout-standard');
+}
+
 if($config->enablesetuptab && empty($moduleinstance->speakingtopic)){
     echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
     if (has_capability('mod/solo:manage', $context)) {
@@ -160,7 +166,7 @@ if($start_or_continue) {
             echo $attempt_renderer->show_teachereval($rubricresults,$feedback,$evaluator);
             $autotranscriptready=true;
             $selftranscribe = utils::fetch_step_no($moduleinstance, constants::STEP_SELFTRANSCRIBE) !==false;
-            echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats,$autotranscriptready,$selftranscribe);
+            echo $attempt_renderer->show_summarypassageandstats($moduleinstance,$attempt,$aidata, $stats,$autotranscriptready,$selftranscribe);
 
         }elseif($attempt){
             echo $attempt_renderer->show_placeholdereval($attempt->id);

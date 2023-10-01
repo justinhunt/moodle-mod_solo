@@ -131,8 +131,11 @@ const RECORDERORPLAYERFIELD='recorderorplayer';
 const TRANSCRIBER_NONE = 0;
 const TRANSCRIBER_OPEN = 1;
 
+const M_LAYOUT_STANDARD = '0';
+const M_LAYOUT_NARROW = '1';
 
-const M_TOPICLEVEL_CUSTOM =1;
+
+    const M_TOPICLEVEL_CUSTOM =1;
 const M_TOPICLEVEL_COURSE =0;
 
 const DEF_CONVLENGTH=2;
@@ -174,7 +177,7 @@ const M_LANG_RURU ='ru-RU';
 const M_LANG_TAIN ='ta-IN';
 const M_LANG_TEIN ='te-IN';
 const M_LANG_TRTR ='tr-TR';
-
+const M_LANG_NONO ='no-NO';
 const M_LANG_NBNO ='nb-NO';
 const M_LANG_PLPL ='pl-PL';
 const M_LANG_RORO ='ro-RO';
@@ -184,6 +187,7 @@ const M_LANG_UKUA ='uk-UA';
 const M_LANG_EUES ='eu-ES';
 const M_LANG_FIFI ='fi-FI';
 const M_LANG_HUHU ='hu-HU';
+const M_LANG_MINZ ='mi-NZ';
 
 const M_HIDDEN_PLAYER = 'mod_solo_hidden_player';
 const M_HIDDEN_PLAYER_BUTTON = 'mod_solo_hidden_player_button';

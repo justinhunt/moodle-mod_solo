@@ -55,9 +55,12 @@ class attempt_renderer extends \plugin_renderer_base {
  public function add_edit_page_links($solo, $latestattempt, $thisstep, $cm, $context) {
 		global $CFG;
 
-     //instructions /intro
-        $output = '';
-        $introcontent = $this->show_intro($solo, $cm);
+     //instructions /intro if less then Moodle 4.0 show
+     if($CFG->version<2022041900) {
+         $introcontent = $this->show_intro($solo, $cm);
+     }else {
+         $introcontent = '';
+     }
 
         $parts = array();
         $buttonclass = 'btn ' . constants::M_COMPONENT .'_menubutton ' . constants::M_COMPONENT;
@@ -160,7 +163,7 @@ class attempt_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    function show_summarypassageandstats($attempt,$aidata,$stats,$autotranscriptready, $selftranscribe){
+    function show_summarypassageandstats($moduleinstance,$attempt,$aidata,$stats,$autotranscriptready, $selftranscribe){
         //mark up our passage for review
         //if we have ai we need all the js and markup, otherwise we just need the formated transcript
         $ret='';
@@ -171,6 +174,8 @@ class attempt_renderer extends \plugin_renderer_base {
         if($tdata['spellingerrors']){$tdata['hasspellingerrors']=true;}
         if($tdata['grammarerrors']){$tdata['hasgrammarerrors']=true;}
         if($selftranscribe){$tdata['selftranscribe']=true; }
+        if($moduleinstance->showgrammar){$tdata['showgrammar']=true; }
+        if($moduleinstance->showspelling){$tdata['showspelling']=true; }
 
         //if you have no transcript then it will error on render, so we use a space by default
         //it should never really be blank however, and theuser arrived in a strange way probbaly. This just avoids an ugly error

@@ -169,9 +169,11 @@ $string['fi-fi'] = 'Finnish';
 $string['hu-hu'] = 'Hungarian';
 
 $string['sv-se'] = 'Swedish';
-$string['nb-no'] = 'Norwegian';
+$string['no-no'] = 'Norwegian';
+$string['nb-no'] = 'Norwegian';//unused
 $string['pl-pl'] = 'Polish';
 $string['ro-ro'] = 'Romanian';
+$string['mi-nz'] = 'Maori';
 
 $string['awsregion']='AWS Region';
 $string['region']='AWS Region';
@@ -624,6 +626,7 @@ $string['content_media'] ='Image, audio or video content';
 $string['content_iframe'] ='Embed iframe code';
 $string['content_tts'] ='TTS text';
 $string['content_ttsvoice'] ='Speaker\'s voice';
+$string['content_ttsspeed'] ='Speaker speed';
 $string['content_ytid'] = "Youtube Video ID";
 $string['content_ytstart'] = "Start Secs";
 $string['content_ytend'] = "End Secs";
@@ -648,7 +651,7 @@ $string['activityopenscloses']="Activity open/close dates";
 $string['solo:preview'] = 'Can preview Solo activities';
 $string['modelanswer'] = "Model Answer";
 $string['modelanswerheader'] = "Model Answer";
-$string['modelanswerinstructions'] = "The model answer can be read aloud to students using text-to-speech if 'Add TTS audio' is selected below. It can also be used as a 'good answer', against which similarity (relevance) scores are calculated for automatic grading.";
+$string['modelanswerinstructions'] = "The model answer is used as a 'good answer', against which similarity (relevance) scores are calculated for automatic grading. It is not shown to students. Use the media options below the model answer to display a video or text to speech player to the students in the model answer step.";
 $string['audiorec_heading'] = "Audio Recorder";
 $string['videorec_heading'] = "Video Recorder";
 $string['grammarcorrection'] = "Suggested Corrections:";
@@ -723,3 +726,20 @@ $string['pushaction']='The setting to push';
 $string['pushsitelevel']='Apply Site Wide (else course wide)';
 $string['pushsamename']='Apply only to activities with the same name';
 $string['pushdone']='Push complete. {$a} records updated.';
+$string['eventsolostepsubmitted'] = 'Solo step submitted';
+$string['eventsoloattemptsubmitted'] = 'Solo attempt submitted';
+$string['layout'] = 'Layout';
+$string['layout_standard'] = 'Standard';
+$string['layout_narrow'] = 'Narrow';
+$string['showgrammar']="Show grammar eval.";
+$string['showspelling']="Show spelling eval.";
+$string['showopts_no']="Don't show.";
+$string['showopts_yes']="Show.";
+
+$string['ttsspeed'] = 'TTS Speed';
+$string['mediumspeed'] = 'Medium';
+$string['slowspeed'] = 'Slow';
+$string['extraslowspeed'] = 'Extra Slow';
+
+
+$string['modelanswer_help'] = 'Enter a good and complete sample answer to the topic. It will be used as part of the grading process.';

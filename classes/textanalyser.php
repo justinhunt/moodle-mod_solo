@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use mod_solo\constants;
+
 
 /**
  * Functions used for producing a textanalysis
@@ -91,7 +93,7 @@ class textanalyser {
         }
 
         //count sentences
-        $items = preg_split('/[!?.]+(?![0-9])/', $passage);
+        $items = $this->split_into_sentences();
         $items = array_filter($items);
         $sentencecount = count($items);
 
@@ -101,7 +103,7 @@ class textanalyser {
         $averagesentence=1;
         $totallengths = 0;
         foreach($items as $sentence){
-            $length = self::mb_count_words($sentence,$this->language);
+            $length = $this->mb_count_words($sentence,0);
             if($length>$longestsentence){
                 $longestsentence =$length;
             }
@@ -180,6 +182,25 @@ class textanalyser {
                 }
 
                 break;
+
+            //Chinese / Japanese / Korean - we do not do words, just characters
+            case constants::M_LANG_ZHCN:
+            case constants::M_LANG_JAJP:
+            case constants::M_LANG_KOKR:
+                preg_match_all('/./u', $string, $characters);
+                $characterArray = $characters[0];
+                switch($format){
+                    case 1:
+                        $ret =$characterArray;
+                        break;
+                    case 0:
+                    default:
+                        $ret = count($characterArray);
+                }
+
+                break;
+
+
             //others
             default:
                 $words = diff::fetchWordArray($string);
@@ -364,6 +385,12 @@ class textanalyser {
             return $stats;
         }
 
+        //if this is not supported by lang tool (for now) lets just return
+        //in future we want to use some AI features to support those languages, and weakly supported langtool langs
+        if(!self::can_lang_tool($this->language)){
+            return $stats;
+        }
+
         //get lanserver lang string
         switch($this->language){
             case constants::M_LANG_ARSA:
@@ -462,14 +489,15 @@ class textanalyser {
             return $stats;
         }
 
-        $items = preg_split('/[!?.]+(?![0-9])/', $passage);
+        $items = $this->split_into_sentences();
         $transcriptarray = array_filter($items);
         $totalturnlengths=0;
         $jsontranscript = '';
 
         foreach($transcriptarray as $sentence){
             //wordcount will be different for different languages
-            $wordcount = self::mb_count_words($sentence,$this->language);
+            //for chinese / japanese / korean -  we dont even try, we just count characters.
+            $wordcount = $this->mb_count_words($sentence,0);
 
             if($wordcount===0){continue;}
             $jsontranscript .= $sentence . ' ' ;
@@ -498,6 +526,115 @@ class textanalyser {
         return get_object_vars($stats);
     }
 
+    public static function can_lang_tool($language){
+        //https://dev.languagetool.org/languages
+        switch($language){
+            case constants::M_LANG_DEDE:
+            case constants::M_LANG_DECH:
+            case constants::M_LANG_ENUS:
+            case constants::M_LANG_ENGB:
+            case constants::M_LANG_ENAU:
+            case constants::M_LANG_ENIN:
+            case constants::M_LANG_ENIE:
+            case constants::M_LANG_ENWL:
+            case constants::M_LANG_ENAB:
+            case constants::M_LANG_ESUS:
+            case constants::M_LANG_ESES:
+            case constants::M_LANG_FRCA:
+            case constants::M_LANG_FRFR:
+            case constants::M_LANG_HEIL:
+            case constants::M_LANG_ITIT:
+            case constants::M_LANG_NONO:
+            case constants::M_LANG_NLNL:
+            case constants::M_LANG_PTBR:
+            case constants::M_LANG_PTPT:
+            case constants::M_LANG_RURU:
+            case constants::M_LANG_TAIN:
+            case constants::M_LANG_PLPL:
+            case constants::M_LANG_UKUA:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    public function split_into_sentences(){
+        $items =[];
+        switch($this->language){
+            //Arabic
+            case constants::M_LANG_ARAE:
+            case constants::M_LANG_ARSA:
+                $items = preg_split('/[!?.،؟]+(?![0-9])/', $this->passage);
+                break;
+
+            //Spanish
+            case constants::M_LANG_ESES:
+            case constants::M_LANG_ESUS:
+                $items = preg_split('/[!?.¡¿]+(?![0-9])/', $this->passage);
+                break;
+
+            //hebrew
+            case constants::M_LANG_HEIL:
+                $items = preg_split('/[!?.׃׀]+(?![0-9])/', $this->passage);
+                break;
+
+             //Japanese
+            case constants::M_LANG_JAJP:
+                $items = preg_split('/[。！？]/u', $this->passage);
+                break;
+
+            //Chinese
+            case constants::M_LANG_ZHCN:
+                $items = preg_split('/[。！？]/u', $this->passage);
+                break;
+
+            //Korean
+            case constants::M_LANG_KOKR:
+                $items = preg_split('/[!?.。！？]+(?![0-9])/u', $this->passage);
+                break;
+
+            //Farsi
+            case constants::M_LANG_FAIR:
+                $items = preg_split('/[!?.،؟؛]+(?![0-9])/', $this->passage);
+                break;
+
+                //Tamil
+            case constants::M_LANG_TAIN:
+                $items = preg_split('/[புள்ளிவினைச்சொல்]+(?![0-9])/', $this->passage);
+                break;
+
+                //Telegu
+            case constants::M_LANG_TEIN:
+                $items = preg_split('/[పూర్ణవిరామమువిరామము]+(?![0-9])/', $this->passage);
+                break;
+
+                //Turkish
+            case constants::M_LANG_TRTR:
+                $items = preg_split('/[!.?…]+(?![0-9])/', $this->passage);
+                break;
+
+            //English and English Like languages
+            case constants::M_LANG_ENUS:
+            case constants::M_LANG_ENGB:
+            case constants::M_LANG_ENAU:
+            case constants::M_LANG_ENIN:
+            case constants::M_LANG_ENIE:
+            case constants::M_LANG_ENWL:
+            case constants::M_LANG_ENAB:
+            case constants::M_LANG_RURU:
+            case constants::M_LANG_NONO:
+            case constants::M_LANG_NBNO:
+            case constants::M_LANG_DECH:
+            case constants::M_LANG_DEDE:
+            case constants::M_LANG_FRFR:
+            case constants::M_LANG_FRCA:
+            default:
+                $items = preg_split('/[!?.]+(?![0-9])/', $this->passage);
+                break;
+        }
+        return $items;
+    }
 
     //fetch the grammar correction suggestions
     public function fetch_grammar_correction($passage='') {
@@ -558,8 +695,8 @@ class textanalyser {
         global $USER;
 
         //default to 100% relevant if no TTS model or if it's not English
-        if(!$this->is_english() || $model_or_modelembedding===false || empty($model_or_modelembedding)){
-            return 1;
+        if($model_or_modelembedding===false || empty($model_or_modelembedding)){
+            return 100;
         }
 
         //use local passage if not set
@@ -761,14 +898,14 @@ class textanalyser {
         }
     }
 
-    public function process_modeltts_stats($passage=''){
+    public function process_modelanswer_stats($passage=''){
         $ret = ['embedding'=>false,'ideacount'=>false];
 
         if(empty($passage)){
             $passage  = $this->passage;
         }
 
-        if(empty($passage) || !$this->is_english()) {
+        if(empty($passage)) {
             return $ret;
         }
 

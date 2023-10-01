@@ -1453,7 +1453,7 @@ class utils{
                 case constants::STEP_NONE:
                     return $step-1;
                 case constants::STEP_MODEL:
-                    if(self::has_modelanswer($moduleinstance, $context)===false){
+                    if(self::has_modelanswer_media($moduleinstance, $context)===false){
                         return $step-1;
                     }
                     break;
@@ -1463,7 +1463,7 @@ class utils{
         return 5;
     }
 
-    public static function has_modelanswer($moduleinstance, $context){
+    public static function has_modelanswer_media($moduleinstance, $context){
         if(!empty(trim($moduleinstance->modelytid))) {return true;}
         if(!empty(trim($moduleinstance->modeliframe))) {return true;}
         if(!empty(trim($moduleinstance->modeltts))) {return true;}
@@ -1561,15 +1561,37 @@ class utils{
         return $options;
     }
 
+    public static function get_layout_options() {
+        return array(
+            constants::M_LAYOUT_NARROW => get_string('layout_narrow', constants::M_COMPONENT),
+            constants::M_LAYOUT_STANDARD => get_string('layout_standard', constants::M_COMPONENT)
+        );
+
+    }
+
+    public static function get_show_options(){
+        return array(
+            0 => get_string('showopts_no', constants::M_COMPONENT),
+            1 => get_string('showopts_yes', constants::M_COMPONENT)
+        );
+    }
+
+    public static function get_ttsspeed_options() {
+        return array(
+            constants::TTSSPEED_MEDIUM => get_string("mediumspeed", constants::M_COMPONENT),
+            constants::TTSSPEED_SLOW => get_string("slowspeed", constants::M_COMPONENT),
+            constants::TTSSPEED_XSLOW => get_string("extraslowspeed", constants::M_COMPONENT)
+        );
+    }
     public static function get_lang_options() {
 
         //we decided to limit this to what we can process and use langtool for:
         //https://dev.languagetool.org/languages
 
         return array(
-             //   constants::M_LANG_ARAE => get_string('ar-ae', constants::M_COMPONENT),
-             //   constants::M_LANG_ARSA => get_string('ar-sa', constants::M_COMPONENT),
-             //   constants::M_LANG_DADK => get_string('da-dk', constants::M_COMPONENT),
+                constants::M_LANG_ARAE => get_string('ar-ae', constants::M_COMPONENT),
+                constants::M_LANG_ARSA => get_string('ar-sa', constants::M_COMPONENT),
+                constants::M_LANG_DADK => get_string('da-dk', constants::M_COMPONENT),
                 constants::M_LANG_DEDE => get_string('de-de', constants::M_COMPONENT),
                 constants::M_LANG_DECH => get_string('de-ch', constants::M_COMPONENT),
                 constants::M_LANG_ENUS => get_string('en-us', constants::M_COMPONENT),
@@ -1581,34 +1603,36 @@ class utils{
                 constants::M_LANG_ENAB => get_string('en-ab', constants::M_COMPONENT),
                 constants::M_LANG_ESUS => get_string('es-us', constants::M_COMPONENT),
                 constants::M_LANG_ESES => get_string('es-es', constants::M_COMPONENT),
-             //   constants::M_LANG_FAIR => get_string('fa-ir', constants::M_COMPONENT),
-             //   constants::M_LANG_FILPH => get_string('fil-ph', constants::M_COMPONENT),
+                constants::M_LANG_FAIR => get_string('fa-ir', constants::M_COMPONENT),
+                constants::M_LANG_FILPH => get_string('fil-ph', constants::M_COMPONENT),
                 constants::M_LANG_FRCA => get_string('fr-ca', constants::M_COMPONENT),
                 constants::M_LANG_FRFR => get_string('fr-fr', constants::M_COMPONENT),
-             //   constants::M_LANG_HIIN => get_string('hi-in', constants::M_COMPONENT),
-             //   constants::M_LANG_HEIL => get_string('he-il', constants::M_COMPONENT),
-             //   constants::M_LANG_IDID => get_string('id-id', constants::M_COMPONENT),
+                constants::M_LANG_HIIN => get_string('hi-in', constants::M_COMPONENT),
+                constants::M_LANG_HEIL => get_string('he-il', constants::M_COMPONENT),
+                constants::M_LANG_IDID => get_string('id-id', constants::M_COMPONENT),
                 constants::M_LANG_ITIT => get_string('it-it', constants::M_COMPONENT),
-              //  constants::M_LANG_JAJP => get_string('ja-jp', constants::M_COMPONENT),
-              //  constants::M_LANG_KOKR => get_string('ko-kr', constants::M_COMPONENT),
-              //  constants::M_LANG_MSMY => get_string('ms-my', constants::M_COMPONENT),
+                constants::M_LANG_JAJP => get_string('ja-jp', constants::M_COMPONENT),
+                constants::M_LANG_KOKR => get_string('ko-kr', constants::M_COMPONENT),
+                constants::M_LANG_MINZ => get_string('mi-nz',constants::M_COMPONENT),
+                constants::M_LANG_MSMY => get_string('ms-my', constants::M_COMPONENT),
+                constants::M_LANG_NONO => get_string('no-no', constants::M_COMPONENT),
                 constants::M_LANG_NLNL => get_string('nl-nl', constants::M_COMPONENT),
                 constants::M_LANG_PTBR => get_string('pt-br', constants::M_COMPONENT),
                 constants::M_LANG_PTPT => get_string('pt-pt', constants::M_COMPONENT),
                 constants::M_LANG_RURU => get_string('ru-ru', constants::M_COMPONENT),
-              //  constants::M_LANG_TAIN => get_string('ta-in', constants::M_COMPONENT),
-              //  constants::M_LANG_TEIN => get_string('te-in', constants::M_COMPONENT),
-              //  constants::M_LANG_TRTR => get_string('tr-tr', constants::M_COMPONENT),
-             //   constants::M_LANG_ZHCN => get_string('zh-cn', constants::M_COMPONENT)
+                constants::M_LANG_TAIN => get_string('ta-in', constants::M_COMPONENT),
+                constants::M_LANG_TEIN => get_string('te-in', constants::M_COMPONENT),
+                constants::M_LANG_TRTR => get_string('tr-tr', constants::M_COMPONENT),
+                constants::M_LANG_ZHCN => get_string('zh-cn', constants::M_COMPONENT),
 
              //   constants::M_LANG_NBNO => get_string('nb-no', constants::M_COMPONENT),
                 constants::M_LANG_PLPL => get_string('pl-pl', constants::M_COMPONENT),
-            //    constants::M_LANG_RORO => get_string('ro-ro', constants::M_COMPONENT),
-            //    constants::M_LANG_SVSE => get_string('sv-se', constants::M_COMPONENT),
+                constants::M_LANG_RORO => get_string('ro-ro', constants::M_COMPONENT),
+                constants::M_LANG_SVSE => get_string('sv-se', constants::M_COMPONENT),
                 constants::M_LANG_UKUA => get_string('uk-ua',constants::M_COMPONENT),
-            //    constants::M_LANG_EUES => get_string('eu-es',constants::M_COMPONENT),
-            //    constants::M_LANG_FIFI => get_string('fi-fi',constants::M_COMPONENT),
-            //    constants::M_LANG_HUHU => get_string('hu-hu',constants::M_COMPONENT)
+                constants::M_LANG_EUES => get_string('eu-es',constants::M_COMPONENT),
+                constants::M_LANG_FIFI => get_string('fi-fi',constants::M_COMPONENT),
+                constants::M_LANG_HUHU => get_string('hu-hu',constants::M_COMPONENT)
         );
     }
 
@@ -1896,22 +1920,22 @@ class utils{
                 constants::M_LANG_FRCA => ['Chantal' => 'Chantal'],
                 constants::M_LANG_FRFR => ['Mathieu' => 'Mathieu', 'Celine' => 'Celine', 'Lea' => 'Lea'],
                 constants::M_LANG_HIIN => ["Aditi" => "Aditi"],
-            //constants::M_LANG_HEIL => [],
-            //constants::M_LANG_IDID => [],
+                constants::M_LANG_HEIL => ['he-IL-Wavenet-A'=>'Sarah_g','he-IL-Wavenet-B'=>'Noah_g'],
+                constants::M_LANG_IDID => ['id-ID-Wavenet-A'=>'Guntur_g','id-ID-Wavenet-B'=>'Bhoomik_g'],
                 constants::M_LANG_ITIT => ['Carla' => 'Carla', 'Bianca' => 'Bianca', 'Giorgio' => 'Giorgio'],
                 constants::M_LANG_JAJP => ['Takumi' => 'Takumi', 'Mizuki' => 'Mizuki'],
-                constants::M_LANG_KOKR => ['Seoyeon' => 'Seoyeon'],
-            //constants::M_LANG_MSMY => [],
+                constants::M_LANG_KOKR => ['Seoyeon' => 'Seoyeon','ko-KR-Neural2-A'=>'Nari_g'],
+                constants::M_LANG_MSMY =>  ['ms-MY-Wavenet-A'=>'Arya_g','ms-MY-Wavenet-B'=>'Putera_g'],
                 constants::M_LANG_NLNL => ["Ruben" => "Ruben", "Lotte" => "Lotte"],
                 constants::M_LANG_PTBR => ['Ricardo' => 'Ricardo', 'Vitoria' => 'Vitoria'],
                 constants::M_LANG_PTPT => ["Ines" => "Ines", 'Cristiano' => 'Cristiano'],
                 constants::M_LANG_RURU => ["Tatyana" => "Tatyana", "Maxim" => "Maxim"],
-            //constants::M_LANG_TAIN => [],
-            //constants::M_LANG_TEIN => [],
+                constants::M_LANG_TAIN => ['ta-IN-Wavenet-A'=>'Dyuthi_g','ta-IN-Wavenet-B'=>'Bhoomik_g'],
+                constants::M_LANG_TEIN => ['te-IN-Standard-A'=>'Anandi_g','te-IN-Standard-B'=>'Kai_g'],
                 constants::M_LANG_TRTR => ['Filiz' => 'Filiz'],
                 constants::M_LANG_ZHCN => ['Zhiyu'=>'Zhiyu'],
 
-                constants::M_LANG_NBNO => ['Liv'=>'Liv','nb-NO-Wavenet-B'=>'Lars_g'],
+                constants::M_LANG_NONO => ['Liv'=>'Liv','nb-NO-Wavenet-B'=>'Lars_g','nb-NO-Wavenet-A'=>'Hedda_g','nb-NO-Wavenet-D'=>'Anders_g'],
                 constants::M_LANG_PLPL => ['Ewa'=>'Ewa','Maja'=>'Maja','Jacek'=>'Jacek','Jan'=>'Jan'],
                 constants::M_LANG_RORO => ['Carmen'=>'Carmen','ro-RO-Wavenet-A'=>'Sorina_g'],
                 constants::M_LANG_SVSE => ['Astrid'=>'Astrid'],
@@ -1919,6 +1943,7 @@ class utils{
                 constants::M_LANG_FILPH => ['fil-PH-Wavenet-A'=>'Darna_g','fil-PH-Wavenet-B'=>'Reyna_g','fil-PH-Wavenet-C'=>'Bayani_g','fil-PH-Wavenet-D'=>'Ernesto_g'],
                 constants::M_LANG_FIFI => ['fi-FI-Wavenet-A'=>'Kaarina_g'],
                 constants::M_LANG_HUHU => ['hu-HU-Wavenet-A'=>'Eszter_g']
+            ////constants::M_LANG_MINZ => [],
 
 
         );
@@ -2343,11 +2368,11 @@ class utils{
         $text = str_replace('<','&lt;',$text);
         $text = str_replace('>','&gt;',$text);
 
-        $slowtemplate='<speak><break time="1000ms"></break><prosody rate="@@speed@@">@@text@@</prosody></speak>';
-        $slowtemplate = str_replace('@@text@@',$text,$slowtemplate);
-        $slowtemplate = str_replace('@@speed@@',$speed,$slowtemplate);
+        $speedtemplate='<speak><break time="1000ms"></break><prosody rate="@@speed@@">@@text@@</prosody></speak>';
+        $speedtemplate = str_replace('@@text@@',$text,$speedtemplate);
+        $speedtemplate = str_replace('@@speed@@',$speed,$speedtemplate);
 
-        return $slowtemplate;
+        return $speedtemplate;
     }
 
 
@@ -2416,19 +2441,23 @@ class utils{
         }
     }
 
-    public static function process_modeltts_stats($moduleinstance){
-        if(empty($moduleinstance->modeltts) || !self::is_english($moduleinstance->ttslanguage)) {
+    public static function process_modelanswer_stats($moduleinstance){
+        if(empty($moduleinstance->modelanswer)) {
             return $moduleinstance;
         }
         $siteconfig = get_config(constants::M_COMPONENT);
         $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-        $textanalyser = new textanalyser($token,$moduleinstance->modeltts,$moduleinstance->region,$moduleinstance->ttslanguage);
+        $textanalyser = new textanalyser($token,$moduleinstance->modelanswer,$moduleinstance->region,$moduleinstance->ttslanguage);
         $embedding = $textanalyser->fetch_embedding();
         $ideacount = $textanalyser->fetch_idea_count();
         if($embedding){
+            //the modelanswer field was originally modeltts, so the field name is out of date.
+            // TO DO: change it
             $moduleinstance->modelttsembedding = $embedding;
         }
         if($ideacount){
+            //the modelanswer field was originally modeltts, so the field name is out of date.
+            // TO DO: change it
             $moduleinstance->modelttsideacount = $ideacount;
         }
         return $moduleinstance;
@@ -2610,6 +2639,16 @@ class utils{
         $mform->setDefault('enablesuggestions',1);
         $mform->addHelpButton('enablesuggestions', 'enablesuggestions', constants::M_MODNAME);
 
+        //Grammar options
+        $grammaroptions = \mod_solo\utils::get_show_options();
+        $mform->addElement('select', 'showgrammar', get_string('showgrammar', constants::M_COMPONENT), $grammaroptions);
+        $mform->setDefault('showgrammar',$config->showgrammar);
+
+        //Spelling options
+        $spellingoptions = \mod_solo\utils::get_show_options();
+        $mform->addElement('select', 'showspelling', get_string('showspelling', constants::M_COMPONENT), $spellingoptions);
+        $mform->setDefault('showspelling',$config->showspelling);
+
         //TTS on pre-audio transcribe
         $mform->addElement('selectyesno', 'enabletts', get_string('enabletts', constants::M_MODNAME));
         $mform->setType('enabletts', PARAM_INT);
@@ -2620,6 +2659,9 @@ class utils{
         $mform->addElement('header', 'modelanswerheader', get_string('modelanswerheader', constants::M_COMPONENT));
         //$mform->addElement('html',"<div>" . get_string('modelanswerinstructions', constants::M_COMPONENT) . "</div>");
         $mform->addElement('static','modelanswerinstructions','', "<div>" . get_string('modelanswerinstructions', constants::M_COMPONENT) . "</div>");
+        $mform->addElement('textarea', 'modelanswer', get_string('modelanswer', constants::M_COMPONENT), array('wrap' => 'virtual', 'style' => 'width: 100%;'));
+        $mform->setType('modelanswer', PARAM_RAW);
+        $mform->addHelpButton('modelanswer', 'modelanswer', constants::M_MODNAME);
         self::prepare_content_toggle('model',$mform,$context);
 
         // Language and Recording
@@ -2820,6 +2862,17 @@ class utils{
         }else {
             $mform->disabledIf($cp . 'ttsvoice', $cp . 'addttsaudio', 'neq', 1);
         }
+
+        $speedoptions = \mod_solo\utils::get_ttsspeed_options();
+        $mform->addElement('select', $cp .'ttsspeed', get_string('content_ttsspeed', constants::M_COMPONENT), $speedoptions);
+        $mform->setDefault($cp .'ttsspeed', constants::TTSSPEED_SLOW);
+       // $mform->addHelpButton($cp . 'ttsspeed', $cp . 'ttsspeed', constants::M_COMPONENT);
+        if($m35){
+            $mform->hideIf($cp . 'ttsspeed', $cp . 'addttsaudio', 'neq', 1);
+        }else {
+            $mform->disabledIf($cp . 'ttsspeed', $cp . 'addttsaudio', 'neq', 1);
+        }
+
 
         //Question YouTube Clip
         $ytarray=array();

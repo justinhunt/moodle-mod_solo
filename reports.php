@@ -98,7 +98,11 @@ if($config->enablesetuptab){
     $PAGE->set_pagelayout('course');
 }
 
-	
+if($config->layout==constants::M_LAYOUT_NARROW) {
+    $PAGE->add_body_class('mod-solo-layout-narrow');
+}else{
+    $PAGE->add_body_class('mod-solo-layout-standard');
+}
 
 $aph_opts =Array();
 //this inits the grading helper JS
@@ -208,7 +212,7 @@ switch ($showreport){
                     echo $attempt_renderer->show_teachereval( $rubricresults,$feedback, $evaluator);
                     $autotranscriptready=true;
                     $selftranscribe = utils::fetch_step_no($moduleinstance, constants::STEP_SELFTRANSCRIBE) !==false;
-                    echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats,$autotranscriptready, $selftranscribe);
+                    echo $attempt_renderer->show_summarypassageandstats($moduleinstance,$attempt,$aidata, $stats,$autotranscriptready, $selftranscribe);
 
                 }
                 //close the summary results div

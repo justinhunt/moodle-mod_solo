@@ -28,12 +28,15 @@
         <FIELD NAME="speakingtopic" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="topictts" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="topicttsvoice" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="topicttsspeed" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="topiciframe" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="topicytid" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="topicytstart" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="topicytend" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="modelanswer" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="modeltts" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="modelttsvoice" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="modelttsspeed" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="modeliframe" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="modelytid" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="modelytstart" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
@@ -60,6 +63,8 @@
         <FIELD NAME="modelttsideacount" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="model tts ideacount"/>
         <FIELD NAME="nopasting" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Disable pasting"/>
         <FIELD NAME="preloadtranscrip" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="pre-load manual transcript"/>
+        <FIELD NAME="showgrammar" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="show grammar eval."/>
+        <FIELD NAME="showspelling" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="show spelling eval."/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
