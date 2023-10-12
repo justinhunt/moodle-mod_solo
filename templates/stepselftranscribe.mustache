@@ -44,7 +44,7 @@
                     <div class='mod_solo_maybereloadaudio'>{{#str}}prerecordtranscriptinstructions, mod_solo{{/str}}</div>
                 {{/audiofilename}}
                 <div class="solo-spinner-overlay">
-                    <textarea name="selftranscript" id="{{uniqid}}_selftranscript" class="form-control" rows="5" cols="80" disabled="true">{{selftranscript}}</textarea>
+                    <textarea name="selftranscript" id="{{uniqid}}_selftranscript" class="form-control" rows="5" cols="80" {{#audiofilename}}disabled="true"{{/audiofilename}}>{{selftranscript}}</textarea>
                     <div class="solo-spinner" id="solo-spinner" style="display: none;"></div>
                 </div>
                 <div id="{{uniqid}}_checkboxholder" style="display: none;">
@@ -125,9 +125,9 @@
                 });
 
                 //this checks for the transcript becoming available and pops it into the text area
-                //we only do this if the text area has not been loaded, the
+                //we only do this if the text area has not been loaded and we have audio (no audio no transcript right?)
                 var selftranscriptarea = $('#' + '{{uniqid}}_selftranscript');
-                if('{{preloadtranscript}}'=='1' && '{{prerecording}}'!=='1' && '{{selftranscript}}'==='') {
+                if('{{audiofilename}}'!=='' && '{{preloadtranscript}}'=='1' && '{{prerecording}}'!=='1' && '{{selftranscript}}'==='') {
                     //first disable the text area, until we have our transcript back
                     selftranscriptarea.prop('disabled', true);
                     selftranscriptarea.attr('placeholder','{{#str}}fetching_auto_transcript, mod_solo{{/str}}');
