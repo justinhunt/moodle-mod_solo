@@ -182,30 +182,13 @@ if($start_or_continue) {
         echo '</div>';
     }
 
-    //all attempts by user table [good for debugging]
-    // echo $attempt_renderer->show_attempts_list($attempts,$tableid,$cm);
     $tdata=new \stdClass();
     if((!$attempt->manualgraded && $moduleinstance->multiattempts) || has_capability('mod/solo:manageattempts', $context)){
         $reattempturl = new \moodle_url(constants::M_URL . '/view.php',
                 array('id'=>$cm->id,'reattempt'=>1));
         $tdata->reattempturl=$reattempturl->out();
     }
-    if($attempt) {
-        //we no longer allow post attempt edit, they just have to take another attempt
-        /*
-        if ($moduleinstance->postattemptedit || has_capability('mod/solo:manageattempts', $context)) {
-            //if they are going back in to edit then, to what step should we take them?
-            if($moduleinstance->step3 != constants::M_STEP_MODEL && $moduleinstance->step3 != constants::M_STEP_NONE){
-                $editstep= 3;
-            }else{
-                $editstep= 2;
-            }
-            $postattemptediturl = new \moodle_url('/mod/solo/attempt/manageattempts.php',
-                    array('id' => $cm->id, 'attemptid' => $attempt->id, 'stepno' => $editstep));
-            $tdata->postattemptediturl=$postattemptediturl->out();
-        }
-        */
-    }
+
     //show back to course button if we are not in an LTI window
     if(!$config->enablesetuptab) {
         $tdata->courseurl = $CFG->wwwroot . '/course/view.php?id=' . $moduleinstance->course . '#section-'. ($cm->section-1);

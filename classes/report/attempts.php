@@ -15,7 +15,7 @@ class attempts extends basereport
 {
 
     protected $report="attempts";
-    protected $fields = array('id','idnumber', 'username','audiofile','stats_words','turns','ATL','LTL','TW','SPL','GRM','ACC','grade','timemodified','view','deletenow');
+    protected $fields = array('id','idnumber', 'username','audiofile','stats_words','turns','ATL','LTL','TW','SPL','GRM','ACC','CEFR','grade','timemodified','view','deletenow');
     protected $headingdata = null;
     protected $qcache=array();
     protected $ucache=array();
@@ -90,7 +90,10 @@ class attempts extends basereport
                 }else{
                     $ret = $record->aiaccuracy;
                 }
+                break;
 
+            case 'CEFR':
+                $ret = $record->cefrlevel ;
                 break;
 
             case 'audiofile':
@@ -169,7 +172,7 @@ class attempts extends basereport
                 list($groupswhere, $allparams) = $DB->get_in_or_equal($formdata->groupid);
 
                 $sql = 'SELECT at.id,at.grade, st.words,at.userid,at.filename, st.turns, st.avturn, st.longestturn, st.targetwords,
-             st.totaltargetwords,st.autospellscore,st.autogrammarscore,st.aiaccuracy, at.timemodified ';
+             st.totaltargetwords,st.autospellscore,st.autogrammarscore,st.aiaccuracy,st.cefrlevel, at.timemodified ';
                 $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at INNER JOIN {' . constants::M_STATSTABLE .
                         '} st ON at.id = st.attemptid ';
                 $sql .= ' INNER JOIN {groups_members} gm ON at.userid=gm.userid';
@@ -182,7 +185,7 @@ class attempts extends basereport
         }else {
 
                 $sql = 'SELECT at.id,at.grade, st.words,at.userid,at.filename, st.turns, st.avturn, st.longestturn, st.targetwords,
-         st.totaltargetwords,st.autospellscore,st.autogrammarscore,st.aiaccuracy, at.timemodified ';
+         st.totaltargetwords,st.autospellscore,st.autogrammarscore,st.aiaccuracy,st.cefrlevel, at.timemodified ';
                 $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at INNER JOIN {' . constants::M_STATSTABLE .
                         '} st ON at.id = st.attemptid ';
                 $sql .= ' WHERE at.solo = :soloid';

@@ -104,6 +104,8 @@ $string['deleteattemptconfirm'] = "Are you sure that you want to delete this att
 $string['deletenow']='';
 $string['attemptsperpage']='Attempts per page';
 $string['attemptsperpage_details']='This sets the number of rows to be shown on reports or lists of attempts.';
+$string['gradingsperpage']='Gradings per page';
+$string['gradingsperpage_details']='This sets the number of attempts to grade manually to be shown on the grading page at the same time.';
 
 $string['apiuser']='Poodll API User ';
 $string['apiuser_details']='The Poodll account username that authorises Poodll on this site.';
@@ -421,9 +423,10 @@ $string['multiattempts_details'] = 'If checked a student can choose to overwrite
 $string['attemptsheading']= 'Attempts';
 $string['partners']= 'Partners';
 $string['turns']= 'Sentences';
-$string['ATL']= 'ASL';
-$string['LTL']= 'LSL';
-$string['TW']= 'TW';
+$string['ATL']= 'Av Sent. Length';
+$string['LTL']= 'Longest Sent. Length';
+$string['TW']= 'Total Words';
+$string['CEFR']= 'CEFR';
 $string['idnumber']= 'ID-number';
 
 $string['audiorecording']= 'Audio Recording';
@@ -445,7 +448,7 @@ $string['maxconvlength_details']= 'Audio recorder time limit';
 $string['maxconvlength']= 'Time limit';
 $string['heard']= 'Heard';
 $string['SPL']= 'Spell';
-$string['ACC']= 'Acc';
+$string['ACC']= 'Accuracy';
 
 //$string['notopicsavailable'] = "No topics have been added by your teacher.";
 
@@ -534,7 +537,7 @@ $string['avturns']='Avg Sentences';
 $string['avatl']='Avg ASL';
 $string['avltl']='Avg LSL';
 $string['avw']='Avg Words';
-$string['GRM']='GRM';
+$string['GRM']='Grammar';
 $string['avtw']='Avg Target Words';
 $string['avspell']='Avg Spelling';
 $string['avacc']='Avg Acc';

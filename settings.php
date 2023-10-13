@@ -143,6 +143,11 @@ if ($ADMIN->fulltree) {
 	$settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/attemptsperpage',
         get_string('attemptsperpage', constants::M_COMPONENT), get_string('attemptsperpage_details', constants::M_COMPONENT), 10, PARAM_INT));
 
+    $gradingsperpage_options = [1=>'1',2=>'2',3=>'3',4=>'4',5=>'5',6=>'6'];
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/gradingsperpage',
+        get_string('gradingsperpage', constants::M_COMPONENT), get_string('gradingsperpage_details', constants::M_COMPONENT),
+        3, $gradingsperpage_options));
+
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enablelocalpost',
         get_string('enablelocalpost', constants::M_COMPONENT), get_string('enablelocalpost_details',constants::M_COMPONENT), 0));
 
