@@ -124,10 +124,24 @@
                     }
                 });
 
+                //this page was loaded via a "browser back button" after a transcript submission,
+                // the button will be disabled. Here we bring it back
+                $(window).on('pageshow', function(event) {
+                    var btn = $('#' + '{{uniqid}}_button');
+                    if(btn.prop('disabled')) {
+                        btn.html('{{#str}}submit, mod_solo{{/str}}');
+                        btn.prop('disabled',false);
+                        log.debug("re-enabling submit button ");
+                    }
+
+                });
+
                 //this checks for the transcript becoming available and pops it into the text area
                 //we only do this if the text area has not been loaded and we have audio (no audio no transcript right?)
                 var selftranscriptarea = $('#' + '{{uniqid}}_selftranscript');
-                if('{{audiofilename}}'!=='' && '{{preloadtranscript}}'=='1' && '{{prerecording}}'!=='1' && '{{selftranscript}}'==='') {
+                var haveselftranscript = false;
+                {{#haveselftranscript}} haveselftranscript = true;{{/haveselftranscript}}
+                if('{{audiofilename}}'!=='' && '{{preloadtranscript}}'=='1' && '{{prerecording}}'!=='1' && !haveselftranscript) {
                     //first disable the text area, until we have our transcript back
                     selftranscriptarea.prop('disabled', true);
                     selftranscriptarea.attr('placeholder','{{#str}}fetching_auto_transcript, mod_solo{{/str}}');
@@ -193,8 +207,6 @@
                         });
                     });
                 }
-
-
             }
         );
     {{/js}}

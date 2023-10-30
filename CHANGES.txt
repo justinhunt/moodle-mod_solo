@@ -1,3 +1,8 @@
+Version 1.0.38 (Build 2023103000)
+- Added a "back to edit" button for transcribe ->record workflow
+- Fixed an issue where transcript text could break transcript page
+- Fixed broken manual grading
+
 Version 1.0.37 (Build 2023101200)
 - fixed issue with locked text area when editing existing transcript prior to recording
 

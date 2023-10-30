@@ -755,6 +755,6 @@ $string['ttsspeed'] = 'TTS Speed';
 $string['mediumspeed'] = 'Medium';
 $string['slowspeed'] = 'Slow';
 $string['extraslowspeed'] = 'Extra Slow';
-
-
 $string['modelanswer_help'] = 'Enter a good and complete sample answer to the topic. It will be used as part of the grading process.';
+$string['backtotranscriptedit']="Back to Edit";
+$string['waitingforteacher']="Your teacher will check your attempt. Thank You";

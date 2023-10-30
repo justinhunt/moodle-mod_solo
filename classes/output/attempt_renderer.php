@@ -163,6 +163,10 @@ class attempt_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
+    function show_waitingforteacher(){
+        return $this->output->render_from_template( constants::M_COMPONENT . '/waitingforteacher',[]);
+    }
+
     function show_summarypassageandstats($moduleinstance,$attempt,$aidata,$stats,$autotranscriptready, $selftranscribe){
         //mark up our passage for review
         //if we have ai we need all the js and markup, otherwise we just need the formated transcript

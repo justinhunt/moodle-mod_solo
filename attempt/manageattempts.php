@@ -281,8 +281,10 @@ switch($type) {
     case constants::STEP_SELFTRANSCRIBE:
         $recordstepno = utils::fetch_step_no($moduleinstance,constants::M_STEP_RECORD);
         //if we have a selftranscript set it
+        $stepcontent->haveselftranscript=false;
         if(isset($attempt->selftranscript)&&!empty($attempt->selftranscript)){
             $stepcontent->selftranscript=$attempt->selftranscript;
+            $stepcontent->haveselftranscript=true;
         }else{
             //otherwise make a blank one
             $stepcontent->selftranscript='';
@@ -291,7 +293,7 @@ switch($type) {
                 $oldattempt = $attempthelper->fetch_latest_complete_attempt();
                 if($oldattempt && $oldattempt->id !== $attempt->id){
                     $stepcontent->selftranscript=$oldattempt->selftranscript;
-                    //we really ought to do something to make sure we dont get suggestions for
+                    $stepcontent->haveselftranscript=true;
                 }
             }
         }

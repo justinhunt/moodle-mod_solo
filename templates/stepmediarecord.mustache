@@ -54,6 +54,9 @@
             <div class="mod_solo_step_card_content mod_solo_readonly">
                 {{selftranscript}}
             </div>
+            <div class="mod_solo_returntranscriptpage">
+                <a href="#" id="{{uniqid}}_backbutton">{{#str}}backtotranscriptedit, mod_solo{{/str}}</a>
+            </div>
         </div>
 
         {{/selftranscript}}
@@ -115,6 +118,12 @@
                         }
                    }]);
 
+                });
+
+                $('#' + '{{uniqid}}_backbutton').click(function(e){
+                    e.preventDefault(); // Prevents the link from navigating to "#" (or any other URL)
+                    log.debug("going baaaaack");
+                    history.back();
                 });
             }
         );

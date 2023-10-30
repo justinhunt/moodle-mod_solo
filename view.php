@@ -155,23 +155,29 @@ if($start_or_continue) {
         require_once($CFG->libdir.'/gradelib.php');
         $gradinginfo = grade_get_grades($moduleinstance->course, 'mod', 'solo', $moduleinstance->id, $USER->id);
         if($attempt && !empty($gradinginfo ) && $attempt->grade !=null) {
-            $feedback=$attempt->feedback;
-            $starrating=true;
-            $rubricresults= utils::display_studentgrade($context,$moduleinstance,$attempt,$gradinginfo,$starrating);
-            if($attempt->manualgraded){
+            $feedback = $attempt->feedback;
+            $starrating = true;
+            $rubricresults = utils::display_studentgrade($context, $moduleinstance, $attempt, $gradinginfo, $starrating);
+            if ($attempt->manualgraded) {
                 $evaluator = get_string("teachereval", constants::M_COMPONENT);
-            }else{
+            } else {
                 $evaluator = get_string("autoeval", constants::M_COMPONENT);
             }
-            echo $attempt_renderer->show_teachereval($rubricresults,$feedback,$evaluator);
-            $autotranscriptready=true;
-            $selftranscribe = utils::fetch_step_no($moduleinstance, constants::STEP_SELFTRANSCRIBE) !==false;
-            echo $attempt_renderer->show_summarypassageandstats($moduleinstance,$attempt,$aidata, $stats,$autotranscriptready,$selftranscribe);
+            echo $attempt_renderer->show_teachereval($rubricresults, $feedback, $evaluator);
+            $autotranscriptready = true;
+            $selftranscribe = utils::fetch_step_no($moduleinstance, constants::STEP_SELFTRANSCRIBE) !== false;
+            echo $attempt_renderer->show_summarypassageandstats($moduleinstance, $attempt, $aidata, $stats, $autotranscriptready, $selftranscribe);
 
+        //manual grading
+        }elseif($attempt && !empty($gradinginfo ) && !$moduleinstance->enableautograde){
+            echo $attempt_renderer->show_waitingforteacher();
+            $selftranscribe = utils::fetch_step_no($moduleinstance, constants::STEP_SELFTRANSCRIBE) !== false;
+            $autotranscriptready = true;
+            echo $attempt_renderer->show_summarypassageandstats($moduleinstance, $attempt, $aidata, $stats, $autotranscriptready, $selftranscribe);
         }elseif($attempt){
             echo $attempt_renderer->show_placeholdereval($attempt->id);
             $autotranscriptready=false;
-            //we decided to make it real obvious if the reslt was not ready yet
+            //we decided to make it real obvious if the result was not ready yet
             //echo $attempt_renderer->show_summarypassageandstats($attempt,$aidata, $stats,$autotranscriptready);
         }
 

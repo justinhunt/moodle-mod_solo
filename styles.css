@@ -1557,9 +1557,11 @@ span.mod_solo_corrections_suggestedword {
 	}
 }
 
-.mod_solo_step_card.speaking_topic,
-.mod_solo_step_card.selftranscript {
+.mod_solo_step_card.speaking_topic {
 	margin-bottom: 72px;
+}
+.mod_solo_step_card.selftranscript {
+	margin-bottom: 40px;
 }
 
 .mod_solo_timer_illustration {
@@ -2820,4 +2822,8 @@ body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_perc
 }
 .msft_finetune_correction {
 	background-color: #fbe8cd;
+}
+
+.mod_solo_returntranscriptpage {
+	align-self: end;
 }
