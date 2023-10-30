@@ -4,7 +4,10 @@ Version 1.0.38 (Build 2023103000)
 - Fixed broken manual grading
 
 Version 1.0.37 (Build 2023101200)
-- fixed issue with locked text area when editing existing transcript prior to recording
+- Fixed issue with locked text area when editing existing transcript prior to recording
+- Added CEFR level to report
+- Fixed issue with miscalc. of total steps affecting gradingui and completion
+- Added gradingsperpage setting 
 
 Version 1.0.36 (Build 2023092700)
 - add speed fields for TTS

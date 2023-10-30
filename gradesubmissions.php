@@ -52,6 +52,7 @@ require_capability('mod/solo:grades', $modulecontext);
 // Set page login data.
 $PAGE->set_url(constants::M_URL . '/gradesubmissions.php',array('id'=>$id,'userid'=>$userid,'grademethod'=>$grademethod));
 require_login($course, true, $cm);
+$config=get_config(constants::M_COMPONENT);
 
 // fetch groupmode/menu/id for this activity
 $groupmenu = '';
@@ -65,9 +66,9 @@ if ($groupmode = groups_get_activity_groupmode($cm)) {
 
 
 // Get student grade data - all students who completed an attempt
-$studentlist = $gradesubmissions->getStudentsToGrade($moduleinstance,$groupid);
+$studentlist = $gradesubmissions->getStudentsToGrade($moduleinstance,$groupid,$modulecontext);
 //get pages of 3 students (array of 3 userids) and the current students page number
-$perpage=1;
+$perpage=$config->gradingsperpage;
 list($pagesofstudents,$currentstudentpage) = $gradesubmissions->getPageOfStudents($studentlist,$userid,$perpage);
 
 //get the page of students (array od f 3 student ids) for current student

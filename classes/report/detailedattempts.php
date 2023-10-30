@@ -15,7 +15,7 @@ class detailedattempts extends basereport
 {
 
     protected $report="detailedattempts";
-    protected $fields = array('id','idnumber', 'username','audiofile','partners','turns','words','ATL','LTL','TW','SPL','ACC','grade','selftranscript','transcript','timemodified','view','deletenow');
+    protected $fields = array('id','idnumber', 'username','audiofile','turns','words','ATL','LTL','TW','SPL','ACC','CEFR','grade','selftranscript','transcript','timemodified','view','deletenow');
     protected $headingdata = null;
     protected $qcache=array();
     protected $ucache=array();
@@ -52,6 +52,10 @@ class detailedattempts extends basereport
                             array('report' => 'userattempts', 'n' => $this->cm->instance, 'id'=>$this->cm->id,'userid' => $record->userid));
                     $ret = \html_writer::link($link, $ret);
                 }
+                break;
+
+            case 'CEFR':
+                $ret = $record->cefrlevel ;
                 break;
 
             case 'transcript':
@@ -190,7 +194,7 @@ class detailedattempts extends basereport
 
             $emptydata = array();
             $sql = 'SELECT at.id, at.grade, at.userid, at.filename, st.turns, st.words,
-        st.avturn, st.longestturn, st.targetwords, st.totaltargetwords,st.autospellscore,st.aiaccuracy,at.selftranscript,at.transcript, at.timemodified ';
+        st.avturn, st.longestturn, st.targetwords, st.totaltargetwords,st.autospellscore,st.aiaccuracy, st.cefrlevel, at.selftranscript,at.transcript, at.timemodified ';
             $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at INNER JOIN {' . constants::M_STATSTABLE .  '} st ON at.id = st.attemptid ';
             $sql .= ' INNER JOIN {groups_members} gm ON at.userid=gm.userid';
             $sql .= ' WHERE gm.groupid ' . $groupswhere . ' AND at.solo = ?';
@@ -205,7 +209,7 @@ class detailedattempts extends basereport
 
             $emptydata = array();
             $sql = 'SELECT at.id, at.grade, at.userid, at.filename, st.turns, st.words,
-        st.avturn, st.longestturn, st.targetwords, st.totaltargetwords,st.autospellscore,st.aiaccuracy,at.selftranscript,at.transcript, at.timemodified ';
+        st.avturn, st.longestturn, st.targetwords, st.totaltargetwords,st.autospellscore,st.aiaccuracy,st.cefrlevel, at.selftranscript,at.transcript, at.timemodified ';
             $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at INNER JOIN {' . constants::M_STATSTABLE .  '} st ON at.id = st.attemptid ';
             $sql .= ' WHERE at.solo = :soloid';
             $sql .= ' ORDER BY at.userid ASC';

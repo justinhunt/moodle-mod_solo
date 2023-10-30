@@ -106,16 +106,6 @@ class attempthelper
     }
 
 
-    //fetch a specific attempt
-    public function fetch_specific_attempt($attemptid) {
-        global $DB;
-
-        $attempt = $DB->get_record(constants::M_ATTEMPTSTABLE,
-                array('id'=>$attemptid, 'solo'=>$this->mod->id,'completedsteps'=>constants::STEP_SELFTRANSCRIBE),
-                'timemodified DESC');
-        return $attempt;
-    }
-
     //Delete an attempt
     public function delete_attempt($attemptid) {
         global $DB;

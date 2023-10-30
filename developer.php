@@ -83,8 +83,9 @@ switch ($action){
 
 	//not a true report, separate implementation in renderer
 	case 'generatedata':
+        $totalsteps = utils::fetch_total_step_count($moduleinstance,$modulecontext);
 	    $attempts = $DB->get_records(constants::M_ATTEMPTSTABLE,
-            array('solo'=>  $moduleinstance->id,'completedsteps'=>constants::STEP_SELFTRANSCRIBE),'timemodified DESC','*',0,1);
+            array('solo'=>  $moduleinstance->id,'completedsteps'=>$totalsteps),'timemodified DESC','*',0,1);
 	    if(!$attempts){
             echo $header;
 	        echo '<h3>No attempt to generate data from</h3>';

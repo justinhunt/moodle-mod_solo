@@ -4,6 +4,7 @@ namespace mod_solo\grades;
 
 use dml_exception;
 use mod_solo\constants;
+use mod_solo\utils;
 
 /**
  * Class grades
@@ -26,6 +27,8 @@ class gradesubmissions {
         global $DB;
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
         $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
+        $modulecontext = \context_module::instance($cm->id);
+        $totalsteps = utils::fetch_total_step_count($moduleinstance,$modulecontext);
 
 
         $sql = "SELECT pa.id AS attemptid,
@@ -64,7 +67,7 @@ class gradesubmissions {
                     AND pa.completedsteps = ?
                 order by pa.id DESC";
 
-        $alldata = $DB->get_records_sql($sql, [$cmid, $userid, $moduleinstance->id, constants::STEP_SELFTRANSCRIBE]);
+        $alldata = $DB->get_records_sql($sql, [$cmid, $userid, $moduleinstance->id, $totalsteps]);
         if($alldata){
             return [reset($alldata)];
         }else{
@@ -80,8 +83,10 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getStudentsToGrade($moduleinstance,$groupid) {
+    public function getStudentsToGrade($moduleinstance,$groupid,$modulecontext) {
         global $DB;
+
+        $totalsteps = utils::fetch_total_step_count($moduleinstance,$modulecontext);
 
         //fetch all finished attempts
         if($groupid>0) {
@@ -89,19 +94,17 @@ class gradesubmissions {
             $sql = "SELECT pa.id AS id, pa.userid as userid
                     FROM {solo_attempts} pa                    
                      INNER JOIN {groups_members} gm ON pa.userid=gm.userid
-                     WHERE pa.solo = ? AND pa.completedsteps = " . constants::STEP_SELFTRANSCRIBE .
+                     WHERE pa.solo = ? AND pa.completedsteps = " . $totalsteps .
                      " AND gm.groupid $groupswhere 
                       ORDER BY pa.id DESC";
             $results = $DB->get_records_sql($sql, array_merge([$moduleinstance->id],$groupparams));
         }else{
             $sql = "SELECT pa.id AS id, pa.userid AS userid
                     FROM {solo_attempts} pa
-                    WHERE pa.solo = ? AND pa.completedsteps = " . constants::STEP_SELFTRANSCRIBE .
+                    WHERE pa.solo = ? AND pa.completedsteps = " . $totalsteps .
                     " ORDER BY pa.id DESC";
             $results = $DB->get_records_sql($sql, [$moduleinstance->id]);
         }
-
-
 
         //if we do not have results just return
         if(!$results){return $results;}
