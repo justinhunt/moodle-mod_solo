@@ -577,7 +577,7 @@ class utils{
         if(!empty($attempt->selftranscript)){
             $siteconfig = get_config(constants::M_COMPONENT);
             $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-            $textanalyser = new textanalyser($token,$attempt->selftranscript,$moduleinstance->region,$moduleinstance->ttslanguage,);
+            $textanalyser = new textanalyser($token,$attempt->selftranscript,$moduleinstance->region,$moduleinstance->ttslanguage);
             $modelembedding = !empty($moduleinstance->modelttsembedding) ? $moduleinstance->modelttsembedding : $moduleinstance->modeltts;
             $relevance = $textanalyser->fetch_relevance($modelembedding);
         }
