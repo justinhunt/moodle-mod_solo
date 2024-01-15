@@ -446,6 +446,20 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023092700, 'solo');
     }
 
+    if($oldversion < 2023111800) {
+        //faulty field name in install.xml needs to be fixed up
+        $table = new xmldb_table(constants::M_TABLE);
+        //this is teh faulty field name we are looking for 'preloadtranscrip' : change to 'preloadtranscript'
+        $field =  new xmldb_field('preloadtranscrip', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null,1);
+
+        // Alter fields
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'preloadtranscript');
+        }
+
+        upgrade_mod_savepoint(true, 2023111800, 'solo');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

@@ -33,5 +33,6 @@ $plugin->version   =  2024011500;
 $plugin->requires  = 2016052300;      // Requires Moodle 3.1
 $plugin->component = 'mod_solo';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.0.40 (Build 2024011500)';
+$plugin->release = '1.0.41 (Build 2024011500)';
+
 

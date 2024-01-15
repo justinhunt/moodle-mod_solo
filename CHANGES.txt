@@ -1,7 +1,10 @@
-Version 1.0.40 (Build 2024011500)
+Version 1.0.41 (Build 2024011500)
 - Fixed issue where no speech was transcribed, causing students to get stuck waiting for processing
 - Added an incomplete attempts report allowing teachers to delete attempts that get stuck
 - publish an expected completion date
+
+Version 1.0.40 (Build 2023111800)
+- fixed poor field declaration (preloadtranscript) on new installs
 
 Version 1.0.39 (Build 2023110900)
 - Fixed an issue with deprecated call to add_to_log on index page
