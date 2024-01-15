@@ -40,6 +40,12 @@ class report_renderer extends \plugin_renderer_base
                 get_string('classprogressreport', constants::M_COMPONENT), 'get');
         $buttons[] = $this->render($classprogress);
 
+        $incompleteattempts = new \single_button(
+            new \moodle_url(constants::M_URL . '/reports.php',
+                array('report' => 'incompleteattempts', 'id' => $cm->id, 'n' => $moduleinstance->id,'format'=>'tabular')),
+            get_string('incompleteattemptsreport', constants::M_COMPONENT), 'get');
+        $buttons[] = $this->render($incompleteattempts);
+
         $downloadaudio = new \single_button(
                 new \moodle_url(constants::M_URL . '/reports.php',
                         array('report' => 'downloadaudio', 'id' => $cm->id, 'n' => $moduleinstance->id,'format'=>'filedownload')),

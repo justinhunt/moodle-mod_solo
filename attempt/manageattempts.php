@@ -113,7 +113,8 @@ if($action == 'confirmdelete'){
 }elseif ($action == 'delete'){
     require_sesskey();
     $attempthelper->delete_attempt($attemptid);
-    redirect($redirecturl);
+    $deleteredirect =  new moodle_url('/mod/solo/reports.php', array('report'=>'menu','id'=>$cm->id));
+    redirect($deleteredirect);
 }
 
 $siteconfig = get_config(constants::M_COMPONENT);

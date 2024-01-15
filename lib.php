@@ -197,6 +197,13 @@ function solo_add_instance(stdClass $moduleinstance, mod_solo_mod_form $mform = 
     $moduleinstance = utils::sequence_to_steps($moduleinstance);
     $moduleinstance = utils::process_modelanswer_stats($moduleinstance);
     $moduleinstance->id = $DB->insert_record(constants::M_TABLE, $moduleinstance);
+
+    if (class_exists('\core_completion\api')) {
+        $completionexpected = (empty($moduleinstance->completionexpected) ? null : $moduleinstance->completionexpected);
+        \core_completion\api::update_completion_date_event($moduleinstance->coursemodule, 'solo', $moduleinstance->id,
+            $completionexpected);
+    }
+
     solo_grade_item_update($moduleinstance);
 	return $moduleinstance->id;
 }
@@ -286,6 +293,11 @@ function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform
     }
 	$success = $DB->update_record(constants::M_TABLE, $moduleinstance);
     solo_grade_item_update($moduleinstance);
+    if (class_exists('\core_completion\api')) {
+        $completionexpected = (empty($moduleinstance->completionexpected) ? null : $moduleinstance->completionexpected);
+        \core_completion\api::update_completion_date_event($moduleinstance->coursemodule, 'solo', $moduleinstance->id,
+            $completionexpected);
+    }
 
     $update_grades = ($moduleinstance->grade === $oldgrade ? false : true);
     if ($update_grades) {

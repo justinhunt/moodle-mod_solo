@@ -225,6 +225,14 @@ switch ($showreport){
             }
         }
         break;
+
+    case 'incompleteattempts':
+        $report = new \mod_solo\report\incompleteattempts($cm);
+        $formdata = new stdClass();
+        $formdata->soloid = $moduleinstance->id;
+        $formdata->activityname = $moduleinstance->name;
+        $formdata->groupmenu = true;
+        break;
 		
 	default:
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', constants::M_COMPONENT));

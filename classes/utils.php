@@ -177,7 +177,9 @@ class utils{
         if(!self::is_valid_transcript($transcript)){return false;}
 
         //if we got here, we have transcripts and we do not need to come back
-        if($jsontranscript && $vtttranscript && $transcript) {
+        //jsontranscript and vtttranscript will both be truthy even if empty, but transcript will not ... it will falsey
+        //so we allow emtpy transcript even though it sucks 15/01/2024 J
+        if($jsontranscript && $vtttranscript && $transcript!==null && $transcript !==false) {
             $updateattempt = new \stdClass();
             $updateattempt->id=$attempt->id;
             $updateattempt->jsontranscript = $jsontranscript;

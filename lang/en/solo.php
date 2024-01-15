@@ -421,6 +421,8 @@ $string['more_stats'] = 'More stats';
 $string['multiattempts'] = 'Allow Multiple Attempts';
 $string['multiattempts_details'] = 'If checked a student can choose to overwrite an existing attempt with a new one.';
 $string['attemptsheading']= 'Attempts';
+$string['incompleteattemptsheading']= 'Incomplete Attempts';
+$string['incompleteattemptsreport']= 'Incomplete Attempts';
 $string['partners']= 'Partners';
 $string['turns']= 'Sentences';
 $string['ATL']= 'Av Sent. Length';
@@ -524,7 +526,7 @@ $string['nogrammarerrors'] = 'No grammar mistakes.';
 $string['possiblegrammarerrors'] = 'Possible grammar mistakes:';
 $string['possiblespellingerrors'] = 'Possible spelling mistakes:';
 $string['nospellingerrors'] = 'No spelling mistakes.';
-
+$string['completedsteps']='Steps Complete';
 $string['completionallsteps']='Complete when all steps completed';
 $string['completionallsteps_help']='Complete when all steps completed';
 $string['yes']='Yes';
