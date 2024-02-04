@@ -639,15 +639,24 @@ class utils{
 
     }
 
-    public static function fetch_grammar_correction_diff($selftranscript,$correction){
+    public static function fetch_grammar_correction_diff($selftranscript,$correction,$direction='l2r'){
 
 
         //turn the passage and transcript into an array of words
         $alternatives = diff::fetchAlternativesArray('');
         $wildcards = diff::fetchWildcardsArray($alternatives);
-        $passagebits = diff::fetchWordArray($selftranscript);
-        $transcriptbits = diff::fetchWordArray($correction);
 
+        //the direction of diff depends on which text we want to mark up. Because we only highlight
+        //this is because if we show the pre-text (eg student typed text) we can not highlight corrections .. they are not there
+        //if we show post-text (eg corrections) we can not highlight mistakes .. they are not there
+        //the diffs tell us where the diffs are with relation to text A
+        if($direction=='l2r') {
+            $passagebits = diff::fetchWordArray($selftranscript);
+            $transcriptbits = diff::fetchWordArray($correction);
+        }else {
+            $passagebits = diff::fetchWordArray($correction);
+            $transcriptbits = diff::fetchWordArray($selftranscript);
+        }
 
         //fetch sequences of transcript/passage matched words
         // then prepare an array of "differences"

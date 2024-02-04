@@ -52,7 +52,8 @@ class external extends external_api {
         }
 
         //if we have suggestions, mark those up and return them
-        list($grammarerrors,$grammarmatches,$insertioncount) = utils::fetch_grammar_correction_diff($text, $suggestions);
+        $direction="r2l";//"l2r";
+        list($grammarerrors,$grammarmatches,$insertioncount) = \mod_solo\utils::fetch_grammar_correction_diff($text, $suggestions,$direction);
         $markedupsuggestions = \mod_solo\aitranscriptutils::render_passage($suggestions,'corrections');
         $ret = [];
         $ret['grammarerrors'] = $grammarerrors;

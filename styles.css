@@ -1319,6 +1319,12 @@ span.mod_solo_corrections_suggestedword {
 	background-color: azure;
 }
 
+span.mod_solo_corrections_omittedword {
+	font-weight: bold;
+	background-color: red;
+}
+
+
 /* Style for a spinner overlay on a textarea */
 .solo-spinner-overlay {
 	position: relative;
