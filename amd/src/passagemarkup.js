@@ -19,8 +19,8 @@ define(['jquery', 'core/log', 'mod_solo/popoverhelper'], function ($, log, popov
             passagecontainer: 'mod_solo_grading_passagecont',
             summarytranscript: 'mod_solo_summarytranscript',
             summarytranscriptplaceholder: 'mod_solo_summarytranscriptplaceholder',
-            audioplayerclass: 'mod_solo_passageaudioplayer',
-            wordplayerclass: 'mod_solo_hidden_player',
+            audioplayerclass: '_mod_solo_hiddenaudioplayer',//mod_solo_passageaudioplayer
+            wordplayerclass: 'mod_solo_hidden_player', //this doesnot exist .. yuk
             wordclass: 'mod_solo_grading_passageword',
             spaceclass: 'mod_solo_grading_passagespace',
             badwordclass: 'mod_solo_grading_badword',

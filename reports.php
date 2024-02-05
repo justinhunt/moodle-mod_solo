@@ -202,14 +202,14 @@ switch ($showreport){
                 require_once($CFG->libdir.'/gradelib.php');
                 $gradinginfo = grade_get_grades($moduleinstance->course, 'mod', 'solo', $moduleinstance->id, $attempt->userid);
                 if(!empty($gradinginfo ) && $attempt->grade !=null) {
-                    $rubricresults= utils::display_studentgrade($modulecontext,$moduleinstance,$attempt,$gradinginfo );
+                    $graderesults= utils::display_studentgrade($modulecontext,$moduleinstance,$attempt,$gradinginfo );
                     $feedback=$attempt->feedback;
                     if($attempt->manualgraded){
                         $evaluator = get_string("teachereval", constants::M_COMPONENT);
                     }else{
                         $evaluator = get_string("autoeval", constants::M_COMPONENT);
                     }
-                    echo $attempt_renderer->show_teachereval( $rubricresults,$feedback, $evaluator);
+                    echo $attempt_renderer->show_teachereval( $graderesults,$feedback, $evaluator);
                     $autotranscriptready=true;
                     $selftranscribe = utils::fetch_step_no($moduleinstance, constants::STEP_SELFTRANSCRIBE) !==false;
                     echo $attempt_renderer->show_summarypassageandstats($moduleinstance,$attempt,$aidata, $stats,$autotranscriptready, $selftranscribe);

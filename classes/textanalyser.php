@@ -382,13 +382,13 @@ class textanalyser {
         //if we have no words for whatever reason the calc will not work
         if(!$wordcount || $wordcount<1) {
             //update spelling and grammar stats in DB
-            return $stats;
+            return get_object_vars($stats);
         }
 
         //if this is not supported by lang tool (for now) lets just return
         //in future we want to use some AI features to support those languages, and weakly supported langtool langs
         if(!self::can_lang_tool($this->language)){
-            return $stats;
+            return get_object_vars($stats);
         }
 
         //get lanserver lang string
@@ -486,7 +486,7 @@ class textanalyser {
         $stats->aiaccuracy=-1;
 
         if(!$passage || empty($passage)){
-            return $stats;
+            return get_object_vars($stats);
         }
 
         $items = $this->split_into_sentences();

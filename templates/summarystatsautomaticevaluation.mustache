@@ -2,7 +2,7 @@
     <div id="chart_container">
         <canvas id="chart_canvas_automatic_evaluation"></canvas>
     </div>
-    <div class="mod_solo_automatic_evaluation_chart_grade_percent">{{{rubricresults}}}</div>
+    <div class="mod_solo_automatic_evaluation_chart_grade_percent">{{{graderesults}}}</div>
     <div class="mod_solo_automatic_evaluation_chart_grade_header">{{#str}}gradeheader, mod_solo{{/str}}</div> 
 </div>
 
@@ -37,7 +37,7 @@
                 };
                 var theRadarChart = new Chart(ctx,cjoptions);
             }
-            make_chart({filled: 28, unfilled: 72});
+            make_chart({filled: {{filled}}, unfilled: {{unfilled}}});
         });
     {{/js}}
 {{/element.frozen}}

@@ -397,7 +397,7 @@ $string['step_modelinstructions']='Check the model answer below.';
 //$string['playpause'] = 'Play/pause';
 //$string['now'] = 'Now';
 //$string['cancel'] = 'Cancel';
-$string['replay'] = 'Replay the transcription';
+$string['replay'] = 'Hear your audio for this attempt';
 $string['selftranscript'] = 'Self Transcript';
 //$string['autotranscript'] = 'Auto Transcript';
 $string['stats'] = 'Stats';
@@ -612,7 +612,7 @@ $string['notgradedyet'] = 'Your submission has been received, but has not been g
 $string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';
 $string['moreattemptdetails'] = "More Attempt Details";
 $string['transcriptevaluation']= "Transcript Evaluation";
-$string['transcriptevaluationdetails']= "Bold red words show differences between your transcript and the automatic transcript.";
+$string['transcriptevaluationdetails']= "Underlined words show differences between your transcript and the automatic transcript.";
 $string['uploading']=' ... uploading ... ';
 
 //media toggles
@@ -763,3 +763,4 @@ $string['extraslowspeed'] = 'Extra Slow';
 $string['modelanswer_help'] = 'Enter a good and complete sample answer to the topic. It will be used as part of the grading process.';
 $string['backtotranscriptedit']="Back to Edit";
 $string['waitingforteacher']="Your teacher will check your attempt. Thank You";
+$string['gradesdate'] = 'Date';

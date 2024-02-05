@@ -94,6 +94,8 @@ foreach($studentgrades as $studentgrade){
     if($studentgrade->aiaccuracy===null){
         $studentgrade->aiaccuracy='--';
     }
+    //format date
+    $studentgrade->date=date('Y-m-d',$studentgrade->timemodified);
 }
 $data = new ArrayIterator($studentgrades);
 

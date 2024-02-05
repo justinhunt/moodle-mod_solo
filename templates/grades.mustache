@@ -33,6 +33,7 @@
         <th>{{# str }} gradestargetwords, mod_solo {{/ str }}</th>
         <th>{{# str }} gradesmethod, mod_solo {{/ str }}</th>
         <th>{{# str }} gradesgrade, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradesdate, mod_solo {{/ str }}</th>
         <th>{{# str }} gradesactions, mod_solo {{/ str }}</th>
 
     </tr>
@@ -46,6 +47,7 @@
         <th>{{# str }} gradestargetwords, mod_solo {{/ str }}</th>
         <th>{{# str }} gradesgrader, mod_solo {{/ str }}</th>
         <th>{{# str }} gradesgrade, mod_solo {{/ str }}</th>
+        <th>{{# str }} gradesdate, mod_solo {{/ str }}</th>
         <th>{{# str }} gradesactions, mod_solo {{/ str }}&nbsp;</th>
 
     </tr>
@@ -60,6 +62,7 @@
             <td>{{targetwords}}/{{totaltargetwords}}</td>
             <td>{{grader}}</td>
             <td class="m-0">{{grade}}</td>
+            <td class="m-0">{{date}}</td>
             <td>
                 {{#methodrubric}}
                 <a href="gradesubmissions.php?id={{cmid}}&userid={{userid}}&grademethod=rubric">

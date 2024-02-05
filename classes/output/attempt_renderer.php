@@ -117,11 +117,29 @@ class attempt_renderer extends \plugin_renderer_base {
         return $this->output->render_from_template( constants::M_COMPONENT . '/summaryplaceholdereval', $data);
     }
 
-    function show_teachereval($rubricresults, $feedback, $evaluator){
+    function show_teachereval($graderesults, $feedback, $evaluator){
         $data = new \stdClass();
-        $data->rubricresults = $rubricresults;
+        $data->graderesults = $graderesults;
         $data->feedback=$feedback;
         $data->evaluator=$evaluator;
+
+
+
+        // Check if the resulting string is numeric
+        if(strpos($graderesults, '%') !== false){
+            // Remove the percentage sign
+            $numericStr = str_replace('%', '', $graderesults);
+            // Parse the string as an integer
+            if(is_numeric($numericStr)) {
+                $percentage = (int)$numericStr;
+                $data->filled = $percentage;
+                $data->unfilled = 100 - $percentage;
+            }else{
+                $data->filled = 50;
+                $data->unfilled = 50;
+            }
+        }
+
         return $this->output->render_from_template( constants::M_COMPONENT . '/summaryteachereval', $data);
     }
 
@@ -173,6 +191,14 @@ class attempt_renderer extends \plugin_renderer_base {
         $ret='';
         //spelling and grammar data
         $tdata=array('a'=>$attempt, 's'=>$stats, 'audiofilename'=>$attempt->filename, 'autotranscriptready'=>$autotranscriptready);
+
+        //if user doesn't edit transcript don't bother explaining how transcript matching works
+        if($moduleinstance->step2==constants::M_STEP_TRANSCRIBE ||
+            $moduleinstance->step3==constants::M_STEP_TRANSCRIBE ||
+            $moduleinstance->step4==constants::M_STEP_TRANSCRIBE){
+            $tdata['studenteditstranscript']=true;
+        }
+
         $tdata['spellingerrors'] = textanalyser::fetch_spellingerrors($stats,$attempt->selftranscript);
         $tdata['grammarerrors'] = textanalyser::fetch_grammarerrors($stats,$attempt->selftranscript);
         if($tdata['spellingerrors']){$tdata['hasspellingerrors']=true;}
@@ -182,7 +208,7 @@ class attempt_renderer extends \plugin_renderer_base {
         if($moduleinstance->showspelling){$tdata['showspelling']=true; }
 
         //if you have no transcript then it will error on render, so we use a space by default
-        //it should never really be blank however, and theuser arrived in a strange way probbaly. This just avoids an ugly error
+        //it should never really be blank however, and theuser arrived in a strange way probably. This just avoids an ugly error
         $simpleselftranscript=' ';
         if(!empty($attempt->selftranscript)){
             $simpleselftranscript=$attempt->selftranscript;
@@ -210,15 +236,22 @@ class attempt_renderer extends \plugin_renderer_base {
 
         //if we have a correction, send that out too
         if(!empty($attempt->grammarcorrection)){
-            /*
-            list($grammarerrors,$grammarmatches,$insertioncount) = utils::fetch_grammar_correction_diff($simpleselftranscript, $attempt->grammarcorrection);
-            $js_opts_html = \mod_solo\aitranscriptutils::prepare_corrections_amd($grammarerrors,$grammarmatches);
-            $markedupcorrections = \mod_solo\aitranscriptutils::render_passage($attempt->grammarcorrection,'corrections');
-            $markedupcorrections .= $js_opts_html;
-            $tdata['grammarcorrection']=$markedupcorrections;
-*/
+            if(diff::cleanText($simpleselftranscript)==diff::cleanText($attempt->grammarcorrection)) {
+                $tdata['grammarcorrection'] = get_string('no_grammar_corrections', constants::M_COMPONENT);
+            }else {
+                $direction = 'r2l';
+                list($grammarerrors, $grammarmatches, $insertioncount) = utils::fetch_grammar_correction_diff($simpleselftranscript, $attempt->grammarcorrection, $direction);
+                $js_opts_html = \mod_solo\aitranscriptutils::prepare_corrections_amd($grammarerrors, $grammarmatches);
+                $markedupcorrections = \mod_solo\aitranscriptutils::render_passage($attempt->grammarcorrection, 'corrections');
+                $markedupcorrections .= $js_opts_html;
+                $tdata['grammarcorrection'] = $markedupcorrections;
+            }
 
 
+            //The following fine diff code works well. But it also shows punctuation and capitalization differences, which is not what we want for spoken text
+            //Also the mark up is not as nice as the ai transcript mark up, which has word and space indexes.
+            // That allows us to highlight the word in the passage and show the correction etc, although that's not implemented here yet
+/*
                 if(diff::cleanText($simpleselftranscript)==diff::cleanText($attempt->grammarcorrection)) {
                     $tdata['grammarcorrection'] = get_string('no_grammar_corrections', constants::M_COMPONENT);
                 }else{
@@ -227,7 +260,7 @@ class attempt_renderer extends \plugin_renderer_base {
                     $toggle_diff = $this->output->render_from_template( constants::M_COMPONENT . '/summary_togglecorrections', []);
                     $tdata['grammarcorrection']= $diff_html . $toggle_diff;
                 }
-
+*/
         }
 
         //send data to template

@@ -989,6 +989,10 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 	font-weight: 700;
 }
 
+.mod_solo_grading_passageword.mod_solo_aicorrected {
+	background-color: lightpink;
+}
+
 .mod_solo_grading_passageword.mod_solo_aiunmatched {
     /*background-color: lightgrey;*/
 }
@@ -1316,12 +1320,13 @@ audio#mod_solo_passageaudioplayer {
 
 span.mod_solo_corrections_suggestedword {
 	font-weight: bold;
-	background-color: azure;
+	background-color: lightgreen;
 }
 
 span.mod_solo_corrections_omittedword {
 	font-weight: bold;
-	background-color: red;
+	background-color: lightgreen;
+	word-spacing: 5px;
 }
 
 

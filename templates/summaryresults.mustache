@@ -27,11 +27,12 @@
                 <div>{{>mod_solo/audioplayer}}</div>
             </div>
 
-            
 
-            {{#autotranscriptready}}
-                <div>{{#str}}transcriptevaluationdetails, mod_solo{{/str}}</div>
-            {{/autotranscriptready}}
+            {{#studenteditstranscript}}
+                {{#autotranscriptready}}
+                    <div>{{#str}}transcriptevaluationdetails, mod_solo{{/str}}</div>
+                {{/autotranscriptready}}
+            {{/studenteditstranscript}}
 
             {{{markedpassage}}}
         

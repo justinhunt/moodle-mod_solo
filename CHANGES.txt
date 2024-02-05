@@ -1,3 +1,9 @@
+Version 1.0.42 (Build 2024020500)
+-Fixed an issue with mode : prepare -> record -> model -> transcript
+-Tweaks to results page
+- Added date to grades report
+- Added better display for corrections feedback
+
 Version 1.0.41 (Build 2024011500)
 - Fixed issue where no speech was transcribed, causing students to get stuck waiting for processing
 - Added an incomplete attempts report allowing teachers to delete attempts that get stuck

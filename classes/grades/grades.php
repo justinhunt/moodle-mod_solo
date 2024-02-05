@@ -41,7 +41,8 @@ class grades {
                     pat.aiaccuracy,
                     pa.manualgraded,
                     pa.grade,
-                    pa.userid
+                    pa.userid,
+                    pa.timemodified
                 from {solo} as p
                     inner join {solo_attempts} pa on p.id = pa.solo
                     inner join {course_modules} as cm on cm.course = p.course and cm.id = ?
@@ -73,7 +74,8 @@ class grades {
                     pat.aiaccuracy,
                     pa.manualgraded,
                     pa.grade,
-                    pa.userid
+                    pa.userid,
+                    pa.timemodified
                 from {solo} as p
                     inner join {solo_attempts} pa on p.id = pa.solo
                     inner join {course_modules} as cm on cm.course = p.course and cm.id = ?
