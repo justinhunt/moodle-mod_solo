@@ -126,7 +126,6 @@ class attempt_renderer extends \plugin_renderer_base {
 
 
         // Check if the resulting string is numeric
-        //by default add cart data
         if(strpos($graderesults, '%') !== false){
             // Remove the percentage sign
             $numericStr = str_replace('%', '', $graderesults);
@@ -138,7 +137,6 @@ class attempt_renderer extends \plugin_renderer_base {
                 $data->unfilled = 100 - $percentage;
             }
         }
-
         return $this->output->render_from_template( constants::M_COMPONENT . '/summaryteachereval', $data);
     }
 

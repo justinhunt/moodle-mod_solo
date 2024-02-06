@@ -1,3 +1,6 @@
+Version 1.0.43 (Build 2024020600)
+ - Fixed bug introduced in last release which could break JS on students attempt summary page
+
 Version 1.0.42 (Build 2024020500)
 -Fixed an issue with mode : prepare -> record -> model -> transcript
 -Tweaks to results page
