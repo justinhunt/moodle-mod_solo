@@ -8,6 +8,11 @@
         </div>
     </div>    
     <div class="mod_solo_report_card_content">
-        {{>mod_solo/summarystatsautomaticevaluation}}
+        {{#donutchart}}
+            {{>mod_solo/summarystatsautomaticevaluation}}
+        {{/donutchart}}
+        {{^donutchart}}
+            {{>mod_solo/summarystatsautomaticnocharts}}
+        {{/donutchart}}
     </div>
 </section>

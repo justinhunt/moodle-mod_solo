@@ -126,17 +126,16 @@ class attempt_renderer extends \plugin_renderer_base {
 
 
         // Check if the resulting string is numeric
+        //by default add cart data
         if(strpos($graderesults, '%') !== false){
             // Remove the percentage sign
             $numericStr = str_replace('%', '', $graderesults);
             // Parse the string as an integer
             if(is_numeric($numericStr)) {
                 $percentage = (int)$numericStr;
+                $data->donutchart =true;
                 $data->filled = $percentage;
                 $data->unfilled = 100 - $percentage;
-            }else{
-                $data->filled = 50;
-                $data->unfilled = 50;
             }
         }
 
