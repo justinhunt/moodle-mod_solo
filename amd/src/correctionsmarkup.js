@@ -19,13 +19,17 @@ define(['jquery', 'core/log'], function ($, log) {
             suggestionclass: 'mod_solo_corrections_suggestedword',
             wordomittedclass: 'mod_solo_corrections_omittedword',
             aiunmatched: 'mod_solo_aiunmatched',
-            aicorrected: 'mod_solo_aicorrected'
+            aicorrected: 'mod_solo_aicorrected',
+            aiomitted: 'mod_solo_aiomitted',
+            aiinserted: 'mod_solo_aiinserted',
+            aisuggested: 'mod_solo_aisuggested',
         },
 
         options: {
             errorwords: {},
             grammarmatches: {},
-            suggestedwords: {}
+            suggestedwords: {},
+            insertioncount: 0
         },
 
 
@@ -51,12 +55,20 @@ define(['jquery', 'core/log'], function ($, log) {
                     this.options.grammarmatches  = {};
                 }
 
+                if (opts['insertioncount'] !== '') {
+                    this.options.insertioncount = opts['insertioncount'];
+                }else{
+                    this.options.insertioncount = 0;
+                }
+
 
             } else if(config.hasOwnProperty('sessionerrors') &&
-                config.hasOwnProperty('sessionmatches')){
+                config.hasOwnProperty('sessionmatches')&&
+                config.hasOwnProperty('insertioncount')){
 
                     this.options.suggestedwords = JSON.parse(config['sessionerrors']);
                     this.options.grammarmatches = JSON.parse(config['sessionmatches']);
+                    this.options.insertioncount = config['insertioncount'];
 
             } else {
                 //if there is no config we might as well give up
@@ -92,7 +104,14 @@ define(['jquery', 'core/log'], function ($, log) {
             this.controls.correctionscontainer.on('click','.' + this.cd.wordclass + ',.' + this.cd.spaceclass, function () {
                 var tpositions = $(this).attr('data-tpositions');
                 if (typeof tpositions === 'undefined' || tpositions === '') {return;}
-                that.highlightoriginal(tpositions);
+
+                var correctiontype = '';//defaults to none .. its just highlighting
+                //any correction will be a suggestion but it might also be an insertion or an omission which overrides suggestion
+                if($(this).hasClass(that.cd.suggestionclass)){correctiontype='suggestion';}
+                if($(this).hasClass(that.cd.insertionclass)){correctiontype='insertion';}
+                if($(this).hasClass(that.cd.wordomittedclass)){correctiontype='omission';}
+
+                that.highlightoriginal(tpositions,correctiontype);
                 setTimeout(function () {
                     that.dehighlightoriginal(tpositions);
                 }, 1000);
@@ -102,7 +121,14 @@ define(['jquery', 'core/log'], function ($, log) {
             this.controls.correctionscontainer.on('mouseover', '.' + this.cd.wordclass + ',.' + this.cd.spaceclass,  function () {
                 var tpositions = $(this).attr('data-tpositions');
                 if (typeof tpositions === 'undefined' || tpositions === '') {return;}
-                that.highlightoriginal(tpositions);
+
+                var correctiontype = '';//defaults to none .. its just highlighting and not corrected
+                //any correction will be a suggestion but it might also be an insertion or an omission which overrides suggestion
+                if($(this).hasClass(that.cd.suggestionclass)){correctiontype='suggestion';}
+                if($(this).hasClass(that.cd.insertionclass)){correctiontype='insertion';}
+                if($(this).hasClass(that.cd.wordomittedclass)){correctiontype='omission';}
+
+                that.highlightoriginal(tpositions, correctiontype);
             });
 
             // Use mouseout event for de-highlighting
@@ -113,19 +139,43 @@ define(['jquery', 'core/log'], function ($, log) {
             });
         },
 
-        highlightoriginal: function (tpositionstring) {
+        highlightoriginal: function (tpositionstring, correctiontype) {
             var that = this;
             var tpositions = tpositionstring.split(',');
-            $.each(tpositions, function (index, tposition) {
-                $('#' + that.cd.passagewordclass + '_' + tposition).addClass(that.cd.aicorrected);
-            });
 
+            //correction classes
+            var correctionsclasses = [];
+            correctionsclasses.push(that.cd.aicorrected);
+            if(correctiontype==='insertion') {
+                correctionsclasses.push(that.cd.aiinserted);
+            }else if(correctiontype==='omission') {
+                correctionsclasses.push(that.cd.aiomitted);
+            }else if (correctiontype==='suggestion') {
+                correctionsclasses.push(that.cd.aisuggested);
+            }
+
+            for (var i = 0; i < tpositions.length; i++) {
+                var tposition = tpositions[i];
+                if(correctiontype==='insertion') {
+                    //if the word is an insertion, then we only highlight spaces, because no word is altered in the original
+                    $('#' + that.cd.passagespaceclass + '_' + tposition).addClass(correctionsclasses);
+                } else {
+                    $('#' + that.cd.passagewordclass + '_' + tposition).addClass(correctionsclasses);
+                    //to highlight connecting spaces we check if we are between tpositions
+                    if(i < tpositions.length - 1) {
+                        $('#' + that.cd.passagespaceclass + '_' + tposition).addClass(correctionsclasses);
+                    }
+                }
+            }
         },
+
         dehighlightoriginal: function (tpositionstring) {
             var that = this;
+            var correctionsclasses = [that.cd.aicorrected, that.cd.aiinserted, that.cd.aiomitted, that.cd.aisuggestion];
             var tpositions = tpositionstring.split(',');
             $.each(tpositions, function (index, tposition) {
-                $('#' + that.cd.passagewordclass + '_' + tposition).removeClass(that.cd.aicorrected);
+                $('#' + that.cd.passagewordclass + '_' + tposition).removeClass(correctionsclasses);
+                $('#' + that.cd.passagespaceclass + '_' + tposition).removeClass(correctionsclasses);
             });
         },
 
@@ -135,6 +185,28 @@ define(['jquery', 'core/log'], function ($, log) {
                     $('.' + m.cd.correctionscontainer + ' #' + m.cd.wordclass + '_' + (m.options.suggestedwords[index].wordnumber)).addClass(m.cd.suggestionclass);
                 }
             );
+            //sadly the above code only takes us to the last match. NOT to the last suggestion
+            //so from the last match to the end of passage (if there are any words left) we mark those up too
+            //we use the insertion count to guess the transcript indexes of end words. This is used to highlight passage on mouseover in view summary
+            //m.options.grammarmatches is js object, so we can't use array functions on it.
+            if(Object.keys(m.options.grammarmatches).length > 0) {
+                var lastpposition=0;
+                var lasttposition=0;
+                $.each(m.options.grammarmatches, function (index, lastmatch) {
+                    lastpposition = Number(lastmatch.pposition);
+                    lasttposition = Number(lastmatch.tposition);
+                });
+                var lastwordnumber = Number(lastpposition);
+                var tpositions = [];
+                for(var i = lasttposition + 1; i <= lasttposition + m.options.insertioncount + 1; i++) {
+                    tpositions.push(i);
+                }
+                var allwords = $('.' + m.cd.correctionscontainer + ' .' + m.cd.wordclass);
+                allwords.filter(function() {
+                    var wordNumber = Number($(this).data('wordnumber'));
+                    return wordNumber > lastwordnumber && !$(this).hasClass(m.cd.suggestionclass);
+                }).addClass(m.cd.suggestionclass).attr('data-tpositions', tpositions.join(','));
+            }
         },
 
         //now we step through all the matched words, and look for "gaps"
@@ -182,7 +254,17 @@ define(['jquery', 'core/log'], function ($, log) {
                                 }
                             }
                         }
+                    }else if(match.pposition - prevmatch.pposition > 1) {
+                        //if there is a gap in the pposition, then we have an extra word in the corrected text
+                        //we want to highlight the space where the extra word would have been in the original text
+                        //eg original "one two three four five" corrected to "one two twopointfive three four five"
+                        // we want to highlight the space between "two" and "three" in original since the p position has jumped by more than one
+                        for (var insertedword = prevmatch.pposition + 1; insertedword < match.pposition; insertedword++) {
+                            $('#' + that.cd.wordclass + '_' + insertedword).addClass(that.cd.insertionclass);
+                            $('#' + that.cd.wordclass + '_' + insertedword).attr('data-tpositions', prevmatch.tposition);
+                        }
                     }
+
                     //Always mark up the current words tposition as well
                     $('#' + that.cd.wordclass + '_' + match.pposition).attr('data-tpositions', match.tposition);
                     //store this match as the new prevmatch so on the next loop pass we can compare

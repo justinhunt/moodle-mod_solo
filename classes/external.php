@@ -59,6 +59,7 @@ class external extends external_api {
         $ret['grammarerrors'] = $grammarerrors;
         $ret['grammarmatches'] = $grammarmatches;
         $ret['suggestions'] = $markedupsuggestions;
+        $ret['insertioncount'] = $insertioncount;
 
         return json_encode($ret);
 

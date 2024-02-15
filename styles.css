@@ -989,8 +989,13 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 	font-weight: 700;
 }
 
-.mod_solo_grading_passageword.mod_solo_aicorrected {
+.mod_solo_grading_passageword.mod_solo_aicorrected,
+.mod_solo_grading_passagespace.mod_solo_aicorrected {
 	background-color: lightpink;
+}
+
+.mod_solo_grading_passageword.asf_cp_aiomitted, .mod_solo_grading_passagespace.asf_cp_aiomitted {
+	text-decoration: line-through;
 }
 
 .mod_solo_grading_passageword.mod_solo_aiunmatched {
@@ -1329,7 +1334,6 @@ span.mod_solo_corrections_omittedword {
 	word-spacing: 5px;
 }
 
-
 /* Style for a spinner overlay on a textarea */
 .solo-spinner-overlay {
 	position: relative;
@@ -1385,9 +1389,7 @@ span.mod_solo_corrections_omittedword {
   margin-right: auto;
 }
 
-
 /* Prepare step */
-
 .mod_solo_step_prepare .container {
 	margin-bottom: 36px;
 }
@@ -1397,7 +1399,6 @@ span.mod_solo_corrections_omittedword {
 		margin-bottom: 92px;
 	}
 }
-
 
 .mod_solo_step_title {
 	font-weight: 700;

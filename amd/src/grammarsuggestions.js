@@ -74,6 +74,7 @@ define(['jquery', 'core/log','mod_solo/definitions','core/str','core/ajax','core
                             var opts = [];
                             opts['sessionerrors'] = payloadobject.grammarerrors;
                             opts['sessionmatches'] = payloadobject.grammarmatches;
+                            opts['insertioncount'] = payloadobject.insertioncount;
                             correctionsmarkup.init(opts);
                         }
 

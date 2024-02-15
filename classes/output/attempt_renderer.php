@@ -238,7 +238,7 @@ class attempt_renderer extends \plugin_renderer_base {
             }else {
                 $direction = 'r2l';
                 list($grammarerrors, $grammarmatches, $insertioncount) = utils::fetch_grammar_correction_diff($simpleselftranscript, $attempt->grammarcorrection, $direction);
-                $js_opts_html = \mod_solo\aitranscriptutils::prepare_corrections_amd($grammarerrors, $grammarmatches);
+                $js_opts_html = \mod_solo\aitranscriptutils::prepare_corrections_amd($grammarerrors, $grammarmatches,$insertioncount);
                 $markedupcorrections = \mod_solo\aitranscriptutils::render_passage($attempt->grammarcorrection, 'corrections');
                 $markedupcorrections .= $js_opts_html;
                 $tdata['grammarcorrection'] = $markedupcorrections;

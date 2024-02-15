@@ -1,3 +1,6 @@
+Version 1.0.44 (Build 2024021500)
+- Improved highlighting of target words in transcript that have been auto suggested/corrected
+
 Version 1.0.43 (Build 2024020600)
  - Fixed bug introduced in last release which could break JS on students attempt summary page
 

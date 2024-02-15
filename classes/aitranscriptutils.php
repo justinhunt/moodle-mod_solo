@@ -665,13 +665,14 @@ class aitranscriptutils{
         return $opts_html;
     }
 
-    public static function prepare_corrections_amd($sessionerrors, $sessionmatches) {
+    public static function prepare_corrections_amd($sessionerrors, $sessionmatches,$insertioncount) {
         global $PAGE;
 
         //here we set up any info we need to pass into javascript
         $correctionsopts = Array();
         $correctionsopts['sessionerrors'] = $sessionerrors; //these are words different from those in original
         $correctionsopts['sessionmatches'] = $sessionmatches; //these are words missing from the original
+        $correctionsopts['insertioncount'] = $insertioncount; //these are words missing from the original
         $correctionsopts['opts_id'] = 'mod_solo_correctionopts';
 
 
