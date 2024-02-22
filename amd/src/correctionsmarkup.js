@@ -13,10 +13,12 @@ define(['jquery', 'core/log'], function ($, log) {
             correctionscontainer: 'mod_solo_corrections_cont',
             insertclass: 'mod_solo_finediffinsertion',
             passagewordclass: 'mod_solo_grading_passageword',
+            passagespaceclass: 'mod_solo_grading_passagespace',
             //previously removed
             wordclass: 'mod_solo_grading_correctionsword',
             spaceclass: 'mod_solo_grading_correctionsspace',
             suggestionclass: 'mod_solo_corrections_suggestedword',
+            insertionclass: 'mod_solo_corrections_insertionword',
             wordomittedclass: 'mod_solo_corrections_omittedword',
             aiunmatched: 'mod_solo_aiunmatched',
             aicorrected: 'mod_solo_aicorrected',
