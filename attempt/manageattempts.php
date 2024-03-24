@@ -168,12 +168,12 @@ $context = \context_module::instance($cm->id);
 $topicmedia['itemtext']=$moduleinstance->speakingtopic;
 
 //Prepare IFrame
-if(!empty(trim($moduleinstance->topiciframe))){
+if(!empty($moduleinstance->topiciframe) && !empty(trim($moduleinstance->topiciframe))){
     $topicmedia['itemiframe']=$moduleinstance->topiciframe;
 }
 
 //Prepare TTS prompt
-if(!empty(trim($moduleinstance->topictts))){
+if(!empty($moduleinstance->topictts) && !empty(trim($moduleinstance->topictts))){
 
     //slowspeed
     $slowpassage = utils::fetch_speech_ssml($moduleinstance->topictts,$moduleinstance->topicttsspeed);
@@ -184,7 +184,7 @@ if(!empty(trim($moduleinstance->topictts))){
 }
 
 //Prepare YT Clip
-if(!empty(trim($moduleinstance->topicytid))){
+if(!empty($moduleinstance->topicytid) && !empty(trim($moduleinstance->topicytid))){
     $ytvideoid = trim($moduleinstance->topicytid);
     //if its a YT URL we want to parse the id from it
     if(\core_text::strlen($ytvideoid)>11){

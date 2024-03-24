@@ -130,8 +130,8 @@ class external extends external_api {
     public static function submit_rubric_grade_form_parameters() {
         return new external_function_parameters(
             array(
-                'contextid' => new external_value(PARAM_INT, 'The context id for the course'),
-                'jsonformdata' => new external_value(PARAM_RAW, 'The data from the create grade form, encoded as a json array'),
+                'contextid' => new external_value(PARAM_INT, 'The context id for the course',VALUE_REQUIRED),
+                'jsonformdata' => new external_value(PARAM_RAW, 'The data from the create grade form, encoded as a json array',VALUE_REQUIRED),
                 'studentid' => new external_value(PARAM_INT, 'The id for the student', false),
                 'cmid' => new external_value(PARAM_INT, 'The course module id for the item', false),
             )
@@ -237,8 +237,8 @@ class external extends external_api {
     public static function submit_simple_grade_form_parameters() {
         return new external_function_parameters(
                 array(
-                        'contextid' => new external_value(PARAM_INT, 'The context id for the course'),
-                        'jsonformdata' => new external_value(PARAM_RAW, 'The data from the create grade form, encoded as a json array'),
+                        'contextid' => new external_value(PARAM_INT, 'The context id for the course',VALUE_REQUIRED),
+                        'jsonformdata' => new external_value(PARAM_RAW, 'The data from the create grade form, encoded as a json array',VALUE_REQUIRED),
                         'studentid' => new external_value(PARAM_INT, 'The id for the student', false),
                         'cmid' => new external_value(PARAM_INT, 'The course module id for the item', false),
                 )
