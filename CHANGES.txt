@@ -1,3 +1,7 @@
+Version 1.0.45 (Build 2024032400)
+- Better display of language options in settings
+- Bug fix for TTS passage voice selection
+
 Version 1.0.44 (Build 2024021500)
 - Improved highlighting of target words in transcript that have been auto suggested/corrected
 
