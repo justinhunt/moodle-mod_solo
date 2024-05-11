@@ -162,7 +162,7 @@ class diff{
     public static function fetchAlternativesArray($thealternates)
     {
         //return empty if input data is useless
-        if(trim($thealternates)==''){
+        if(\core_text::trim_utf8_bom($thealternates)==''){
             return [];
         }
         //regexp from https://stackoverflow.com/questions/7058168/explode-textarea-php-at-new-lines
@@ -170,7 +170,7 @@ class diff{
         $alternatives = [];
 
         foreach($lines as $line){
-            if(!empty(trim($line))) {
+            if(!empty(\core_text::trim_utf8_bom($line))) {
                 $set = explode('|', $line);
                 switch(count($set)){
                     case 0:
@@ -182,7 +182,7 @@ class diff{
                         $forwardmatches= [];
                         $words= [];
                         foreach($set as $wordstring){
-                            $wordstring = trim($wordstring);
+                            $wordstring = \core_text::trim_utf8_bom($wordstring);
                             if($wordstring==''){continue;}
                             $wordsarray=explode(' ',$wordstring);
 

@@ -1237,8 +1237,8 @@ class utils{
                 get_string('refreshtoken',constants::M_COMPONENT)) . '<br>';
 
         $message = '';
-        $apiuser = trim($apiuser);
-        $apisecret = trim($apisecret);
+        $apiuser = \core_text::trim_utf8_bom($apiuser);
+        $apisecret = \core_text::trim_utf8_bom($apisecret);
         if(empty($apiuser)){
            $message .= get_string('noapiuser',constants::M_COMPONENT) . '<br>';
        }
@@ -1291,8 +1291,8 @@ class utils{
         $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
         $tokenobject = $cache->get('recentpoodlltoken');
         $tokenuser = $cache->get('recentpoodlluser');
-        $apiuser = trim($apiuser);
-        $apisecret = trim($apisecret);
+        $apiuser = \core_text::trim_utf8_bom($apiuser);
+        $apisecret = \core_text::trim_utf8_bom($apisecret);
         $now = time();
 
         //if we got a token and its less than expiry time
@@ -1475,9 +1475,9 @@ class utils{
     }
 
     public static function has_modelanswer_media($moduleinstance, $context){
-        if(!empty(trim($moduleinstance->modelytid))) {return true;}
-        if(!empty(trim($moduleinstance->modeliframe))) {return true;}
-        if(!empty(trim($moduleinstance->modeltts))) {return true;}
+        if(!empty(\core_text::trim_utf8_bom($moduleinstance->modelytid))) {return true;}
+        if(!empty(\core_text::trim_utf8_bom($moduleinstance->modeliframe))) {return true;}
+        if(!empty(\core_text::trim_utf8_bom($moduleinstance->modeltts))) {return true;}
         $itemid=0;
         $filearea='modelmedia';
         $mediaurls = utils::fetch_media_urls($context->id,$filearea,$itemid);

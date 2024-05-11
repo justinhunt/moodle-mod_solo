@@ -472,7 +472,7 @@ class aitranscriptutils{
             }
 
             $ret = implode(" ",$retarray);
-            if(trim($ret)==''){
+            if(\core_text::trim_utf8_bom($ret)==''){
                 return false;
             }else{
                 return $ret;
@@ -516,7 +516,7 @@ class aitranscriptutils{
         //init the text count
         $wordcount = 0;
         foreach ($nodes as $node) {
-            $trimmednode = trim($node->nodeValue);
+            $trimmednode = \core_text::trim_utf8_bom($node->nodeValue);
             if (empty($trimmednode)) {
                 continue;
             }
@@ -608,7 +608,7 @@ class aitranscriptutils{
         //init the text count
         $wordcount = 0;
         foreach ($nodes as $node) {
-            $trimmednode = trim($node->nodeValue);
+            $trimmednode = \core_text::trim_utf8_bom($node->nodeValue);
             if (empty($trimmednode)) {
                 continue;
             }
