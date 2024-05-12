@@ -6,21 +6,20 @@
  * @author  Justin Hunt - Poodll.com
  */
 
-
-namespace mod_solo;
-
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_value;
+use core_external\external_single_structure;
+use core_external\external_multiple_structure;
 
-use context_module;
-use external_api;
-use external_function_parameters;
-use external_value;
-use external_single_structure;
-use external_multiple_structure;
 use mod_solo\grades\gradesubmissions;
 use mod_solo\utils;
+use mod_solo\constants;
 use mod_solo\aitranscript;
+use mod_solo\textanalyser;
+use mod_solo\attempthelper;
 
 /**
  * External class.
@@ -28,7 +27,7 @@ use mod_solo\aitranscript;
  * @package mod_solo
  * @author  Justin Hunt - Poodll.com
  */
-class external extends external_api {
+class mod_solo_external extends external_api {
 
     public static function check_grammar($text, $activityid) {
         global $DB, $USER;
@@ -132,8 +131,8 @@ class external extends external_api {
             array(
                 'contextid' => new external_value(PARAM_INT, 'The context id for the course',VALUE_REQUIRED),
                 'jsonformdata' => new external_value(PARAM_RAW, 'The data from the create grade form, encoded as a json array',VALUE_REQUIRED),
-                'studentid' => new external_value(PARAM_INT, 'The id for the student', false),
-                'cmid' => new external_value(PARAM_INT, 'The course module id for the item', false),
+                'studentid' => new external_value(PARAM_INT, 'The id for the student', VALUE_DEFAULT,0),
+                'cmid' => new external_value(PARAM_INT, 'The course module id for the item', VALUE_DEFAULT,0),
             )
         );
     }
@@ -239,8 +238,8 @@ class external extends external_api {
                 array(
                         'contextid' => new external_value(PARAM_INT, 'The context id for the course',VALUE_REQUIRED),
                         'jsonformdata' => new external_value(PARAM_RAW, 'The data from the create grade form, encoded as a json array',VALUE_REQUIRED),
-                        'studentid' => new external_value(PARAM_INT, 'The id for the student', false),
-                        'cmid' => new external_value(PARAM_INT, 'The course module id for the item', false),
+                        'studentid' => new external_value(PARAM_INT, 'The id for the student', VALUE_DEFAULT,0),
+                        'cmid' => new external_value(PARAM_INT, 'The course module id for the item', VALUE_DEFAULT,0),
                 )
         );
     }
