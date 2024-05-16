@@ -4,17 +4,20 @@
 
 {{! we set the title and instructions}}
 <div class="container mod_solo_step_model">
-
-        <span class="mod_solo_step_title_eyebrow">Step {{stepno}}</span>
-        <h2 class="mod_solo_step_title">
-        {{#str}}attempt_model, mod_solo{{/str}}
-        </h2>
-
-    <div class="mx-auto">
-        <div class="solo_stepinstructions">
-            {{#str}}step_modelinstructions, mod_solo{{/str}}
+    <div class="row">
+        <div class="col-sm mx-auto">
+            <span class="mod_solo_step_title_eyebrow">Step {{stepno}}</span>
+            <h2 class="mod_solo_step_title">
+            {{#str}}attempt_model, mod_solo{{/str}}
+            </h2>
         </div>
     </div>
+
+    {{! Prepare step instructions }}
+    <div class="solo_stepinstructions">
+        {{#str}}step_modelinstructions, mod_solo{{/str}}
+    </div>
+
 
     <div class="mod_solo_activitycontent_container">
         {{#contentitems}}

@@ -1,3 +1,6 @@
+Version 1.0.48 (Build 2024051601)
+- Fixed an unclosed tag issue which could break pages with a TTS player on them
+
 Version 1.0.47 (Build 2024051600)
 - Fixes for external API calls on pre M40 sites
 
