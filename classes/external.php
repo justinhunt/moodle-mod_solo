@@ -7,12 +7,17 @@
  */
 
 global $CFG;
+
+//This is for pre M4.0 and post M4.0 to work on same code base
 require_once($CFG->libdir . '/externallib.php');
+
+/*
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
 use core_external\external_single_structure;
 use core_external\external_multiple_structure;
+*/
 
 use mod_solo\grades\gradesubmissions;
 use mod_solo\utils;
