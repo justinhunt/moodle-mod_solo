@@ -1,4 +1,6 @@
--- fixed wrong trim function
+Version 1.0.49 (Build 202406xxxx)
+- fixed wrong trim function
+- fixed wrong dialect labels for Arabic voices:  Arabic (modern standard) / Arabic (gulf)
 
 Version 1.0.48 (Build 2024051601)
 - Fixed an unclosed tag issue which could break pages with a TTS player on them
