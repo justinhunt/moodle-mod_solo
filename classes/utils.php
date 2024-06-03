@@ -1237,8 +1237,8 @@ class utils{
                 get_string('refreshtoken',constants::M_COMPONENT)) . '<br>';
 
         $message = '';
-        $apiuser = \core_text::trim_utf8_bom($apiuser);
-        $apisecret = \core_text::trim_utf8_bom($apisecret);
+        $apiuser = self::super_trim($apiuser);
+        $apisecret = self::super_trim($apisecret);
         if(empty($apiuser)){
            $message .= get_string('noapiuser',constants::M_COMPONENT) . '<br>';
        }
@@ -1291,8 +1291,8 @@ class utils{
         $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
         $tokenobject = $cache->get('recentpoodlltoken');
         $tokenuser = $cache->get('recentpoodlluser');
-        $apiuser = \core_text::trim_utf8_bom($apiuser);
-        $apisecret = \core_text::trim_utf8_bom($apisecret);
+        $apiuser = self::super_trim($apiuser);
+        $apisecret = self::super_trim($apisecret);
         $now = time();
 
         //if we got a token and its less than expiry time
@@ -1475,9 +1475,9 @@ class utils{
     }
 
     public static function has_modelanswer_media($moduleinstance, $context){
-        if(!empty(\core_text::trim_utf8_bom($moduleinstance->modelytid))) {return true;}
-        if(!empty(\core_text::trim_utf8_bom($moduleinstance->modeliframe))) {return true;}
-        if(!empty(\core_text::trim_utf8_bom($moduleinstance->modeltts))) {return true;}
+        if(!empty(self::super_trim($moduleinstance->modelytid))) {return true;}
+        if(!empty(self::super_trim($moduleinstance->modeliframe))) {return true;}
+        if(!empty(self::super_trim($moduleinstance->modeltts))) {return true;}
         $itemid=0;
         $filearea='modelmedia';
         $mediaurls = utils::fetch_media_urls($context->id,$filearea,$itemid);
@@ -2173,7 +2173,7 @@ class utils{
             $correction = $payloadobject->returnMessage;
             //clean up the correction a little
             if(\core_text::strlen($correction) > 0){
-                $correction = \core_text::trim_utf8_bom($correction);
+                $correction = self::super_trim($correction);
                 $charone = substr($correction,0,1);
                 if(preg_match('/^[.,:!?;-]/',$charone)){
                     $correction = substr($correction,1);
@@ -3011,5 +3011,14 @@ class utils{
         return $moduleinstance;
 
   }//end of prepare_file_and_json_stuff
+
+    public static function super_trim($str){
+        if($str==null){
+            return '';
+        }else{
+            $str = trim($str);
+            return $str;
+        }
+    }
 
 }

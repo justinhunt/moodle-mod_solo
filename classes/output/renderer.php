@@ -71,7 +71,7 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_intro($solo,$cm){
         $ret = "";
-        if (\core_text::trim_utf8_bom(strip_tags($solo->intro))) {
+        if (utils::super_trim(strip_tags($solo->intro))) {
             $ret .= $this->output->box_start('mod_introbox');
             $ret .= format_module_intro(constants::M_MODNAME, $solo, $cm->id);
             $ret .= $this->output->box_end();

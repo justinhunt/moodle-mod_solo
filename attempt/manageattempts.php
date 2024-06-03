@@ -168,12 +168,12 @@ $context = \context_module::instance($cm->id);
 $topicmedia['itemtext']=$moduleinstance->speakingtopic;
 
 //Prepare IFrame
-if(!empty($moduleinstance->topiciframe) && !empty(\core_text::trim_utf8_bom($moduleinstance->topiciframe))){
+if(!empty($moduleinstance->topiciframe) && !empty(utils::super_trim($moduleinstance->topiciframe))){
     $topicmedia['itemiframe']=$moduleinstance->topiciframe;
 }
 
 //Prepare TTS prompt
-if(!empty($moduleinstance->topictts) && !empty(\core_text::trim_utf8_bom($moduleinstance->topictts))){
+if(!empty($moduleinstance->topictts) && !empty(utils::super_trim($moduleinstance->topictts))){
 
     //slowspeed
     $slowpassage = utils::fetch_speech_ssml($moduleinstance->topictts,$moduleinstance->topicttsspeed);
@@ -184,8 +184,8 @@ if(!empty($moduleinstance->topictts) && !empty(\core_text::trim_utf8_bom($module
 }
 
 //Prepare YT Clip
-if(!empty($moduleinstance->topicytid) && !empty(\core_text::trim_utf8_bom($moduleinstance->topicytid))){
-    $ytvideoid = \core_text::trim_utf8_bom($moduleinstance->topicytid);
+if(!empty($moduleinstance->topicytid) && !empty(utils::super_trim($moduleinstance->topicytid))){
+    $ytvideoid = utils::super_trim($moduleinstance->topicytid);
     //if its a YT URL we want to parse the id from it
     if(\core_text::strlen($ytvideoid)>11){
         $urlbits=[];
@@ -318,12 +318,12 @@ switch($type) {
     case constants::STEP_MODEL:
         $modelmedia = [];
         //Prepare IFrame
-        if(!empty(\core_text::trim_utf8_bom($moduleinstance->modeliframe))){
+        if(!empty(utils::super_trim($moduleinstance->modeliframe))){
             $modelmedia['itemiframe']=$moduleinstance->modeliframe;
         }
 
         //Prepare TTS prompt
-        if(!empty(\core_text::trim_utf8_bom($moduleinstance->modeltts))){
+        if(!empty(utils::super_trim($moduleinstance->modeltts))){
             //slowspeed
             $slowpassage = utils::fetch_speech_ssml($moduleinstance->modeltts,$moduleinstance->modelttsspeed);
             $modelmedia['itemtts']=utils::fetch_polly_url($token,$moduleinstance->region,$slowpassage,'ssml',$moduleinstance->modelttsvoice);
@@ -333,8 +333,8 @@ switch($type) {
         }
 
         //Prepare YT Clip
-        if(!empty(\core_text::trim_utf8_bom($moduleinstance->modelytid))){
-            $modelytvideoid = \core_text::trim_utf8_bom($moduleinstance->modelytid);
+        if(!empty(utils::super_trim($moduleinstance->modelytid))){
+            $modelytvideoid = utils::super_trim($moduleinstance->modelytid);
             //if its a YT URL we want to parse the id from it
             if(\core_text::strlen($modelytvideoid)>11){
                 $urlbits=[];

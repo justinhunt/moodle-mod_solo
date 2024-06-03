@@ -677,7 +677,7 @@ class textanalyser {
             $correction = $payloadobject->returnMessage;
             //clean up the correction a little
             if(\core_text::strlen($correction) > 0){
-                $correction = \core_text::trim_utf8_bom($correction);
+                $correction = utils::super_trim($correction);
                 $charone = substr($correction,0,1);
                 if(preg_match('/^[.,:!?;-]/',$charone)){
                     $correction = substr($correction,1);
