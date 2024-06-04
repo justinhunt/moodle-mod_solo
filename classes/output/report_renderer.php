@@ -9,6 +9,8 @@
 namespace mod_solo\output;
 
 use \mod_solo\constants;
+use \mod_solo\utils;
+
 
 class report_renderer extends \plugin_renderer_base
 {
@@ -204,6 +206,8 @@ class report_renderer extends \plugin_renderer_base
             foreach ($fields as $field) {
                 $rowarray[]= $row->{$field};
             }
+            //for UTF 8 encoding
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
             fputcsv($handle, $rowarray,$delim,$quote);
         }
         fclose($handle);
