@@ -7,7 +7,6 @@
  */
 
 $functions = array(
-
         'mod_solo_check_grammar' => array(
                 'classname'   => 'mod_solo_external',
                 'methodname'  => 'check_grammar',
@@ -20,7 +19,7 @@ $functions = array(
             'classname'   => 'mod_solo_external',
             'methodname'  => 'get_grade_submission',
             'description' => 'Gets a solo grade submission',
-            'capabilities'=> 'mod/solo:managegrades',
+            'capabilities'=> 'mod/solo:manage',
             'type'        => 'write',
             'ajax' => true,
         ),
@@ -30,7 +29,7 @@ $functions = array(
             'description' => 'Creates a grade from submitted rubric grade form',
             'ajax' => true,
             'type' => 'write',
-            'capabilities' => 'mod/solo:managegrades',
+            'capabilities' => 'mod/solo:manage',
         ),
         'mod_solo_submit_simple_grade_form' => array(
                 'classname' => 'mod_solo_external',
@@ -38,7 +37,7 @@ $functions = array(
                 'description' => 'Creates a grade from submitted simple form',
                 'ajax' => true,
                 'type' => 'write',
-                'capabilities' => 'mod/solo:managegrades',
+                'capabilities' => 'mod/solo:manage',
         ),
         'mod_solo_check_for_results' => array(
                 'classname' => 'mod_solo_external',
@@ -55,5 +54,13 @@ $functions = array(
             'ajax' => true,
             'type' => 'write',
             'capabilities' => 'mod/solo:view'
+        ),
+        'mod_solo_fetch_ai_grade' => array(
+            'classname' => 'mod_solo_external',
+            'methodname' => 'fetch_ai_grade',
+            'description' => 'fetches the AI grade for a given prompt and response',
+            'ajax' => true,
+            'type' => 'write',
+            'capabilities' => 'mod/solo:manage'
         )
 );

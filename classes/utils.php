@@ -3021,4 +3021,124 @@ class utils{
         }
     }
 
+    /**
+     * Used by prompttester in the editing form
+     *
+     * @param string $response
+     * @param string $aiprompt
+     * @param number $defaultmark
+     * @param string $markscheme
+     * @param string $feedbacklanguage
+     * @return string;
+     */
+    public static function build_full_aigrade_prompt($studentresponse,$questiontext, $feedbackscheme, $maxmarks, $markscheme, $feedbacklanguage): string {
+        $feedbacklanguage = current_language();// TO DO allow the feedback language to be passed in
+        $questiontext = strip_tags($questiontext);//TO DO include question text in the prompt (or decide not to)
+         //TO DO implement pre prompt - get_config(constants::M_COMPONENT, 'baseprompt');
+        $preprompt = '"in [responsetext] analyse but do not mention the part between [[ and ]] as follows:"';
+        
+        //TO DO implement post prompt - get_config(constants::M_COMPONENT, 'postprompt');
+        $postprompt = 'Return only a JSON object which enumerates a set of 2 elements.The JSON object should be in
+	this format: {feedback":"array","marks":"number"} where marks is a single number summing all marks, and feedback is an array of strings. Each string is a feedback item.'; 
+        
+        $responsetext = strip_tags($studentresponse);
+            $responsetext = '[['.$responsetext.']]';
+            $prompt = $preprompt;
+            $prompt = preg_replace("/\[responsetext\]/", $responsetext, $prompt);
+            $prompt .= ' '.trim($feedbackscheme);
+
+        if ($markscheme > '') {
+            // Tell the LLM how to mark the submission.
+            $prompt .= " The total score is: $maxmarks .";
+            $prompt .= ' '.$markscheme;
+        } else {
+            // Todo should this be a plugin setting value?.
+            $prompt .= ' Set marks to null in the json object.'.PHP_EOL;
+        }
+        $prompt .= ' '.$postprompt;
+        $prompt .= ' translate the feedback to the language '.$feedbacklanguage;
+        return $prompt;
+    }
+
+      //fetch the grammar correction suggestions
+      public static function fetch_aigrade($token,$region,$ttslanguage,$fullprompt) {
+        global $USER;
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'request_autograde';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $fullprompt;//urlencode($passage);
+        $params['language'] = $ttslanguage;
+        $params['subject'] = 'none';
+        $params['region'] = $region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then lets do the embed
+        } else if ($payloadobject->returnCode === 0) {
+            $autograde = $payloadobject->returnMessage;
+            //clean up the correction a little
+            if(\core_text::strlen($autograde) > 0){
+                $autograde = self::super_trim($autograde);
+                //trim junk first letter .. 
+                //TO DO remove this I think we do not need it
+                $charone = substr($autograde,0,1);
+                if(preg_match('/^[.,:!?;-]/',$charone)){
+                    $autograde = substr($autograde,1);
+                }
+            }
+
+            return $autograde;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     *
+     * Convert string json returned from LLM call to an object,
+     * if it is not valid json apend as string to new object
+     *
+     * @param string $feedback
+     * @return \stdClass
+     */
+    public static function process_aigrade_feedback(string $feedback) {
+        if (preg_match('/\{[^{}]*\}/', $feedback, $matches)) {
+            // Array $matches[1] contains the captured text inside the braces.
+            $feedback = $matches[0];
+        }
+        $contentobject = json_decode($feedback);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            $contentobject->feedback = trim($contentobject->feedback);
+            $contentobject->feedback = preg_replace(array('/\[\[/', '/\]\]/'), '"', $contentobject->feedback);
+          //  $disclaimer = get_config('qtype_aitext', 'disclaimer');
+          //  $disclaimer = str_replace("[[model]]", $this->model, $disclaimer);
+          //  $contentobject->feedback .= ' '.$this->llm_translate($disclaimer);
+        } else {
+            $contentobject = (object) [
+                                        "feedback" => $feedback,
+                                        "marks" => null,
+                                        ];
+        }
+        return $contentobject;
+    }
+
+
 }

@@ -393,4 +393,82 @@ class mod_solo_external extends external_api {
         return new external_value(PARAM_RAW);
     }
 
+       /**
+     * Get the parameters and types
+     *
+     * @return void
+     */
+    public static function fetch_ai_grade_parameters(): external_function_parameters {
+        return new external_function_parameters(
+            [   'region' => new external_value(PARAM_TEXT, 'The aws regions'),
+               'targetlanguage' => new external_value(PARAM_TEXT, 'The target language'),
+               'questiontext' => new external_value(PARAM_TEXT, 'The target language'), 
+                'studentresponse' => new external_value(PARAM_TEXT, 'The students response'),
+                'maxmarks' => new external_value(PARAM_INT, 'The total possible score'),
+                'markscheme' => new external_value(PARAM_TEXT, 'The marks scheme'),
+                'feedbackscheme' => new external_value(PARAM_TEXT, 'The AI Prompt'),
+                'feedbacklanguage' => new external_value(PARAM_TEXT, 'The language of feedback')]
+        );
+
+    }
+    /**
+     * Similar to clicking the submit button.
+     * @param string $region
+     * @param string $targetlanguage
+     * @param string $questiontext
+     * @param string $studentresponse
+     * @param integer $maxmarks
+     * @param string $markscheme
+     * @param string $feedbackscheme
+     * @param string $feedbacklanguage
+     * @return array $contentobject
+     */
+    public static function fetch_ai_grade($region,$targetlanguage,$questiontext,$studentresponse, $maxmarks, $markscheme, $feedbackscheme,$feedbacklanguage) {
+        $siteconfig = get_config(constants::M_COMPONENT);
+        $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
+        if (empty($token)) {
+            return ["feedback" => "Invalid API credentials", "marks" => 0];
+        }
+        if (empty($targetlanguage)) {
+            return ["feedback" => "Invalid target language", "marks" => 0];
+        }
+
+        // Make sure we have the right data for AI to work with.
+        if (!empty($studentresponse) && !empty($feedbackscheme) && $maxmarks > 0) {
+            $fullaiprompt = utils::build_full_aigrade_prompt($studentresponse,$questiontext, $feedbackscheme, $maxmarks, $markscheme,$feedbacklanguage);
+            //just while testing, lets return the prompt so we can check its all going hunky dory
+            $solodebug=true;
+            if($solodebug){
+                return ["feedback" => $fullaiprompt, "marks" => 0];
+            }else{
+                $llmresponse = utils::fetch_aigrade($token,$region,$targetlanguage,$fullaiprompt);
+                $feedback = $llmresponse['response']['choices'][0]['message']['content'];
+                $contentobject = utils::process_aigrade_feedback($feedback);
+            }
+        
+        } else {
+            $contentobject = ["feedback" => "Invalid parameters. Check that you have a sample answer and prompt", "marks" => 0];
+        }
+
+        // Return whatever we have got.
+        return $contentobject;
+
+    }
+
+    /**
+     * Get the structure for retuning grade feedbak and marks
+     *
+     * @return void
+     */
+    public static function fetch_ai_grade_returns(): external_single_structure {
+        return new external_single_structure([
+            'feedback' => new external_value(PARAM_TEXT, 'text feedback for display to student', VALUE_DEFAULT),
+            'marks' => new external_value(PARAM_FLOAT, 'AI grader awarded marks for student response', VALUE_DEFAULT),
+        ]);
+
+    }
+
+
+    
+
 }
