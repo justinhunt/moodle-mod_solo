@@ -3021,49 +3021,11 @@ class utils{
         }
     }
 
-    /**
-     * Used by prompttester in the editing form
-     *
-     * @param string $response
-     * @param string $aiprompt
-     * @param number $defaultmark
-     * @param string $markscheme
-     * @param string $feedbacklanguage
-     * @return string;
-     */
-    public static function build_full_aigrade_prompt($studentresponse,$questiontext, $feedbackscheme, $maxmarks, $markscheme, $feedbacklanguage): string {
-        $feedbacklanguage = current_language();// TO DO allow the feedback language to be passed in
-        $questiontext = strip_tags($questiontext);//TO DO include question text in the prompt (or decide not to)
-         //TO DO implement pre prompt - get_config(constants::M_COMPONENT, 'baseprompt');
-        $preprompt = '"in [responsetext] analyse but do not mention the part between [[ and ]] as follows:"';
-        
-        //TO DO implement post prompt - get_config(constants::M_COMPONENT, 'postprompt');
-        $postprompt = 'Return only a JSON object which enumerates a set of 2 elements.The JSON object should be in
-	this format: {feedback":"array","marks":"number"} where marks is a single number summing all marks, and feedback is an array of strings. Each string is a feedback item.'; 
-        
-        $responsetext = strip_tags($studentresponse);
-            $responsetext = '[['.$responsetext.']]';
-            $prompt = $preprompt;
-            $prompt = preg_replace("/\[responsetext\]/", $responsetext, $prompt);
-            $prompt .= ' '.trim($feedbackscheme);
 
-        if ($markscheme > '') {
-            // Tell the LLM how to mark the submission.
-            $prompt .= " The total score is: $maxmarks .";
-            $prompt .= ' '.$markscheme;
-        } else {
-            // Todo should this be a plugin setting value?.
-            $prompt .= ' Set marks to null in the json object.'.PHP_EOL;
-        }
-        $prompt .= ' '.$postprompt;
-        $prompt .= ' translate the feedback to the language '.$feedbacklanguage;
-        return $prompt;
-    }
-
-      //fetch the grammar correction suggestions
-      public static function fetch_aigrade($token,$region,$ttslanguage,$fullprompt) {
+      //fetch the AI Grade
+      public static function fetch_aigrade($token,$region,$ttslanguage,$studentresponse, $instructions) {
         global $USER;
-
+        $instructions_json=json_encode($instructions);
         //The REST API we are calling
         $functionname = 'local_cpapi_call_ai';
 
@@ -3071,11 +3033,11 @@ class utils{
         $params['wstoken'] = $token;
         $params['wsfunction'] = $functionname;
         $params['moodlewsrestformat'] = 'json';
-        $params['action'] = 'request_autograde';
+        $params['action'] = 'autograde_text';
         $params['appid'] = 'mod_solo';
-        $params['prompt'] = $fullprompt;//urlencode($passage);
+        $params['prompt'] = $instructions_json;
         $params['language'] = $ttslanguage;
-        $params['subject'] = 'none';
+        $params['subject'] = $studentresponse;
         $params['region'] = $region;
         $params['owner'] = hash('md5',$USER->username);
 
@@ -3096,16 +3058,10 @@ class utils{
             $autograde = $payloadobject->returnMessage;
             //clean up the correction a little
             if(\core_text::strlen($autograde) > 0){
-                $autograde = self::super_trim($autograde);
-                //trim junk first letter .. 
-                //TO DO remove this I think we do not need it
-                $charone = substr($autograde,0,1);
-                if(preg_match('/^[.,:!?;-]/',$charone)){
-                    $autograde = substr($autograde,1);
-                }
+                return $autograde;
+            }else{
+                return false;
             }
-
-            return $autograde;
         } else {
             return false;
         }

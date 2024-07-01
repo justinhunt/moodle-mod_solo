@@ -435,17 +435,19 @@ class mod_solo_external extends external_api {
 
         // Make sure we have the right data for AI to work with.
         if (!empty($studentresponse) && !empty($feedbackscheme) && $maxmarks > 0) {
-            $fullaiprompt = utils::build_full_aigrade_prompt($studentresponse,$questiontext, $feedbackscheme, $maxmarks, $markscheme,$feedbacklanguage);
-            //just while testing, lets return the prompt so we can check its all going hunky dory
-            $solodebug=true;
-            if($solodebug){
-                return ["feedback" => $fullaiprompt, "marks" => 0];
-            }else{
-                $llmresponse = utils::fetch_aigrade($token,$region,$targetlanguage,$fullaiprompt);
-                $feedback = $llmresponse['response']['choices'][0]['message']['content'];
-                $contentobject = utils::process_aigrade_feedback($feedback);
-            }
-        
+
+            $instructions = new \stdClass();
+            $instructions->feedbackscheme=$feedbackscheme;
+            $instructions->feedbacklanguage=$feedbacklanguage;
+            $instructions->markscheme=$markscheme;
+            $instructions->maxmarks=$maxmarks;
+            $instructions->questiontext=$questiontext;
+            $instructions->modeltext='';
+
+            $llmresponse = utils::fetch_aigrade($token,$region,$targetlanguage,$studentresponse,$instructions);
+            $contentobject =$llmresponse;
+           // $feedback = $llmresponse['response']['choices'][0]['message']['content'];
+           // $contentobject = utils::process_aigrade_feedback($feedback);
         } else {
             $contentobject = ["feedback" => "Invalid parameters. Check that you have a sample answer and prompt", "marks" => 0];
         }
