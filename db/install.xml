@@ -14,7 +14,7 @@
         <FIELD NAME="grade" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="gradeoptions" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="gradeoptions"/>
         <FIELD NAME="mingrade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="completion condition mingrade"/>
-        <FIELD NAME="ttslanguage" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="none" SEQUENCE="false" COMMENT="the audio filename"/>
+        <FIELD NAME="ttslanguage" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="none" SEQUENCE="false" COMMENT="the target language"/>
         <FIELD NAME="recorderskin" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="once" SEQUENCE="false" COMMENT="the recorder skin"/>
         <FIELD NAME="recordertype" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="audio" SEQUENCE="false" COMMENT="the recorder type"/>
         <FIELD NAME="enableai" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to use AI on this activity"/>
@@ -65,6 +65,10 @@
         <FIELD NAME="preloadtranscript" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="pre-load manual transcript"/>
         <FIELD NAME="showgrammar" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="show grammar eval."/>
         <FIELD NAME="showspelling" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="show spelling eval."/>
+        <FIELD NAME="markscheme" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="feedbackscheme" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="feedbacklanguage" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="en-US" SEQUENCE="false" COMMENT="the AI feedback language"/>
+        <FIELD NAME="sampleanswer" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>

@@ -1,4 +1,4 @@
-Version 1.0.49 (Build 202406xxxx)
+Version 1.0.49 (Build 2024070300)
 - fixed wrong trim function
 - fixed wrong dialect labels for Arabic voices:  Arabic (modern standard) / Arabic (gulf)
 

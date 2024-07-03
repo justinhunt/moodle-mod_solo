@@ -427,15 +427,15 @@ class mod_solo_external extends external_api {
         $siteconfig = get_config(constants::M_COMPONENT);
         $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
         if (empty($token)) {
-            return ["feedback" => "Invalid API credentials", "marks" => 0];
+            return ["correctedtext"=>"An error occurred","feedback" => ["Invalid API credentials"], "marks" => 0];
         }
         if (empty($targetlanguage)) {
-            return ["feedback" => "Invalid target language", "marks" => 0];
+            return ["correctedtext"=>"An error occurred","feedback" => ["Invalid target language"], "marks" => 0];
         }
 
         // Make sure we have the right data for AI to work with.
         if (!empty($studentresponse) && !empty($feedbackscheme) && $maxmarks > 0) {
-
+        //if (!empty($studentresponse)) {
             $instructions = new \stdClass();
             $instructions->feedbackscheme=$feedbackscheme;
             $instructions->feedbacklanguage=$feedbacklanguage;
@@ -444,12 +444,15 @@ class mod_solo_external extends external_api {
             $instructions->questiontext=$questiontext;
             $instructions->modeltext='';
 
-            $llmresponse = utils::fetch_aigrade($token,$region,$targetlanguage,$studentresponse,$instructions);
-            $contentobject =$llmresponse;
-           // $feedback = $llmresponse['response']['choices'][0]['message']['content'];
-           // $contentobject = utils::process_aigrade_feedback($feedback);
+            $llmresponse = utils::fetch_ai_grade($token,$region,$targetlanguage,$studentresponse,$instructions);
+           error_log(print_r($llmresponse, true)); 
+           if(!$llmresponse){
+                $contentobject = ["correctedtext"=>"An error occurred","feedback" => ["Invalid response received from server. Could be a network issue, or possibly a Poodll auth issue."], "marks" => 0];
+            }else{
+                $contentobject =$llmresponse;
+            }
         } else {
-            $contentobject = ["feedback" => "Invalid parameters. Check that you have a sample answer and prompt", "marks" => 0];
+            $contentobject = ["correctedtext"=>"An error occurred","feedback" => ["Invalid parameters. Check that you have a sample answer,feedback and marks instructions."], "marks" => 0];
         }
 
         // Return whatever we have got.
@@ -464,8 +467,9 @@ class mod_solo_external extends external_api {
      */
     public static function fetch_ai_grade_returns(): external_single_structure {
         return new external_single_structure([
-            'feedback' => new external_value(PARAM_TEXT, 'text feedback for display to student', VALUE_DEFAULT),
+            'correctedtext' => new external_value(PARAM_TEXT, 'corrected text of student submission', VALUE_DEFAULT),
             'marks' => new external_value(PARAM_FLOAT, 'AI grader awarded marks for student response', VALUE_DEFAULT),
+            'feedback' => new external_multiple_structure(new external_value(PARAM_TEXT, 'text feedback for display to student', VALUE_DEFAULT)),
         ]);
 
     }

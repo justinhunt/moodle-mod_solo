@@ -768,3 +768,15 @@ $string['modelanswer_help'] = 'Enter a good and complete sample answer to the to
 $string['backtotranscriptedit']="Back to Edit";
 $string['waitingforteacher']="Your teacher will check your attempt. Thank You";
 $string['gradesdate'] = 'Date';
+
+$string['prompttester'] = 'AI Grade Tester';
+$string['prompttester_help'] = 'Use this to test the AI grading. Enter a sample answer and see how it is graded.';
+$string['sampleanswerempty'] = 'To test the AI grade you need to enter a sample answer.';
+$string['sampleanswerevaluate'] = 'Evaluate';
+$string['sampleanswer'] = 'Sample Answer';
+$string['sampleanswer_help'] = 'Sample Answer';
+$string['markscheme'] = 'AI Mark Instructions';
+$string['markscheme_help'] = 'Instructions to AI on how to grade the student\'s answer.';
+$string['feedbackscheme'] = 'AI Feedback Instructions';
+$string['feedbackscheme_help'] = 'Instructions to AI on how to give feedback on the student\'s answer.';
+$string['feedbacklanguage'] = 'AI Feedback Language';

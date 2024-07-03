@@ -155,5 +155,14 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enablesetuptab',
             get_string('enablesetuptab', constants::M_COMPONENT), get_string('enablesetuptab_details',constants::M_COMPONENT), 0));
 
+    $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/markscheme',
+        get_string('markscheme', constants::M_COMPONENT), get_string('markscheme_help', constants::M_COMPONENT), 'Deduct one mark for each grammar mistake.', PARAM_TEXT,100));
 
+    $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/feedbackscheme',
+        get_string('feedbackscheme', constants::M_COMPONENT), get_string('feedbackscheme_help', constants::M_COMPONENT), 'Explain each grammar mistake simply.', PARAM_TEXT,100));
+
+       // $langoptions = \mod_solo\utils::get_lang_options(); // already set above
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/feedbacklanguage',
+                get_string('feedbacklanguage', constants::M_COMPONENT), '',
+                constants::M_LANG_ENUS, $langoptions));
 }

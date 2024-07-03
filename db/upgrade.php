@@ -460,6 +460,25 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023111800, 'solo');
     }
 
+    if($oldversion < 2024070300) {
+        $table = new xmldb_table(constants::M_TABLE);
+        $fields = [];
+        $fields[] =  new xmldb_field('feedbacklanguage', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED,XMLDB_NOTNULL, null,'en-US');
+        $fields[] =  new xmldb_field('sampleanswer', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] =  new xmldb_field('markscheme', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] =  new xmldb_field('feedbackscheme', XMLDB_TYPE_TEXT, null, null, null, null);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2024070300, 'solo');
+    }
+
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

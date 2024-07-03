@@ -2558,7 +2558,7 @@ class utils{
     }
 
     public static function add_mform_elements($mform, $context,$setuptab=false) {
-        global $CFG;
+        global $CFG,$PAGE;
         $config = get_config(constants::M_COMPONENT);
           $dateoptions = array('optional' => true);
         //if this is setup tab we need to add a field to tell it the id of the activity
@@ -2716,7 +2716,7 @@ class utils{
         $mform->addElement('select','recorderskin',get_string('recorderskin', constants::M_COMPONENT), $options,array());
         $mform->setDefault('recorderskin',constants::SKIN_SOLO);
 
-        //Enable Manual Transcription [for now lets force this ]
+        //Enable Manual Transcription [lets force this ]
         $mform->addElement('hidden', 'enabletranscription', 1);
         $mform->setType('enabletranscription',PARAM_BOOL);
         //$mform->addElement('advcheckbox', 'enabletranscription', get_string('enabletranscription', constants::M_COMPONENT), get_string('enabletranscription_details', constants::M_COMPONENT));
@@ -2724,7 +2724,7 @@ class utils{
 
 
         //Enable AI
-        //Enable Manual Transcription [for now lets foprce this ]
+        //Enable AI [lets force this ]
         $mform->addElement('hidden', 'enableai', 1);
         $mform->setType('enableai',PARAM_BOOL);
         // $mform->addElement('advcheckbox', 'enableai', get_string('enableai', constants::M_COMPONENT), get_string('enableai_details', constants::M_COMPONENT));
@@ -2809,6 +2809,27 @@ class utils{
         $mform->addHelpButton('suggestionsgrade', 'suggestionsgrade', constants::M_MODNAME);
         $mform->addElement('static', 'stext42','', get_string('suggestionsgrade_details', constants::M_COMPONENT));
 
+    //AI grading options
+    //how to give marks to student
+    $mform->addElement('textarea', 'markscheme', get_string('markscheme', constants::M_COMPONENT),
+    ['maxlen' => 50, 'rows' => 6, 'size' => 30]);
+     $mform->setType('markscheme', PARAM_RAW);
+     $mform->setDefault('markscheme', get_config(constants::M_COMPONENT, 'markscheme'));
+     $mform->addHelpButton('markscheme', 'markscheme', constants::M_COMPONENT);
+ 
+     // how to give feedback to student
+     $mform->addElement('textarea', 'feedbackscheme', get_string('feedbackscheme', constants::M_COMPONENT),
+         ['maxlen' => 50, 'rows' => 5, 'size' => 30]);
+    $mform->setType('feedbackscheme', PARAM_RAW);
+    $mform->setDefault('feedbackscheme', get_config(constants::M_COMPONENT, 'feedbackscheme'));
+    $mform->addHelpButton('feedbackscheme', 'feedbackscheme', constants::M_COMPONENT);
+     
+     //feedback options 
+   //  $langoptions = \mod_solo\utils::get_lang_options(); //already set earlier
+     $mform->addElement('select', 'feedbacklanguage', get_string('feedbacklanguage', constants::M_COMPONENT), $langoptions);
+     $mform->setDefault('feedbacklanguage',$config->feedbacklanguage);
+
+        //bonus grades (positive and negative)
         for ($bonusno=1;$bonusno<=4;$bonusno++){
             $bg = array();
             $bg[] =& $mform->createElement('select', 'bonusdirection' . $bonusno, '', $plusminusoptions);
@@ -2826,10 +2847,37 @@ class utils{
             $mform->addGroup($bg, 'bonusgroup' . $bonusno,$grouptitle, '', false);
         }
 
+
         //grade options
         //for now we hard code this to latest attempt
         $mform->addElement('hidden', 'gradeoptions',constants::M_GRADELATEST);
         $mform->setType('gradeoptions', PARAM_INT);
+
+        //preview AI grade options
+        $mform->addElement('header', 'prompttester', get_string('prompttester', constants::M_COMPONENT));
+        $mform->addElement('textarea', 'sampleanswer', get_string('sampleanswer', constants::M_COMPONENT),
+            ['maxlen' => 50, 'rows' => 6, 'size' => 30]);
+        $mform->setType('sampleanswer', PARAM_RAW);
+        $mform->setDefault('sampleanswer', '');
+        $mform->addHelpButton('sampleanswer', 'sampleanswer', constants::M_COMPONENT);
+        $mform->addElement('static', 'sampleanswereval', '',  '<a class="'. constants::M_COMPONENT . '_sampleanswerbtn btn btn-secondary"
+                id="id_sampleanswerbtn">'
+            . get_string('sampleanswerevaluate', constants::M_COMPONENT) . '</a>' .
+             '<div class="' . constants::M_COMPONENT . '_sampleanswereval" id="id_sampleanswereval"></div>');
+        
+        // Load any JS for the prompt tester.
+        $props=[];
+        $props['questiontextid']='#id_speakingtopic';
+        $props['previewbtnid']='#id_sampleanswerbtn';
+        $props['sampleanswerid']='#id_sampleanswer';
+        $props['sampleanswerevalid']='#id_sampleanswereval';
+        $props['maxmarksid']='';
+        $props['markschemeid']='#id_markscheme';
+        $props['feedbackschemeid']='#id_feedbackscheme';
+        $props['regionid']='#id_region';
+        $props['targetlanguageid']='#id_ttslanguage';
+        $props['feedbacklanguageid']='#id_feedbacklanguage';
+        $PAGE->requires->js_call_amd(constants::M_COMPONENT . '/aigradepreview', 'init', [$props]);
 
 
     } //end of add_mform_elements
@@ -3023,7 +3071,7 @@ class utils{
 
 
       //fetch the AI Grade
-      public static function fetch_aigrade($token,$region,$ttslanguage,$studentresponse, $instructions) {
+      public static function fetch_ai_grade($token,$region,$ttslanguage,$studentresponse, $instructions) {
         global $USER;
         $instructions_json=json_encode($instructions);
         //The REST API we are calling
@@ -3053,12 +3101,19 @@ class utils{
         //returnCode > 0  indicates an error
         if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
             return false;
-            //if all good, then lets do the embed
+            //if all good, then lets return
         } else if ($payloadobject->returnCode === 0) {
-            $autograde = $payloadobject->returnMessage;
+            $autograderesponse = $payloadobject->returnMessage;
             //clean up the correction a little
-            if(\core_text::strlen($autograde) > 0){
-                return $autograde;
+            if(\core_text::strlen($autograderesponse) > 0 && self::is_json($autograderesponse)){
+                $autogradeobj = json_decode($autograderesponse);
+                if(isset($autogradeobj->feedback) && $autogradeobj->feedback==null){
+                    unset($autogradeobj->feedback);
+                }
+                if(isset($autogradeobj->marks) && $autogradeobj->marks==null){
+                    unset($autogradeobj->marks);
+                }
+                return $autogradeobj;
             }else{
                 return false;
             }
