@@ -389,6 +389,8 @@ $string['step_posttranscriberecordinstructions']='Use the recorder below to reco
 //$string['step_selftranscribetitle']='Transcribe';
 $string['step_selftranscribeinstructions']='Listen to your recording and enter/check what you said in the editor below. Do not change what you said. You should fix any spelling or punctuation mistakes.';
 $string['step_prerecord_transcribeinstructions']='Check the instructions and speaking targets, then type your response in the text editor below.';
+$string['step_writtensubmissioninstructions']='Check the instructions and speaking targets, then type your response in the text editor below.';
+
 
 //$string['step_modeltitle']='Model Answer';
 $string['step_modelinstructions']='Check the model answer below.';
@@ -628,7 +630,7 @@ $string['addytclip'] = 'Add YouTube';
 
 $string['speakingtargetsheader'] ='Speaking Targets';
 $string['languageandrecordingheader'] ='Language and Recording';
-$string['attemptsandautogradingheader'] ='Attempts and AutoGrading';
+$string['autogradingheader'] ='AutoGrading';
 $string['enablesetuptab']="Enable setup tab";
 $string['enablesetuptab_details']="Show a tab containing the activity instance settings to admins. Not super useful in most cases.";
 $string['setup']="Setup";
@@ -674,7 +676,7 @@ $string['activityopenscloses']="Activity open/close dates";
 $string['solo:preview'] = 'Can preview Solo activities';
 $string['modelanswer'] = "Model Answer";
 $string['modelanswerheader'] = "Model Answer";
-$string['modelanswerinstructions'] = "The model answer is used as a 'good answer', against which similarity (relevance) scores are calculated for automatic grading. It is not shown to students. Use the media options below the model answer to display a video or text to speech player to the students in the model answer step.";
+$string['modelanswerinstructions'] = "The model answer is used as a 'good answer', against which similarity (relevance) scores may be calculated for automatic grading. It is not shown to students. Use the media options below the model answer to display a video or text-to-speech player to the students in the model answer step.";
 $string['audiorec_heading'] = "Audio Recorder";
 $string['videorec_heading'] = "Video Recorder";
 $string['grammarcorrection'] = "Suggested Corrections:";
@@ -685,7 +687,8 @@ $string['step_model'] = 'Model';
 $string['seq_PRTM']='Prepare -> Record -> Transcribe -> Model (if set)';
 $string['seq_PRMT']='Prepare -> Record -> Model -> Transcript';
 $string['seq_PRM']='Prepare -> Record -> Model (if set)';
-$string['seq_PTRM']='Prepare -> Transcribe -> Record -> Model (if set)';
+$string['seq_PTRM']='Prepare -> Type -> Record -> Model (if set)';
+$string['seq_PTM']='Prepare -> Type -> Model (if set)';
 $string['activitysteps'] = "Activity Steps";
 $string['preloadtranscript'] = 'Preload transcript';
 $string['preloadtranscript_details'] = 'Preload transcript into transcript editor, so the student the student just has to edit it. NB the transcript can take several minutes to become available.';
@@ -724,7 +727,7 @@ $string['enablelocalpost']="Enable Local Post";
 $string['enablelocalpost_details']="This is an experimental setting for users in mainland China. Local post will send audio recording submissions to the Moodle server, which will relay them onto our cloud servers. It *might* improve reliability for users with slow connections.";
 
 $string['gradeequals'] = 'Grade = ';
-$string['bonusgrade'] = 'Auto grading - Adjustments';
+$string['bonusgrade'] = 'Bonus Grades';
 $string['relevancegrade'] = 'Auto grading - Similarity/Relevance';
 $string['relevancegrade_help'] = 'Similarity is an AI generated measure of how semantically similar the students response is to the model answer text. When the students similarity score falls below the threshold (x %) their overall grade is reduced proportionally. Similarity is only calculated for responses in English.';
 $string['relevancegrade_details'] = 'Reduce the score of English submissions to the extent that their semantic similarity to the model answer falls below the threshold (x %). If no model answer is specified, this is ignored.';
@@ -775,8 +778,13 @@ $string['sampleanswerempty'] = 'To test the AI grade you need to enter a sample 
 $string['sampleanswerevaluate'] = 'Evaluate';
 $string['sampleanswer'] = 'Sample Answer';
 $string['sampleanswer_help'] = 'Sample Answer';
-$string['markscheme'] = 'AI Mark Instructions';
+$string['markscheme'] = 'AI Grade Instructions';
 $string['markscheme_help'] = 'Instructions to AI on how to grade the student\'s answer.';
 $string['feedbackscheme'] = 'AI Feedback Instructions';
 $string['feedbackscheme_help'] = 'Instructions to AI on how to give feedback on the student\'s answer.';
 $string['feedbacklanguage'] = 'AI Feedback Language';
+$string['stats_aigrade'] = 'AI Grade';
+$string['relevance_model'] = 'Relevance - similarity to model answer';
+$string['relevance_question'] = 'Relevance - to question topic';
+
+$string['aifeedback'] = 'AI Feedback:';

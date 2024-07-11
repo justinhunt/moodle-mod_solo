@@ -15,8 +15,6 @@
         </div>
 
         <div class="mod_solo_report_card_content">
-
-        
             <p>
                 <a data-toggle="collapse" href="#collapseAudioPlayer" role="button" aria-expanded="false" aria-controls="collapseAudioPlayer">
                     {{#str}}replay, mod_solo{{/str}}
@@ -40,6 +38,17 @@
                 <h5>{{#str}}grammarcorrection, mod_solo{{/str}}</h5>
                 <div class='mod_solo_corrections_cont'>{{{grammarcorrection}}}</div>
             {{/grammarcorrection}}
+
+            {{#hasaifeedback}}
+                <h5>{{#str}}aifeedback, mod_solo{{/str}}</h5>
+                <div class='mod_solo_aifeedback_cont'>
+                    <ol>
+                    {{#aifeedback}}
+                        <li>{{.}}</li>
+                    {{/aifeedback}}
+                    </ol>
+                </div>
+            {{/hasaifeedback}}
 
             <div class="mod_solo_attemptdetailscontainer">
                 <div id="attemptdetails">

@@ -27,7 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 use \mod_solo\constants;
 
-//sometimes its not present ... how
 require_once($CFG->dirroot . '/mod/solo/lib.php');
 
 
@@ -417,7 +416,7 @@ class utils{
 
         //if we do not have a self transcript, and yet we require a self transcript,
         // and if we are calling from cron, we send the task back
-        //this will happen if crons runs while the student is still typing and after the transcript has finishined processing
+        //this will happen if crons runs while the student is still typing and after the transcript has finished processing
         $transcribestep = self::fetch_step_no($moduleinstance, constants::STEP_SELFTRANSCRIBE);
         if(empty($attempt->selftranscript) && $transcribestep !==false){
             if($trace) {
@@ -427,8 +426,15 @@ class utils{
         }
 
         //if we do not have automatic transcripts, try to fetch them
+        $recordstep = self::fetch_step_no($moduleinstance, constants::M_STEP_RECORD);
         $hastranscripts = !empty($attempt->jsontranscript);
-        if(!$hastranscripts) {
+        //if we have no record step, this is a written assignment
+        if(!$hastranscripts && $recordstep === false) {
+            //fake some ai data so we dont need to rewrite the whole world
+            $DB->update_record(constants::M_ATTEMPTSTABLE,
+                array('id' => $attempt->id, 'transcript' => $attempt->selftranscript,'jsontranscript'=>'{}'));
+       //if we have a record step but no transcripts th
+        }elseif(!$hastranscripts) {
             $attempt_with_transcripts = self::retrieve_transcripts_from_s3($attempt);
             $hastranscripts = $attempt_with_transcripts !== false;
 
@@ -438,7 +444,7 @@ class utils{
                 return false;
             }
 
-            //if we fetched the transcript, and this activity has no manual self transcript, use the the auto transcript as manual
+            //if we fetched the transcript, and this activity has no manual self transcript, use the auto transcript as manual
             if ($transcribestep === false && $hastranscripts) {
                 $attempt->selftranscript = $attempt_with_transcripts->transcript;
                 $DB->update_record(constants::M_ATTEMPTSTABLE, array('id' => $attempt->id, 'selftranscript' => $attempt->selftranscript));
@@ -465,13 +471,24 @@ class utils{
         //get target words
         $targetwords = utils::fetch_targetwords($attempt->topictargetwords);
 
+        //for relevance, the default is to use the model answer embedding
+        //but that's not helful with an open ended question e.g "what would you do with a million dollars?"
+        //so we use the speaking topic
+        $agoptions = json_decode($moduleinstance->autogradeoptions);
+        $targettopic=false;
+        if($agoptions->relevancegrade==constants::RELEVANCE_QUESTION){
+            $targettopic = strip_tags($moduleinstance->speakingtopic);
+        }
+
         //get text analyser
         $passage = $attempt->selftranscript;
-        $textanalyser = new textanalyser($token,$passage,$moduleinstance->region,$moduleinstance->ttslanguage,$moduleinstance->modelttsembedding);
+        $userlanguage=false;
+        $textanalyser = new textanalyser($token,$passage,$moduleinstance->region,
+            $moduleinstance->ttslanguage,$moduleinstance->modelttsembedding,$userlanguage,$targettopic);
 
         //update statistics and grammar correction if we need to
         if($hastranscripts) {
-            //if we dont already have stats calculate them
+            //if we don't already have stats calculate them
             if(!$DB->get_records(constants::M_STATSTABLE,['attemptid'=>$attempt->id])){
 
                 $stats = $textanalyser->process_all_stats($targetwords);
@@ -503,8 +520,38 @@ class utils{
             }
         }
 
-        //Process grammar correction
-        self::process_grammar_correction($moduleinstance,$attempt);
+
+        //Do we need aI data
+        $studentresponse=$attempt->selftranscript;
+        $maxmarks=100;
+        $aigraderesults=false;
+        //if we do not already have an ai grade, and we have all the info we need to fetch one, lets do it
+        if ($attempt->aigrade ==null && !empty($studentresponse) && !empty($moduleinstance->feedbackscheme) && !empty($moduleinstance->markscheme)) {
+            $instructions = new \stdClass();
+            $instructions->feedbackscheme = $moduleinstance->feedbackscheme;
+            $instructions->feedbacklanguage = $moduleinstance->feedbacklanguage;
+            $instructions->markscheme = $moduleinstance->markscheme;
+            $instructions->maxmarks = $maxmarks;
+            $instructions->questiontext = strip_tags($moduleinstance->speakingtopic);
+            $instructions->modeltext = '';
+            $aigraderesults = self::fetch_ai_grade($token, $moduleinstance->region, $moduleinstance->ttslanguage, $studentresponse, $instructions);
+            if($aigraderesults && isset($aigraderesults->marks) && isset($aigraderesults->feedback)){
+                if($aigraderesults->feedback!==null){
+                    $aigraderesults->feedback=json_encode($aigraderesults->feedback);
+                }
+                $DB->update_record(constants::M_ATTEMPTSTABLE,
+                    array('id'=>$attempt->id,
+                        'aigrade'=>$aigraderesults->marks,
+                        'aifeedback'=>$aigraderesults->feedback));
+            }
+        }
+
+        //Process grammar correction (it won't fetch again if it has it already)
+        if($aigraderesults && isset($aigraderesults->correctedtext)){
+            self::process_grammar_correction($moduleinstance,$attempt,$aigraderesults->correctedtext);
+        }else{
+            self::process_grammar_correction($moduleinstance,$attempt);
+        }
 
         //if we have an ungraded activity, lets grade it
         if($hastranscripts && $requiresgrading) {
@@ -520,7 +567,7 @@ class utils{
      /*
       * Process grammar correction details as returned by text analyser
       */
-    public static function process_grammar_correction($moduleinstance,$attempt){
+    public static function process_grammar_correction($moduleinstance,$attempt,$corrections=false){
         global $DB;
 
         if(!empty($attempt->grammarcorrection)){
@@ -535,7 +582,7 @@ class utils{
                 $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
                 //get text analyser
                 $textanalyser = new textanalyser($token, $attempt->selftranscript,$moduleinstance->region,$moduleinstance->ttslanguage);
-                $gcdata= $textanalyser->process_grammar_correction($attempt->selftranscript);
+                $gcdata= $textanalyser->process_grammar_correction($attempt->selftranscript,$corrections);
                 $grammarcorrection = $gcdata['gcorrections'];
                 $gcerrors= $gcdata['gcerrors'];
                 $gcmatches= $gcdata['gcmatches'];
@@ -954,7 +1001,7 @@ class utils{
         global $DB;
 
         $attempt = $DB->get_record(constants::M_ATTEMPTSTABLE, array('id'=>$attemptid));
-        //if not attempt found, all is lost.
+        //if no attempt can be found, all is lost.
         if(!$attempt) {
             return;
         }
@@ -984,95 +1031,72 @@ class utils{
         $thewordcount = $agoptions->gradewordcount== 'totalunique' ? $stats->uniquewords : $stats->words;
         $gradewordgoal = $moduleinstance->gradewordgoal;
         if($gradewordgoal<1){$gradewordgoal=1;}//what kind of person would set to 0 anyway?
+        $wordratio = round(($thewordcount / $gradewordgoal),2);
+        if($wordratio>1){$wordratio=1;}
 
         //ratio to apply to start ratio
-        $useratio = 100;
         switch($agoptions->graderatioitem){
-            case 'spelling':
-                $useratio = $stats->autospellscore;
-                break;
-            case 'grammar':
-                $useratio = $stats->autogrammarscore;
-                break;
             case 'accuracy':
                 if($airesult){
-                    $useratio = $stats->aiaccuracy;
+                    $accuracyratio = $stats->aiaccuracy;
                 }
                 break;
             case '--':
             default:
-                $useratio = 100;
+                $accuracyratio = 100;
                 break;
 
         }
+        if(!is_number($accuracyratio) && !is_numeric($accuracyratio)){$accuracyratio=0;}
+        $accuracyratio=$accuracyratio*.01;
 
         //Ratio for relevance
-        $relevance_ratio=1;
-        if(self::is_english($moduleinstance->ttslanguage)
-            && !empty($moduleinstance->modelttsembedding)
-            && isset($agoptions->relevancegrade)){
+        $relevanceratio=1;
+        if(isset($agoptions->relevancegrade)){
             switch($agoptions->relevancegrade){
-                case constants::RELEVANCE_NONE:
-                case constants::RELEVANCE_BROAD:
-                case constants::RELEVANCE_QUITE:
-                case constants::RELEVANCE_VERY:
-                case constants::RELEVANCE_EXTREME:
-                    $relevance_penalty = $agoptions->relevancegrade - $stats->relevance; // eg. 90  - 87
-                    if($relevance_penalty>0){
-                        $relevance_ratio= 1- ($relevance_penalty / $agoptions->relevancegrade);
-                    }
+                case constants::RELEVANCE_QUESTION:
+                case constants::RELEVANCE_MODEL:
+                    //we assume a relevance of 80% given the vagaries of AI is a sincere answer,
+                    // if they drop below 50% then it will noticeably affect their grade
+                    $relevanceratio= round(min($stats->relevance +20,100) / 100,2);
                     break;
                 default:
-                    $relevance_ratio=1;
+                    $relevanceratio=1;
             }
         }
 
-        //Ratio for suggestions grade
-        $suggestions_ratio=1;
-        if(self::is_english($moduleinstance->ttslanguage)
-            && !empty($attempt->grammarcorrection)
-            && isset($agoptions->suggestionsgrade)
-            && !empty($stats->gcerrorcount)){
-                $suggestionspenalty=$stats->words - $stats->gcerrorcount;
-                if($suggestionspenalty>0){
-                    $suggestions_ratio = $suggestionspenalty / $stats->words;
-                }
+        //AI Grade
+        if ($agoptions->aigradeitem==constants::AIGRADE_USE & $attempt->aigrade!==null) {
+            $aigraderatio = $attempt->aigrade * .01;
+        }else{
+            $aigraderatio  = 1;
         }
 
-        //get starting value from which to add/minus bonuses
-        //eg 80 unique words over target words 100 :
-        // round(80/100,2) = .80
-        $autograde = round(($thewordcount / $gradewordgoal),2);
-        if($autograde>1){$autograde=1;}
+        //Begin with wordratio
+        $autograde= $wordratio;
 
-        //apply basescore (default 80%)
-        //eg we allow 20% for bonuses so start at 80%. And we already have 80%
+        //apply basescore (default 100%)
+        //eg word score = 80% and base score = 80%
         //.80 x 80 = 64
         $autograde = $autograde * $basescore;
 
-        //apply use ratio (default aiaccuracy)
+        //apply use ratio (default aiaccuracy / speaking clarity same thing)
         //eg we reduce score according to accuracy. in this case 50%
         // 64 x 50 x .01 = 32
-        if(!is_number($useratio) && !is_numeric($useratio)){$useratio=0;}//ai accuracy returns  "--" ..
-        $autograde = $autograde * $useratio * .01;
+        $autograde = $autograde * $accuracyratio;
 
-        //apply suggestions and similarity rations
-        $autograde = $autograde * $suggestions_ratio * $relevance_ratio;
+        //apply ai grade ratio
+        $autograde = $autograde * $aigraderatio;
+
+        //apply relevance ratio
+        $autograde = $autograde * $relevanceratio;
 
         //apply bonuses
         for($bonusno =1;$bonusno<=4;$bonusno++){
-            $factor=1;
-            if($agoptions->{'bonusdirection' . $bonusno}=='minus'){
-                $factor=-1;
-            }
+
             $bonusscore=0;
             switch($agoptions->{'bonus' . $bonusno}){
-                case 'spellingmistake':
-                    $bonusscore=$stats->autospellerrors;
-                    break;
-                case 'grammarmistake':
-                    $bonusscore=$stats->autogrammarerrors;
-                    break;
+
                 case 'bigword':
                     $bonusscore=$stats->longwords;
                     break;
@@ -1089,8 +1113,8 @@ class utils{
 
             }
             //eg 3 points minus'ed for each of 7 spelling mistakes:
-            //if we had 32% : 32 - [3 points] * [-1] * [7] = 11%
-            $autograde += $agoptions->{'bonuspoints' . $bonusno} * $factor * $bonusscore;
+            //if we had 32% : 32 - [3 points] * [7] = 11%
+            $autograde += $agoptions->{'bonuspoints' . $bonusno}  * $bonusscore;
         }
 
 
@@ -1510,16 +1534,6 @@ class utils{
         return $options;
     }
 
-    public static function get_relevancegrade_options(){
-        return array(
-            constants::RELEVANCE_NONE => get_string("relevance_none",constants::M_COMPONENT),
-            constants::RELEVANCE_BROAD => get_string("relevance_broad",constants::M_COMPONENT),
-            constants::RELEVANCE_QUITE => get_string("relevance_quite",constants::M_COMPONENT),
-            constants::RELEVANCE_VERY => get_string("relevance_very",constants::M_COMPONENT),
-            constants::RELEVANCE_EXTREME => get_string("relevance_extreme",constants::M_COMPONENT)
-        );
-    }
-
     public static function get_suggestionsgrade_options(){
         return array(
             constants::SUGGEST_GRADE_NONE => get_string("suggestionsgrade_none",constants::M_COMPONENT),
@@ -1698,18 +1712,51 @@ class utils{
         return array(
                 '--'=>'--',
                 'bigword'=>get_string('bigword',constants::M_COMPONENT),
-                'spellingmistake'=>get_string('spellingmistake',constants::M_COMPONENT),
-                'grammarmistake'=>get_string('grammarmistake',constants::M_COMPONENT),
+                //'spellingmistake'=>get_string('spellingmistake',constants::M_COMPONENT),
+                //'grammarmistake'=>get_string('grammarmistake',constants::M_COMPONENT),
                 'targetwordspoken'=>get_string('targetwordspoken',constants::M_COMPONENT),
                 'sentence'=>get_string('sentence',constants::M_COMPONENT)
         );
     }
+
+    public static function fetch_factor_options(){
+        return array(
+            '*'=>'*',
+            '+'=>'+'
+        );
+    }
+
     public static function fetch_ratio_grade_options(){
         return array(
                 '--'=>'--',
-                'spelling'=>get_string('stats_autospellscore',constants::M_COMPONENT),
-                'grammar'=>get_string('stats_autogrammarscore',constants::M_COMPONENT),
+             //   'spelling'=>get_string('stats_autospellscore',constants::M_COMPONENT),
+             //   'grammar'=>get_string('stats_autogrammarscore',constants::M_COMPONENT),
                 'accuracy'=>get_string('stats_aiaccuracy',constants::M_COMPONENT),
+        );
+    }
+
+    public static function fetch_ai_grade_options(){
+        return array(
+            constants::AIGRADE_NONE=>'--',
+            constants::AIGRADE_USE=>get_string('stats_aigrade',constants::M_COMPONENT),
+        );
+    }
+
+    public static function fetch_relevance_options(){
+        return array(
+            constants::RELEVANCE_NONE=>'--',
+            constants::RELEVANCE_MODEL=>get_string('relevance_model',constants::M_COMPONENT),
+            constants::RELEVANCE_QUESTION=>get_string('relevance_question',constants::M_COMPONENT)
+        );
+    }
+
+    public static function get_relevancegrade_options(){
+        return array(
+            constants::RELEVANCE_NONE => get_string("relevance_none",constants::M_COMPONENT),
+            constants::RELEVANCE_BROAD => get_string("relevance_broad",constants::M_COMPONENT),
+            constants::RELEVANCE_QUITE => get_string("relevance_quite",constants::M_COMPONENT),
+            constants::RELEVANCE_VERY => get_string("relevance_very",constants::M_COMPONENT),
+            constants::RELEVANCE_EXTREME => get_string("relevance_extreme",constants::M_COMPONENT)
         );
     }
 
@@ -1910,10 +1957,11 @@ class utils{
 
     public static function fetch_options_sequences(){
         $ret = array();
-        $ret[constants::M_SEQ_PRTM] = get_string('seq_PRTM',constants::M_COMPONENT);
+       // $ret[constants::M_SEQ_PRTM] = get_string('seq_PRTM',constants::M_COMPONENT);
         $ret[constants::M_SEQ_PRM] =get_string('seq_PRM',constants::M_COMPONENT);
         $ret[constants::M_SEQ_PTRM]=get_string('seq_PTRM',constants::M_COMPONENT);
-        $ret[constants::M_SEQ_PRMT]=get_string('seq_PRMT',constants::M_COMPONENT);
+        $ret[constants::M_SEQ_PTM]=get_string('seq_PTM',constants::M_COMPONENT);
+       // $ret[constants::M_SEQ_PRMT]=get_string('seq_PRMT',constants::M_COMPONENT);
         return $ret;
     }
     public static function fetch_step_no($moduleinstance, $type){
@@ -2507,12 +2555,7 @@ class utils{
     public static function sequence_to_steps($moduleinstance){
         switch($moduleinstance->activitysteps){
 
-            case constants::M_SEQ_PRM:
-                $moduleinstance->step2=constants::M_STEP_RECORD;
-                $moduleinstance->step3=constants::M_STEP_MODEL;
-                $moduleinstance->step4=constants::M_STEP_NONE;
-                $moduleinstance->step5=constants::M_STEP_NONE;
-                break;
+
             case constants::M_SEQ_PTRM:
                 $moduleinstance->step2=constants::M_STEP_TRANSCRIBE;
                 $moduleinstance->step3=constants::M_STEP_RECORD;
@@ -2525,11 +2568,23 @@ class utils{
                 $moduleinstance->step4=constants::M_STEP_TRANSCRIBE;
                 $moduleinstance->step5=constants::M_STEP_NONE;
                 break;
+            case constants::M_SEQ_PTM:
+                $moduleinstance->step2=constants::M_STEP_TRANSCRIBE;
+                $moduleinstance->step3=constants::M_STEP_MODEL;
+                $moduleinstance->step4=constants::M_STEP_NONE;
+                $moduleinstance->step5=constants::M_STEP_NONE;
+                break;
             case constants::M_SEQ_PRTM:
-            default:
                 $moduleinstance->step2=constants::M_STEP_RECORD;
                 $moduleinstance->step3=constants::M_STEP_TRANSCRIBE;
                 $moduleinstance->step4=constants::M_STEP_MODEL;
+                $moduleinstance->step5=constants::M_STEP_NONE;
+                break;
+            case constants::M_SEQ_PRM:
+            default:
+                $moduleinstance->step2=constants::M_STEP_RECORD;
+                $moduleinstance->step3=constants::M_STEP_MODEL;
+                $moduleinstance->step4=constants::M_STEP_NONE;
                 $moduleinstance->step5=constants::M_STEP_NONE;
                 break;
         }
@@ -2539,7 +2594,7 @@ class utils{
 
     public static function steps_to_sequence($moduleinstance){
         //this just uses function sequence_to_steps to figure out the sequence (activitysteps)
-        $sequences = [constants::M_SEQ_PRM,constants::M_SEQ_PTRM,constants::M_SEQ_PRMT,constants::M_SEQ_PRTM];
+        $sequences = [constants::M_SEQ_PRM,constants::M_SEQ_PTRM,constants::M_SEQ_PRMT,constants::M_SEQ_PRTM,constants::M_SEQ_PTM];
         foreach ($sequences as $sequence){
             $fakemodule = new \stdClass();
             $fakemodule->activitysteps=$sequence;
@@ -2552,8 +2607,8 @@ class utils{
                 return $moduleinstance;
             }
         }
-        //if we got here just default to PRTM
-        $moduleinstance->activitysteps = constants::M_SEQ_PRTM;
+        //if we got here just default to PRM
+        $moduleinstance->activitysteps = constants::M_SEQ_PRM;
         return $moduleinstance;
     }
 
@@ -2607,22 +2662,36 @@ class utils{
         $mform->setDefault('tips_editor',array('text'=>$config->speakingtips, 'format'=>FORMAT_HTML));
         $mform->setType('tips_editor',PARAM_RAW);
 
+        //Sequence of activities
+        $options = self::fetch_options_sequences();
+        $mform->addElement('select','activitysteps',get_string('activitysteps', constants::M_COMPONENT), $options,array());
+        $mform->setDefault('activitysteps',constants::M_SEQ_PRM);
+
         //Disable copy pasting on transcribe text box
         $mform->addElement('selectyesno', 'nopasting', get_string('nopasting', constants::M_MODNAME));
+        $mform->disabledIf('nopasting', 'activitysteps', 'neq', constants::M_SEQ_PTRM);
         $mform->setType('nopasting', PARAM_INT);
         $mform->setDefault('nopasting',0);
         $mform->addHelpButton('nopasting', 'nopasting', constants::M_MODNAME);
 
+        //Enable multiple attempts (or not)
+        $mform->addElement('advcheckbox', 'multiattempts', get_string('multiattempts', constants::M_COMPONENT), get_string('multiattempts_details', constants::M_COMPONENT));
+        $mform->setDefault('multipleattempts',$config->multipleattempts);
+
+        //allow post attempt edit
+        $mform->addElement('hidden','postattemptedit');
+        $mform->setDefault('postattemptedit',false);
+        $mform->setType('postattemptedit',PARAM_BOOL);
+
         //Preload automatic transcript
+        $mform->addElement('hidden', 'preloadtranscript', 1);
+        $mform->setType('preloadtranscript',PARAM_BOOL);
+        /*
         $mform->addElement('selectyesno', 'preloadtranscript', get_string('preloadtranscript', constants::M_MODNAME));
         $mform->setType('preloadtranscript', PARAM_INT);
         $mform->setDefault('preloadtranscript',1);
         $mform->addHelpButton('preloadtranscript', 'preloadtranscript', constants::M_MODNAME);
-
-        //Sequence of activities
-        $options = self::fetch_options_sequences();
-        $mform->addElement('select','activitysteps',get_string('activitysteps', constants::M_COMPONENT), $options,array());
-        $mform->setDefault('activitysteps',constants::M_SEQ_PRTM);
+        */
 
         //display media options for speaking prompt
 //--------------------------------------------------------
@@ -2675,26 +2744,43 @@ class utils{
         $mform->addHelpButton('gradewordgoal', 'gradewordgoal', constants::M_MODNAME);
 
         //Enable Grammar Suggestions
+        $mform->addElement('hidden', 'enablesuggestions', 1);
+        $mform->setType('enablesuggestions',PARAM_BOOL);
+        /*
         $mform->addElement('selectyesno', 'enablesuggestions', get_string('enablesuggestions', constants::M_MODNAME));
         $mform->setType('enablesuggestions', PARAM_INT);
         $mform->setDefault('enablesuggestions',1);
         $mform->addHelpButton('enablesuggestions', 'enablesuggestions', constants::M_MODNAME);
+        */
 
         //Grammar options
+        $mform->addElement('hidden', 'showgrammar', 0);
+        $mform->setType('showgrammar',PARAM_BOOL);
+        /*
         $grammaroptions = \mod_solo\utils::get_show_options();
         $mform->addElement('select', 'showgrammar', get_string('showgrammar', constants::M_COMPONENT), $grammaroptions);
         $mform->setDefault('showgrammar',$config->showgrammar);
+        */
+
 
         //Spelling options
+        $mform->addElement('hidden', 'showspelling', 0);
+        $mform->setType('showspelling',PARAM_BOOL);
+        /*
         $spellingoptions = \mod_solo\utils::get_show_options();
         $mform->addElement('select', 'showspelling', get_string('showspelling', constants::M_COMPONENT), $spellingoptions);
         $mform->setDefault('showspelling',$config->showspelling);
+        */
 
         //TTS on pre-audio transcribe
+        $mform->addElement('hidden', 'enabletts', 0);
+        $mform->setType('enabletts',PARAM_BOOL);
+        /*
         $mform->addElement('selectyesno', 'enabletts', get_string('enabletts', constants::M_MODNAME));
         $mform->setType('enabletts', PARAM_INT);
         $mform->setDefault('enabletts',1);
         $mform->addHelpButton('enabletts', 'enabletts', constants::M_MODNAME);
+        */
 
         //Model Answer
         $mform->addElement('header', 'modelanswerheader', get_string('modelanswerheader', constants::M_COMPONENT));
@@ -2754,60 +2840,79 @@ class utils{
         $mform->setDefault('expiredays',$config->expiredays);
 
         // Attempts and autograding
-        $mform->addElement('header', 'attemptsandautogradingheader', get_string('attemptsandautogradingheader', constants::M_COMPONENT));
+        $mform->addElement('header', 'autogradingheader', get_string('autogradingheader', constants::M_COMPONENT));
 
-        //Enable multiple attempts (or not)
-        $mform->addElement('advcheckbox', 'multiattempts', get_string('multiattempts', constants::M_COMPONENT), get_string('multiattempts_details', constants::M_COMPONENT));
-        $mform->setDefault('multipleattempts',$config->multipleattempts);
-
-        //allow post attempt edit
-        $mform->addElement('hidden','postattemptedit');
-        $mform->setDefault('postattemptedit',false);
-        $mform->setType('postattemptedit',PARAM_BOOL);
        // $mform->addElement('advcheckbox', 'postattemptedit', get_string('postattemptedit', constants::M_COMPONENT), get_string('postattemptedit_details', constants::M_COMPONENT));
        // $mform->setDefault('postattemptedit',false);
 
         //To auto grade or not to autograde
-        $mform->addElement('advcheckbox', 'enableautograde', get_string('enableautograde', constants::M_COMPONENT), get_string('enableautograde_details', constants::M_COMPONENT));
-        $mform->setDefault('enableautograde',$config->enableautograde);
+        $mform->addElement('hidden', 'enableautograde', 1);
+        $mform->setType('enableautograde',PARAM_BOOL);
+       // $mform->addElement('advcheckbox', 'enableautograde', get_string('enableautograde', constants::M_COMPONENT), get_string('enableautograde_details', constants::M_COMPONENT));
+       // $mform->setDefault('enableautograde',$config->enableautograde);
 
 
         //auto grading options
         $aggroup=array();
-        $wordcountoptions = utils::get_word_count_options();
-        $startgradeoptions = utils::get_grade_element_options();
-        $bonusgradeoptions = utils::fetch_bonus_grade_options();
-        $ratiogradeoptions = utils::fetch_ratio_grade_options();
-        $plusminusoptions = array('plus'=>'+','minus'=>'-');
+        $wordcountoptions = utils::get_word_count_options(); //unique word total ;all word total
+        $startgradeoptions = utils::get_grade_element_options(); //0-100
+        $bonusgradeoptions = utils::fetch_bonus_grade_options(); //targetwordspoken=+3;bigword=+3
+        $ratiogradeoptions = utils::fetch_ratio_grade_options(); //accuracy (aka speaking clarity)
+        $aigradeoptions = utils::fetch_ai_grade_options(); //aigrade or ---
+        $relevanceoptions = utils::fetch_relevance_options(); //relevance_model or relevance_question or ---
+        $factoroptions= utils::fetch_factor_options();//+ or *
         $points_per = get_string("ag_pointsper",constants::M_COMPONENT);
         $over_target_words = get_string("ag_overgradewordgoal",constants::M_COMPONENT);
 
-        $aggroup[] =& $mform->createElement('static', 'stext0', '',get_string('gradeequals', constants::M_COMPONENT). '( ');
-        $aggroup[] =& $mform->createElement('select', 'gradewordcount', '', $wordcountoptions);
-        $aggroup[] =& $mform->createElement('static', 'statictext00', '',$over_target_words );
-        $aggroup[] =& $mform->createElement('select', 'gradebasescore', '', $startgradeoptions);
+        //auto grading base elements (word count)
+        $aggroup1[] =& $mform->createElement('static', 'stext0', '',get_string('gradeequals', constants::M_COMPONENT). '( ');
+        $aggroup1[] =& $mform->createElement('select', 'gradewordcount', '', $wordcountoptions);
+        $aggroup1[] =& $mform->createElement('static', 'statictext00', '',$over_target_words );
+        $aggroup1[] =& $mform->createElement('select', 'gradebasescore', '', $startgradeoptions);
+        $aggroup1[] =& $mform->createElement('static', 'stext1', '','%');
         $mform->setDefault('gradebasescore',100);
-
-
-        $aggroup[] =& $mform->createElement('static', 'stext1', '','% x ');
-        $aggroup[] =& $mform->createElement('select', 'graderatioitem', '', $ratiogradeoptions);
-        $mform->setDefault('graderatioitem','accuracy');
-        $aggroup[] =& $mform->createElement('static', 'stext11', '','% ');
-        $mform->addGroup($aggroup, 'aggroup', get_string('aggroup', constants::M_COMPONENT),
-                '', false);
+        $mform->addGroup($aggroup1, 'aggroup', get_string('aggroup', constants::M_COMPONENT),'',false);
         $mform->addHelpButton('aggroup', 'aggroup', constants::M_MODNAME);
 
+        //ai grade
+        $aggroup2=array();
+        $aggroup2[] =& $mform->createElement('static', 'stext2', '',' x &nbsp;');
+        $aggroup2[] =& $mform->createElement('select', 'aigradeitem', '', $aigradeoptions);
+        $mform->setDefault('aigradeitem',constants::AIGRADE_USE);
+        $aggroup2[] =& $mform->createElement('static', 'stext11', '','%  x &nbsp;');
+
+        //relevance item
+        $aggroup2[] =& $mform->createElement('select', 'relevancegrade', '', $relevanceoptions);
+        $mform->setDefault('relevancegrade',constants::RELEVANCE_QUESTION);
+        $aggroup2[] =& $mform->createElement('static', 'stext11', '','%');
+        $mform->addGroup($aggroup2, 'aigroup2', '','',false);
+
+
+        //grade ratio (AKA speaking clarity)
+        $aggroup3=array();
+        $aggroup3[] =& $mform->createElement('static', 'stext2', '',' x &nbsp;');
+        $aggroup3[] =& $mform->createElement('select', 'graderatioitem', '', $ratiogradeoptions);
+        $mform->setDefault('graderatioitem','accuracy');
+        $aggroup3[] =& $mform->createElement('static', 'stext11', '','% )');
+        $aggroup3[] =& $mform->createElement('static', 'stext12', '',' + ' . get_string("bonusgrade",constants::M_COMPONENT));
+        $mform->addGroup($aggroup3, 'aggroup3', '','',false);
+
+
         //relevance
+        /*
         $relevanceoptions = utils::get_relevancegrade_options();
         $mform->addElement('select', 'relevancegrade',get_string('relevancegrade', constants::M_COMPONENT), $relevanceoptions);
         $mform->addHelpButton('relevancegrade', 'relevancegrade', constants::M_MODNAME);
         $mform->addElement('static', 'stext32','', get_string('relevancegrade_details', constants::M_COMPONENT));
+        */
 
         //suggestions
+        /*
         $suggestionsoptions = utils::get_suggestionsgrade_options();
         $mform->addElement('select', 'suggestionsgrade',get_string('suggestionsgrade', constants::M_COMPONENT), $suggestionsoptions);
         $mform->addHelpButton('suggestionsgrade', 'suggestionsgrade', constants::M_MODNAME);
         $mform->addElement('static', 'stext42','', get_string('suggestionsgrade_details', constants::M_COMPONENT));
+        */
 
     //AI grading options
     //how to give marks to student
@@ -2829,10 +2934,10 @@ class utils{
      $mform->addElement('select', 'feedbacklanguage', get_string('feedbacklanguage', constants::M_COMPONENT), $langoptions);
      $mform->setDefault('feedbacklanguage',$config->feedbacklanguage);
 
-        //bonus grades (positive and negative)
+
+        //bonus points
         for ($bonusno=1;$bonusno<=4;$bonusno++){
             $bg = array();
-            $bg[] =& $mform->createElement('select', 'bonusdirection' . $bonusno, '', $plusminusoptions);
             $bg[] =& $mform->createElement('static', 'stext2'. $bonusno, '',' ');
             $bg[] =& $mform->createElement('select', 'bonuspoints' . $bonusno,'', $startgradeoptions);
             $mform->setDefault('bonuspoints' . $bonusno,3);
@@ -3010,16 +3115,15 @@ class utils{
             if(isset($agoptions->relevancegrade)) {
                 $moduleinstance->relevancegrade = $agoptions->relevancegrade;
             }else{
-                $moduleinstance->suggestionsgrade=constants::RELEVANCE_NONE;
+                $moduleinstance->relevancegrade=constants::RELEVANCE_NONE;
             }
-            if(isset($agoptions->suggestionsgrade)) {
-                $moduleinstance->suggestionsgrade = $agoptions->suggestionsgrade;
+            if(isset($agoptions->aigradeitem)) {
+                $moduleinstance->aigradeitem = $agoptions->aigradeitem;
             }else{
-                $moduleinstance->suggestionsgrade=constants::SUGGEST_GRADE_NONE;
+                $moduleinstance->aigradeitem=constants::AIGRADE_NONE;
             }
 
             for ($bonusno=1;$bonusno<=4;$bonusno++) {
-                $moduleinstance->{'bonusdirection' . $bonusno} = $agoptions->{'bonusdirection' . $bonusno};
                 $moduleinstance->{'bonuspoints' . $bonusno}  = $agoptions->{'bonuspoints' . $bonusno} ;
                 $moduleinstance->{'bonus' . $bonusno} = $agoptions->{'bonus' . $bonusno};
             }

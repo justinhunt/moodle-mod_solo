@@ -33,6 +33,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 use \mod_solo\constants;
+use \mod_solo\utils;
 
 /**
  * Execute solo upgrade from the given old version
@@ -476,6 +477,121 @@ function xmldb_solo_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2024070300, 'solo');
+    }
+
+    if($oldversion < 2024071100) {
+        //add fields to hold the AI grade and feedback results
+        $table = new xmldb_table(constants::M_ATTEMPTSTABLE);
+        $fields = [];
+        $fields[] =  new xmldb_field('aifeedback', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] =  new xmldb_field('aigrade', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null);
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+
+
+        //We are doing a major upgrade to the grading options so we need to reset the grading options to the new format
+        //depending on what the old format was.
+        $recordset = $DB->get_recordset(constants::M_TABLE,[]);
+        if($recordset->valid()) {
+            foreach ($recordset as $record) {
+
+                //We are removing the manual transcription option (after recording)
+                if($record->step3==constants::M_STEP_TRANSCRIBE ||$record->step4==constants::M_STEP_TRANSCRIBE){
+                    $record->step3=constants::M_STEP_MODEL;
+                    $record->step4=constants::M_STEP_NONE;
+                    $DB->update_record(constants::M_TABLE, ['id'=>$record->id,'step3'=>constants::M_STEP_MODEL,'step4'=>constants::M_STEP_NONE]);
+                }
+
+
+                if(utils::is_json($record->autogradeoptions)) {
+                    //decode options
+                    $agoptions = json_decode($record->autogradeoptions);
+
+                    //Now fix'em all up ...
+
+                    //relevance option is now just "model" or "question" or "none"
+                    //nobody understood the other options and they were hard predict the outcomes
+                    switch($agoptions->relevancegrade){
+                            case constants::RELEVANCE_BROAD:
+                            case constants::RELEVANCE_QUITE:
+                            case constants::RELEVANCE_VERY:
+                            case constants::RELEVANCE_EXTREME:
+                                $agoptions->relevancegrade=constants::RELEVANCE_MODEL;
+                                break;
+                        case constants::RELEVANCE_NONE:
+                        default:
+                            $agoptions->relevancegrade=constants::RELEVANCE_NONE;
+                    }
+
+                    //grade ratio item is now just accuracy (AKA speaking clarity)  or nothing
+                    //ie we dont have spelling or grammar options
+                    $forceaigrade=false;
+                    switch($agoptions->graderatioitem){
+                        case 'accuracy':
+                            //we don't do AI accuracy for manual transcription anymore, nobody wants to do it
+                            //its just for the case where they read their own typed in text
+                            if($record->step2!==constants::M_STEP_TRANSCRIBE){
+                                $agoptions->graderatioitem='--';
+                            }
+                            break;
+
+                        case 'spelling':
+                            //Spelling is meaningless unless we are typing text (step2=type)
+                            if($record->step2===constants::M_STEP_TRANSCRIBE){
+                                //if they are using spelling and step2=type, then we let AI grade take care of it
+                                $forceaigrade=true;
+                            }
+                            $agoptions->graderatioitem='--';
+                            break;
+                        //we don't do grammar here anymore, we leave this up to AI
+                        case 'grammar':
+                            $forceaigrade=true;
+                            $agoptions->graderatioitem='--';
+                            break;
+                        case '--':
+                        default:
+                            $agoptions->graderatioitem='--';
+                            break;
+                    }//end of graderatioitem
+
+                    //AI Grade
+                    if($forceaigrade) {
+                        $agoptions->aigradeitem = constants::AIGRADE_USE;
+                    }else{
+                        switch ($agoptions->suggestionsgrade) {
+                            case constants::SUGGEST_GRADE_USE:
+                                $agoptions->aigradeitem = constants::AIGRADE_USE;
+                                break;
+                            case constants::SUGGEST_GRADE_NONE:
+                            default:
+                                $agoptions->aigradeitem = constants::AIGRADE_NONE;
+                        }
+                    }
+
+                    //Bonus Grades
+                    //we don't do negative grading anymore ..so no spelling or grammar processing,
+                    for ($bonusno=1;$bonusno<=4;$bonusno++) {
+                        if($agoptions->{'bonus' . $bonusno}=='spellingmistake' || $agoptions->{'bonus' . $bonusno} == 'grammarmistake'){
+                            $agoptions->{'bonus' . $bonusno} ='--';
+                        }
+                        // and we drop the bonusdirection attribute since its always positive
+                        unset($agoptions->{'bonusdirection' . $bonusno});
+                    }
+
+                    //save the options back
+                    $record->autogradeoptions = json_encode($agoptions);
+                    $DB->update_record(constants::M_TABLE, ['id'=>$record->id,'autogradeoptions'=>$record->autogradeoptions]);
+
+                }//end of if is json
+            }
+            $recordset->close();
+        }
+        upgrade_mod_savepoint(true, 2024071100, 'solo');
     }
 
 

@@ -260,6 +260,11 @@ class attempt_renderer extends \plugin_renderer_base {
 */
         }
 
+        if(!empty($attempt->aifeedback)&&utils::is_json($attempt->aifeedback)){
+            $tdata['hasaifeedback']=true;
+            $tdata['aifeedback'] = json_decode($attempt->aifeedback);
+        }
+
         //send data to template
         $ret .= $this->output->render_from_template( constants::M_COMPONENT . '/summaryresults', $tdata);
         return $ret;

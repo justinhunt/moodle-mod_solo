@@ -18,7 +18,12 @@
         <div class="col-sm-12 mx-auto">
             <div class="solo_stepinstructions">
                 {{^prerecording}}
-                    {{#str}}step_selftranscribeinstructions, mod_solo{{/str}}
+                    {{^audiorecording}}
+                        {{#str}}step_writtensubmissioninstructions, mod_solo{{/str}}
+                    {{/audiorecording}}
+                    {{#audiorecording}}
+                        {{#str}}step_selftranscribeinstructions, mod_solo{{/str}}
+                    {{/audiorecording}}
                 {{/prerecording}}
                 {{#prerecording}}
                     {{#str}}step_prerecord_transcribeinstructions, mod_solo{{/str}}
@@ -31,6 +36,16 @@
     {{#prerecording}}
         {{>mod_solo/stepprompt}}
     {{/prerecording}}
+    {{^prerecording}}
+        {{^audiorecording}}
+            {{>mod_solo/stepprompt}}
+            <div class="mod_solo_activitycontent_container">
+                {{#contentitems}}
+                    {{>mod_solo/activitycontent}}
+                {{/contentitems}}
+            </div>
+        {{/audiorecording}}
+    {{/prerecording}}
 
     <div class="row">
         <div class="col-sm">
@@ -41,7 +56,9 @@
                     <!--div class='mod_solo_maybereloadaudio'>{{#str}}toggleplayinstructions, mod_solo{{/str}}</div-->
                 {{/audiofilename}}
                 {{^audiofilename}}
-                    <div class='mod_solo_maybereloadaudio'>{{#str}}prerecordtranscriptinstructions, mod_solo{{/str}}</div>
+                    {{#audiorecording}}
+                        <div class='mod_solo_maybereloadaudio'>{{#str}}prerecordtranscriptinstructions, mod_solo{{/str}}</div>
+                    {{/audiorecording}}
                 {{/audiofilename}}
                 <div class="solo-spinner-overlay">
                     <textarea name="selftranscript" id="{{uniqid}}_selftranscript" class="form-control" rows="5" cols="80" {{#audiofilename}}disabled="true"{{/audiofilename}}>{{selftranscript}}</textarea>

@@ -41,6 +41,10 @@ const M_SEQ_PRTM=0;
 const M_SEQ_PRM=1;
 const M_SEQ_PTRM=2;
 const M_SEQ_PRMT=3;
+const M_SEQ_PTM=4;
+
+const AIGRADE_NONE=0;
+const AIGRADE_USE=1;
 
 //AI Transcript constants
 const M_AI_PARENTFIELDNAME = 'solo';
@@ -93,6 +97,8 @@ const RELEVANCE_BROAD = 50;
 const RELEVANCE_QUITE = 70;
 const RELEVANCE_VERY = 80;
 const RELEVANCE_EXTREME = 90;
+const RELEVANCE_QUESTION = 2;
+const RELEVANCE_MODEL = 1;
 
 //constants for suggest grade
 const SUGGEST_GRADE_NONE = 0;

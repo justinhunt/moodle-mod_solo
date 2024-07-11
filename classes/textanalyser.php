@@ -60,17 +60,21 @@ class textanalyser {
     /** @var string $targetembedding The vector for the 'correct'/model answer. */
     protected $targetembedding;
 
+    /** @var string $targettopic The topic. */
+    protected $targettopic;
+
         /**
          * The class constructor.
          *
          */
-    public function __construct($token,$passage, $region,  $language,$targetembedding=false, $userlanguage=false){
+    public function __construct($token,$passage, $region,  $language,$targetembedding=false, $userlanguage=false,$targettopic=false,){
         $this->token = $token;
         $this->region = $region;
         $this->passage = $passage;
         $this->language = $language;
         $this->targetembedding = $targetembedding;
         $this->userlanguage = $userlanguage;
+        $this->targettopic = $targettopic;
     }
 
     //fetch lang server url, services incl. 'transcribe' , 'lm', 'lt', 'spellcheck'
@@ -271,7 +275,7 @@ class textanalyser {
                 $stats['ideacount'] = $this->process_idea_count();
                 $stats['cefrlevel'] = $this->process_cefr_level();
                 $stats['relevance'] = $this->process_relevance();
-                //something went wrong, but it might be used for grading. Lets give them 100, though it sucks
+                //something went wrong, but it might be used for grading. Let's give them 100, though it sucks
                 if ( $stats['relevance']==0 || $stats['relevance']==false) {
                     $stats['relevance'] = 100;
                 }
@@ -283,13 +287,15 @@ class textanalyser {
             return $stats;
     }
 
-    public function process_grammar_correction($passage){
+    public function process_grammar_correction($passage,$grammarcorrection=false){
 
         $ret=['gcorrections'=>false,'gcerrors'=>false,'gcmatches'=>false,'gcerrorcount'=>false];
         //If this is English then lets see if we can get a grammar correction
        // if(!empty($attempt->selftranscript) && self::is_english($moduleinstance)){
         if(!empty($passage)){
-                $grammarcorrection = self::fetch_grammar_correction($passage);
+                if($grammarcorrection===false) {
+                    $grammarcorrection = self::fetch_grammar_correction($passage);
+                }
                 if ($grammarcorrection) {
                     $ret['gcorrections']=$grammarcorrection;
 
@@ -307,7 +313,7 @@ class textanalyser {
         return $ret;
     }
 
-    public function process_relevance($passage='',$targetembedding=false){
+    public function process_relevance($passage='',$targetembedding=false,$targettopic=false){
 
         if(empty($passage)){
             $passage = $this->passage;
@@ -315,10 +321,17 @@ class textanalyser {
         if(!$targetembedding){
             $targetembedding = $this->targetembedding;
         }
+        if(!$targettopic){
+            $targettopic = $this->targettopic;
+        }
 
         $relevance=false;//default is blank
-        if(!empty($passage)&&$targetembedding!==false){
-            $relevance = $this->fetch_relevance($passage,$targetembedding);
+        if(!empty($passage)){
+            if($targettopic!==false){
+                $relevance = $this->fetch_relevance_topic($targettopic, $passage);
+            }elseif($targetembedding!==false){
+                $relevance = $this->fetch_relevance_semantic($targetembedding,$passage);
+            }
         }
         if ($relevance!==false) {
             return $relevance;
@@ -690,8 +703,63 @@ class textanalyser {
         }
     }
 
-    //fetch the relevance
-    public  function fetch_relevance($model_or_modelembedding,$passage='') {
+    //fetch the relevance by topic
+    public  function fetch_relevance_topic($topic,$passage='') {
+        global $USER;
+
+        //default to 100% relevant if no TTS model or if it's not English
+        if($topic===false || empty($topic)){
+            return 100;
+        }
+
+        //use local passage if not set
+        if(empty($passage)){
+            $passage = $this->passage;
+        }
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = array();
+        $params['wstoken'] = $this->token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'get_topic_relevance';
+        $params['appid'] = 'mod_solo';
+        $params['prompt'] = $passage;//urlencode($passage);
+        $params['subject'] = $topic;
+        $params['language'] = $this->language;
+        $params['region'] = $this->region;
+        $params['owner'] = hash('md5',$USER->username);
+
+        //log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params,'post');
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then return the value
+        } else if ($payloadobject->returnCode === 0) {
+            $relevance = $payloadobject->returnMessage;
+            if(is_numeric($relevance)){
+                $relevance=(int)round($relevance * 100,0);
+            }else{
+                $relevance = false;
+            }
+            return $relevance;
+        } else {
+            return false;
+        }
+    }
+
+    //fetch the relevance by semantic similarity
+    public  function fetch_relevance_semantic($model_or_modelembedding,$passage='') {
         global $USER;
 
         //default to 100% relevant if no TTS model or if it's not English
@@ -1137,6 +1205,7 @@ class textanalyser {
 
     public static function fetch_duration_from_transcript($jsontranscript){
         $transcript = json_decode($jsontranscript);
+        if(!isset($transcript->results)){return 0;}
         $titems=$transcript->results->items;
         $twords=array();
         foreach($titems as $titem){

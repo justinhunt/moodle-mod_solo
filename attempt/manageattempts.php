@@ -299,18 +299,23 @@ switch($type) {
             }
         }
 
-
-        //if we are transcribing first and then talking, we want to do things a bit differently
-        if($stepno<$recordstepno){
+        //if its a text only transcript
+        if($recordstepno===false) {
             $stepcontent->contentitems = [$topicmedia];
             $stepcontent->activityid =$moduleinstance->id;
+            $stepcontent->audiorecording=false;
+        //if we are transcribing first and then talking, we want to do things a bit differently
+        }elseif($stepno<$recordstepno){
+            $stepcontent->contentitems = [$topicmedia];
+            $stepcontent->activityid =$moduleinstance->id;
+            $stepcontent->audiorecording=true;
             $stepcontent->prerecording=true;
-            echo $renderer->render_from_template(constants::M_COMPONENT . '/stepselftranscribe', $stepcontent);
         }else{
             //we will need an audio file to transcribe from
             $stepcontent->audiofilename=$attempt->filename;
-            echo $renderer->render_from_template(constants::M_COMPONENT . '/stepselftranscribe', $stepcontent);
+            $stepcontent->audiorecording=true;
         }
+        echo $renderer->render_from_template(constants::M_COMPONENT . '/stepselftranscribe', $stepcontent);
 
 
         break;
