@@ -485,6 +485,7 @@ function xmldb_solo_upgrade($oldversion) {
         $fields = [];
         $fields[] =  new xmldb_field('aifeedback', XMLDB_TYPE_TEXT, null, null, null, null);
         $fields[] =  new xmldb_field('aigrade', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null);
+        $fields[] =  new xmldb_field('autogradelog', XMLDB_TYPE_TEXT, null, null, null, null);
         // Add fields
         foreach ($fields as $field) {
             if (!$dbman->field_exists($table, $field)) {

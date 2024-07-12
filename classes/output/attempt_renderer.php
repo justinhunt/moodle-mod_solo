@@ -117,11 +117,12 @@ class attempt_renderer extends \plugin_renderer_base {
         return $this->output->render_from_template( constants::M_COMPONENT . '/summaryplaceholdereval', $data);
     }
 
-    function show_teachereval($graderesults, $feedback, $evaluator){
+    function show_teachereval($graderesults, $feedback, $evaluator,$autogradelog){
         $data = new \stdClass();
         $data->graderesults = $graderesults;
         $data->feedback=$feedback;
         $data->evaluator=$evaluator;
+        $data->autogradelog=$autogradelog;
 
 
 

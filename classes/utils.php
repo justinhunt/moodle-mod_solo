@@ -1024,6 +1024,9 @@ class utils{
         //figure out the autograde
         $agoptions = json_decode($moduleinstance->autogradeoptions);
 
+        //autograde log
+        $ag_log=[];
+
         //basescore
         $basescore = $agoptions->gradebasescore;
 
@@ -1033,6 +1036,8 @@ class utils{
         if($gradewordgoal<1){$gradewordgoal=1;}//what kind of person would set to 0 anyway?
         $wordratio = round(($thewordcount / $gradewordgoal),2);
         if($wordratio>1){$wordratio=1;}
+        $ag_log[]="Words% = Total words($agoptions->gradewordcount)/ Words goal";
+        $ag_log[]="Words% = $thewordcount / $gradewordgoal = " . (100 * $wordratio) . "%";
 
         //ratio to apply to start ratio
         switch($agoptions->graderatioitem){
@@ -1047,7 +1052,13 @@ class utils{
                 break;
 
         }
-        if(!is_number($accuracyratio) && !is_numeric($accuracyratio)){$accuracyratio=0;}
+        $ag_log[]="Accuracy% = % AI transcript matches manual transcript";
+        if(!is_number($accuracyratio) && !is_numeric($accuracyratio)){
+            $accuracyratio=100;
+            $ag_log[]="Accuracy%: is not considered. Defaulting to 100%";
+        }
+         
+         $ag_log[]="Accuracy% = " . $accuracyratio . "%";
         $accuracyratio=$accuracyratio*.01;
 
         //Ratio for relevance
@@ -1055,20 +1066,37 @@ class utils{
         if(isset($agoptions->relevancegrade)){
             switch($agoptions->relevancegrade){
                 case constants::RELEVANCE_QUESTION:
-                case constants::RELEVANCE_MODEL:
-                    //we assume a relevance of 80% given the vagaries of AI is a sincere answer,
+                    $ag_log[]="Relevance% = % Submission is on topic. Margin of 20%";
+                    //we assume a relevance of 80% (given the vagaries of AI) is a sincere answer,
                     // if they drop below 50% then it will noticeably affect their grade
                     $relevanceratio= round(min($stats->relevance +20,100) / 100,2);
+                    $ag_log[]="Relevance% = " . (100 * $relevanceratio) . "%";
                     break;
+
+                case constants::RELEVANCE_MODEL:
+                    $ag_log[]="Relevance% = % Submission is similar to model answer. Margin of 20%";
+                    //we assume a relevance of 80% (given the vagaries of AI) is a sincere answer,
+                    // if they drop below 50% then it will noticeably affect their grade
+                    $relevanceratio= round(min($stats->relevance +20,100) / 100,2);
+                    $ag_log[]="Relevance% = " . (100 * $relevanceratio) . "%";
+                    break;
+
                 default:
+                    $ag_log[]="Relevance%: is not considered. Defaulting to 100%";
+                    $ag_log[]="Relevance% = 100%";
                     $relevanceratio=1;
             }
         }
+        
 
         //AI Grade
         if ($agoptions->aigradeitem==constants::AIGRADE_USE & $attempt->aigrade!==null) {
+            $ag_log[]="AI Grade% = is calculated from the following guideline: $moduleinstance->markscheme";
+            $ag_log[]="AI Grade% = is $attempt->aigrade%";
             $aigraderatio = $attempt->aigrade * .01;
         }else{
+            $ag_log[]="AI Grade%: is not used. Defaulting to 100%";
+            $ag_log[]="AI Grade% = 100%";
             $aigraderatio  = 1;
         }
 
@@ -1099,12 +1127,15 @@ class utils{
 
                 case 'bigword':
                     $bonusscore=$stats->longwords;
+                    $ag_log[]="Bonus long words: +" . ($bonusscore + $agoptions->{'bonuspoints' . $bonusno});
                     break;
                 case 'targetwordspoken':
                     $bonusscore=$stats->targetwords;
+                    $ag_log[]="Bonus target words: +" . ($bonusscore + $agoptions->{'bonuspoints' . $bonusno});
                     break;
                 case 'sentence':
                     $bonusscore=$stats->turns;
+                    $ag_log[]="Bonus sentences: +" . ($bonusscore + $agoptions->{'bonuspoints' . $bonusno});
                     break;
                 case '--':
                 default:
@@ -1128,6 +1159,8 @@ class utils{
 
         //update attempts table
         $attempt->grade = round($autograde,0);
+        $ag_log[]="Autograde = $attempt->grade%";
+        $attempt->autogradelog=implode('<br>',$ag_log);
         $DB->update_record(constants::M_ATTEMPTSTABLE, $attempt);
 
         //update gradebook

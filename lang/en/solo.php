@@ -755,6 +755,7 @@ $string['pushsamename']='Apply only to activities with the same name';
 $string['pushdone']='Push complete. {$a} records updated.';
 $string['eventsolostepsubmitted'] = 'Solo step submitted';
 $string['eventsoloattemptsubmitted'] = 'Solo attempt submitted';
+$string['eventsoloattemptautograded'] = 'Solo attempt autograded';
 $string['layout'] = 'Layout';
 $string['layout_standard'] = 'Standard';
 $string['layout_narrow'] = 'Narrow';

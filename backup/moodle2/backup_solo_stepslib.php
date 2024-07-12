@@ -67,7 +67,7 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
             'selftranscript','stembedding','topictargetwords','mywords','convlength',
             'customtext1', 'customtext1format','completedsteps',
             'currentint1','currentint2','currentint3','currentint4',
-            'allowsharing', 'timemodified','createdby','modifiedby'));
+            'allowsharing','aifeedback','aigrade','autogradelog', 'timemodified','createdby','modifiedby'));
 
         //attemptstats
         $attemptstats = new backup_nested_element('attemptstats');
