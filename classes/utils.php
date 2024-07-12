@@ -2904,18 +2904,17 @@ class utils{
 
 
         //auto grading options
-        $aggroup=array();
         $wordcountoptions = utils::get_word_count_options(); //unique word total ;all word total
         $startgradeoptions = utils::get_grade_element_options(); //0-100
         $bonusgradeoptions = utils::fetch_bonus_grade_options(); //targetwordspoken=+3;bigword=+3
         $ratiogradeoptions = utils::fetch_ratio_grade_options(); //accuracy (aka speaking clarity)
         $aigradeoptions = utils::fetch_ai_grade_options(); //aigrade or ---
         $relevanceoptions = utils::fetch_relevance_options(); //relevance_model or relevance_question or ---
-        $factoroptions= utils::fetch_factor_options();//+ or *
         $points_per = get_string("ag_pointsper",constants::M_COMPONENT);
         $over_target_words = get_string("ag_overgradewordgoal",constants::M_COMPONENT);
 
         //auto grading base elements (word count)
+        $aggroup1=array();
         $aggroup1[] =& $mform->createElement('static', 'stext0', '',get_string('gradeequals', constants::M_COMPONENT). '( ');
         $aggroup1[] =& $mform->createElement('select', 'gradewordcount', '', $wordcountoptions);
         $aggroup1[] =& $mform->createElement('static', 'statictext00', '',$over_target_words );
