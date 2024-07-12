@@ -60,7 +60,8 @@ class attempt_autograded extends \core\event\base {
         $data = array(
             'context' => $modulecontext,
             'objectid' => $attempt->id,
-            'userid' => $USER->id
+            'userid' => $USER->id,
+            'other' => ['autograde'=>$attempt->grade]
         );
 
         /** @var attempt_autograded $event */
@@ -85,7 +86,7 @@ class attempt_autograded extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The attempt(id $this->objectid) for Poodll Solo(cmid $this->contextinstanceid) was autograded.";
+        return "The attempt(id $this->objectid)  by user(id $this->userid) for Poodll Solo(cmid $this->contextinstanceid) was autograded. Grade: " . $this->other['autograde'];
     }
 
     /**

@@ -789,3 +789,4 @@ $string['relevance_model'] = 'Relevance - similarity to model answer';
 $string['relevance_question'] = 'Relevance - to question topic';
 
 $string['aifeedback'] = 'AI Feedback:';
+$string['autogradelog'] = 'AutoGrade Log';

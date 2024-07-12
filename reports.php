@@ -209,11 +209,11 @@ switch ($showreport){
                     }else{
                         $evaluator = get_string("autoeval", constants::M_COMPONENT);
                     }
-                    echo $attempt_renderer->show_teachereval( $graderesults,$feedback, $evaluator,$attempt->autogradelog);
+                    echo $attempt_renderer->show_teachereval( $graderesults,$feedback, $evaluator);
                     $autotranscriptready=true;
                     $selftranscribe = utils::fetch_step_no($moduleinstance, constants::STEP_SELFTRANSCRIBE) !==false;
                     echo $attempt_renderer->show_summarypassageandstats($moduleinstance,$attempt,$aidata, $stats,$autotranscriptready, $selftranscribe);
-
+                    echo $attempt_renderer->show_autogradelog($attempt->autogradelog);
                 }
                 //close the summary results div
                 echo '</div>';

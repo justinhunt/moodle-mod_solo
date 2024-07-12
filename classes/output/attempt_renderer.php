@@ -117,14 +117,11 @@ class attempt_renderer extends \plugin_renderer_base {
         return $this->output->render_from_template( constants::M_COMPONENT . '/summaryplaceholdereval', $data);
     }
 
-    function show_teachereval($graderesults, $feedback, $evaluator,$autogradelog){
+    function show_teachereval($graderesults, $feedback, $evaluator){
         $data = new \stdClass();
         $data->graderesults = $graderesults;
         $data->feedback=$feedback;
         $data->evaluator=$evaluator;
-        $data->autogradelog=$autogradelog;
-
-
 
         // Check if the resulting string is numeric
         if(strpos($graderesults, '%') !== false){
@@ -269,6 +266,15 @@ class attempt_renderer extends \plugin_renderer_base {
         //send data to template
         $ret .= $this->output->render_from_template( constants::M_COMPONENT . '/summaryresults', $tdata);
         return $ret;
+    }
+
+    function show_autogradelog($autogradelog){
+        if(empty($autogradelog)) {return '';}
+        if(!utils::is_json($autogradelog)) {return '';}
+
+        $data = new \stdClass();
+        $data->autogradelog = json_decode($autogradelog);
+        return $this->output->render_from_template( constants::M_COMPONENT . '/summaryautogradelog', $data);
     }
 
 

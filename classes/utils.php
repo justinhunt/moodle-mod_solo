@@ -1014,9 +1014,19 @@ class utils{
         if(!$moduleinstance) {
             return;
         }
+        //if autograding we should not be here
         if(!$moduleinstance->enableautograde){
             return;
         }
+
+        //if its already been autograded ... why are we doing it again?
+        //it can also be called from utils::update_stat_aiaccuracy
+        // TO DO - prevent that happening
+        /*
+        if($attempt->autogradelog !== null && self::is_json($attempt->autogradelog)){
+            return;
+        }
+        */
 
         //we might need AI table data too
         $airesult = $DB->get_record(constants::M_AITABLE,array('attemptid'=>$attemptid));
@@ -1049,6 +1059,7 @@ class utils{
             case '--':
             default:
                 $accuracyratio = 100;
+                $ag_log[]="Accuracy%: is not considered. Defaulting to 100%";
                 break;
 
         }
@@ -1064,21 +1075,24 @@ class utils{
         //Ratio for relevance
         $relevanceratio=1;
         if(isset($agoptions->relevancegrade)){
+
             switch($agoptions->relevancegrade){
                 case constants::RELEVANCE_QUESTION:
-                    $ag_log[]="Relevance% = % Submission is on topic. Margin of 20%";
-                    //we assume a relevance of 80% (given the vagaries of AI) is a sincere answer,
-                    // if they drop below 50% then it will noticeably affect their grade
-                    $relevanceratio= round(min($stats->relevance +20,100) / 100,2);
-                    $ag_log[]="Relevance% = " . (100 * $relevanceratio) . "%";
+                    $margin = 10;
+                    $ag_log[]="Relevance% = % Submission is on topic. Margin of $margin%";
+                    //we assume a relevance of 80% (given the vagaries of AI) is a good answer,
+                    $calculatedrelevance = round($stats->relevance / 100,2);
+                    $relevanceratio= round(min($stats->relevance +$margin,100) / 100,2);
+                    $ag_log[]="Relevance% = (" . (100 * $calculatedrelevance) . " + $margin )% => " . (100 * $relevanceratio) . "%";
                     break;
 
                 case constants::RELEVANCE_MODEL:
-                    $ag_log[]="Relevance% = % Submission is similar to model answer. Margin of 20%";
-                    //we assume a relevance of 80% (given the vagaries of AI) is a sincere answer,
-                    // if they drop below 50% then it will noticeably affect their grade
-                    $relevanceratio= round(min($stats->relevance +20,100) / 100,2);
-                    $ag_log[]="Relevance% = " . (100 * $relevanceratio) . "%";
+                    $margin = 10;
+                    $ag_log[]="Relevance% = % Submission is similar to model answer. Margin of $margin%";
+                    //we assume a relevance of 85% (given the vagaries of AI) is a good answer,
+                    $calculatedrelevance = round($stats->relevance / 100,2);
+                    $relevanceratio= round(min($stats->relevance +$margin,100) / 100,2);
+                    $ag_log[]="Relevance% = (" . (100 * $calculatedrelevance) . " + $margin )% => " . (100 * $relevanceratio) . "%";
                     break;
 
                 default:
@@ -1091,7 +1105,7 @@ class utils{
 
         //AI Grade
         if ($agoptions->aigradeitem==constants::AIGRADE_USE & $attempt->aigrade!==null) {
-            $ag_log[]="AI Grade% = is calculated from the following guideline: $moduleinstance->markscheme";
+            $ag_log[]="AI Grade% = is calculated from the following guideline: \"$moduleinstance->markscheme\"";
             $ag_log[]="AI Grade% = is $attempt->aigrade%";
             $aigraderatio = $attempt->aigrade * .01;
         }else{
@@ -1120,22 +1134,18 @@ class utils{
         $autograde = $autograde * $relevanceratio;
 
         //apply bonuses
+        $bonustotal=0;
         for($bonusno =1;$bonusno<=4;$bonusno++){
-
-            $bonusscore=0;
             switch($agoptions->{'bonus' . $bonusno}){
 
                 case 'bigword':
                     $bonusscore=$stats->longwords;
-                    $ag_log[]="Bonus long words: +" . ($bonusscore + $agoptions->{'bonuspoints' . $bonusno});
                     break;
                 case 'targetwordspoken':
                     $bonusscore=$stats->targetwords;
-                    $ag_log[]="Bonus target words: +" . ($bonusscore + $agoptions->{'bonuspoints' . $bonusno});
                     break;
                 case 'sentence':
                     $bonusscore=$stats->turns;
-                    $ag_log[]="Bonus sentences: +" . ($bonusscore + $agoptions->{'bonuspoints' . $bonusno});
                     break;
                 case '--':
                 default:
@@ -1143,8 +1153,10 @@ class utils{
                     break;
 
             }
-            //eg 3 points minus'ed for each of 7 spelling mistakes:
-            //if we had 32% : 32 - [3 points] * [7] = 11%
+            if($bonusscore>0) {
+                $ag_log[] = "Bonuses for " . $agoptions->{'bonus' . $bonusno}. ": +" . ($bonusscore * $agoptions->{'bonuspoints' . $bonusno});
+            }
+            $bonustotal+= $agoptions->{'bonuspoints' . $bonusno}  * $bonusscore;
             $autograde += $agoptions->{'bonuspoints' . $bonusno}  * $bonusscore;
         }
 
@@ -1159,8 +1171,8 @@ class utils{
 
         //update attempts table
         $attempt->grade = round($autograde,0);
-        $ag_log[]="Autograde = $attempt->grade%";
-        $attempt->autogradelog=implode('<br>',$ag_log);
+        $ag_log[]="Autograde = 100 * (Words[$wordratio] * Accuracy[$accuracyratio] * AI Grade[$aigraderatio])  + bonustotal[$bonustotal] => $attempt->grade%";
+        $attempt->autogradelog=json_encode($ag_log);
         $DB->update_record(constants::M_ATTEMPTSTABLE, $attempt);
 
         //update gradebook
@@ -1168,6 +1180,12 @@ class utils{
         $grade->userid = $attempt->userid;
         $grade->rawgrade = $autograde;
         \solo_grade_item_update($moduleinstance,$grade);
+
+        //fire an event to tell the world this happened
+        $cm=\get_coursemodule_from_instance(constants::M_MODNAME,$moduleinstance->id);
+        $context = \context_module::instance($cm->id);
+        $event=\mod_solo\event\attempt_autograded::create_from_attempt($attempt,$context);
+        $event->trigger();
     }
 
     //remove stats
@@ -2925,7 +2943,7 @@ class utils{
         $aggroup3=array();
         $aggroup3[] =& $mform->createElement('static', 'stext2', '',' x &nbsp;');
         $aggroup3[] =& $mform->createElement('select', 'graderatioitem', '', $ratiogradeoptions);
-        $mform->setDefault('graderatioitem','accuracy');
+        $mform->setDefault('graderatioitem','--');
         $aggroup3[] =& $mform->createElement('static', 'stext11', '','% )');
         $aggroup3[] =& $mform->createElement('static', 'stext12', '',' + ' . get_string("bonusgrade",constants::M_COMPONENT));
         $mform->addGroup($aggroup3, 'aggroup3', '','',false);

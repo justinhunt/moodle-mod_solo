@@ -479,7 +479,7 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2024070300, 'solo');
     }
 
-    if($oldversion < 2024071100) {
+    if($oldversion < 2024071101) {
         //add fields to hold the AI grade and feedback results
         $table = new xmldb_table(constants::M_ATTEMPTSTABLE);
         $fields = [];
@@ -493,8 +493,6 @@ function xmldb_solo_upgrade($oldversion) {
             }
         }
 
-
-
         //We are doing a major upgrade to the grading options so we need to reset the grading options to the new format
         //depending on what the old format was.
         $recordset = $DB->get_recordset(constants::M_TABLE,[]);
@@ -507,7 +505,6 @@ function xmldb_solo_upgrade($oldversion) {
                     $record->step4=constants::M_STEP_NONE;
                     $DB->update_record(constants::M_TABLE, ['id'=>$record->id,'step3'=>constants::M_STEP_MODEL,'step4'=>constants::M_STEP_NONE]);
                 }
-
 
                 if(utils::is_json($record->autogradeoptions)) {
                     //decode options
@@ -592,7 +589,7 @@ function xmldb_solo_upgrade($oldversion) {
             }
             $recordset->close();
         }
-        upgrade_mod_savepoint(true, 2024071100, 'solo');
+        upgrade_mod_savepoint(true, 2024071101, 'solo');
     }
 
 

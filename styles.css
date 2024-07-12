@@ -2839,3 +2839,7 @@ body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_perc
 .mod_solo_returntranscriptpage {
 	align-self: end;
 }
+.mod_solo_autogradelog_content {
+	font-size: 13px;
+	padding: 8px;
+}
