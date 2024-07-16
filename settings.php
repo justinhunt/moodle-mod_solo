@@ -142,7 +142,7 @@ if ($ADMIN->fulltree) {
             get_string('enablesetuptab', constants::M_COMPONENT), get_string('enablesetuptab_details',constants::M_COMPONENT), 0));
 
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/markscheme',
-        get_string('markscheme', constants::M_COMPONENT), get_string('markscheme_help', constants::M_COMPONENT), 'Deduct one mark for each grammar mistake.', PARAM_TEXT,100));
+        get_string('markscheme', constants::M_COMPONENT), get_string('markscheme_help', constants::M_COMPONENT), 'Deduct two marks for each grammar mistake.', PARAM_TEXT,100));
 
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/feedbackscheme',
         get_string('feedbackscheme', constants::M_COMPONENT), get_string('feedbackscheme_help', constants::M_COMPONENT), 'Explain each grammar mistake simply.', PARAM_TEXT,100));

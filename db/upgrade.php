@@ -567,7 +567,9 @@ function xmldb_solo_upgrade($oldversion) {
                                 break;
                             case constants::SUGGEST_GRADE_NONE:
                             default:
-                                $agoptions->aigradeitem = constants::AIGRADE_NONE;
+                                //Sorry. EVERYONE gets AI grading by default from now on
+                                $agoptions->aigradeitem = constants::AIGRADE_USE;
+                                //$agoptions->aigradeitem = constants::AIGRADE_NONE;
                         }
                     }
 
