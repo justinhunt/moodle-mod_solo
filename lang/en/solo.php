@@ -743,8 +743,8 @@ $string['suggestionsgrade_details'] = 'If suggested corrections affect the grade
 $string['suggestionsgrade_help'] = 'If suggested corrections affect the grade, then the percentage difference between the transcript and suggestions text reduces the grade proportionally.';
 $string['fetching_auto_transcript']='Fetching the transcript. Please wait ...';
 $string['no_grammar_corrections']='No grammar corrections. Well done!';
-$string['showallcorrections']='Show all corrections';
-$string['hidecrossouts']='Hide crossouts';
+$string['showcorrections']='Show inline corrections';
+$string['hidecorrections']='Hide inline corrections';
 
 $string['pushpage']='Push page';
 $string['pushinstructions']='On this page you can select an activity setting, the value of that setting will be pushed to all other activities in this course. You can widen the scope to the whole site, if you are an admin. You can narrow the scope to only activities of the same name. <BR> <b>Be very very careful</b> there is no confirm step. It will just push immediately when you press save. Be sure that you want to do this.';
@@ -790,3 +790,5 @@ $string['relevance_question'] = 'Relevance - to question topic';
 
 $string['aifeedback'] = 'AI Feedback:';
 $string['autogradelog'] = 'AutoGrade Log';
+$string['yourtranscript'] = 'Your Transcript:';
+$string['estimated'] = 'estimated';

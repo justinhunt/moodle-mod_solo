@@ -231,9 +231,7 @@ class attempt_renderer extends \plugin_renderer_base {
 
         //if we have a correction, send that out too
         if(!empty($attempt->grammarcorrection)){
-            if(diff::cleanText($simpleselftranscript)==diff::cleanText($attempt->grammarcorrection)) {
-                $tdata['grammarcorrection'] = get_string('no_grammar_corrections', constants::M_COMPONENT);
-            }else {
+            if(diff::cleanText($simpleselftranscript)!==diff::cleanText($attempt->grammarcorrection)) {
                 $direction = 'r2l';
                 list($grammarerrors, $grammarmatches, $insertioncount) = utils::fetch_grammar_correction_diff($simpleselftranscript, $attempt->grammarcorrection, $direction);
                 $js_opts_html = \mod_solo\aitranscriptutils::prepare_corrections_amd($grammarerrors, $grammarmatches,$insertioncount);
@@ -242,20 +240,6 @@ class attempt_renderer extends \plugin_renderer_base {
                 $tdata['grammarcorrection'] = $markedupcorrections;
             }
 
-
-            //The following fine diff code works well. But it also shows punctuation and capitalization differences, which is not what we want for spoken text
-            //Also the mark up is not as nice as the ai transcript mark up, which has word and space indexes.
-            // That allows us to highlight the word in the passage and show the correction etc, although that's not implemented here yet
-/*
-                if(diff::cleanText($simpleselftranscript)==diff::cleanText($attempt->grammarcorrection)) {
-                    $tdata['grammarcorrection'] = get_string('no_grammar_corrections', constants::M_COMPONENT);
-                }else{
-                    $differer = new \mod_solo\FineDiff($simpleselftranscript, $attempt->grammarcorrection, \mod_solo\FineDiff::$wordGranularity);
-                    $diff_html = $differer->renderDiffToHTML();
-                    $toggle_diff = $this->output->render_from_template( constants::M_COMPONENT . '/summary_togglecorrections', []);
-                    $tdata['grammarcorrection']= $diff_html . $toggle_diff;
-                }
-*/
         }
 
         if(!empty($attempt->aifeedback)&&utils::is_json($attempt->aifeedback)){

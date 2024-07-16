@@ -170,7 +170,7 @@ div.mod_solo_mbuttons {
 
 
 .mod_solo_summarytranscript {
-	margin-top: 24px;
+	/* margin-top: 24px; */
 	margin-bottom: 24px;
 	background: #FAFBFD;
 	border: 1px solid #DCE0E3;
@@ -1332,6 +1332,10 @@ span.mod_solo_corrections_omittedword {
 	font-weight: bold;
 	background-color: lightgreen;
 	word-spacing: 5px;
+}
+span.mod_solo_grading_original_preword,span.mod_solo_grading_original_postword {
+	font-weight: 500;
+	background-color: antiquewhite;
 }
 
 /* Style for a spinner overlay on a textarea */
@@ -2842,4 +2846,16 @@ body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_perc
 .mod_solo_autogradelog_content {
 	font-size: 13px;
 	padding: 8px;
+}
+.mod_solo_result_squaretiles {
+	margin: 15px;
+	padding: 5px;
+}
+.mod_solo_result_squaretile {
+	margin: 8px;
+	
+}
+.mod_solo_result_squaretile .card-header {
+	background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
+	max-width: 200px;
 }

@@ -32,12 +32,19 @@
                 {{/autotranscriptready}}
             {{/studenteditstranscript}}
 
+            <h5>{{#str}}yourtranscript, mod_solo{{/str}}</h5>
             {{{markedpassage}}}
         
-            {{#grammarcorrection}}
-                <h5>{{#str}}grammarcorrection, mod_solo{{/str}}</h5>
-                <div class='mod_solo_corrections_cont'>{{{grammarcorrection}}}</div>
+            <h5>{{#str}}grammarcorrection, mod_solo{{/str}}</h5>
+            {{#grammarcorrection}}             
+                <div class='mod_solo_corrections_cont'>
+                    {{{grammarcorrection}}}
+                    {{>mod_solo/summary_togglecorrections}}
+                </div>
             {{/grammarcorrection}}
+            {{^grammarcorrection}}
+                {{#str}}no_grammar_corrections, mod_solo{{/str}}
+            {{/grammarcorrection}}         
 
             {{#hasaifeedback}}
                 <h5>{{#str}}aifeedback, mod_solo{{/str}}</h5>

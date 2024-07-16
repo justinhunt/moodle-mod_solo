@@ -25,26 +25,35 @@
     </section>
 
     <section class='mod_solo_visual_stats'>
-
         {{>mod_solo/summarystatstargetwords}}
-
         {{#selftranscribe}}
             {{>mod_solo/summarystatsspeakingclarity}}
         {{/selftranscribe}}
     </section>
-
-        <table class="mod_solo_more_stats_table">
-          <thead>
-            <tr><th colspan="2">{{#str}}more_stats, mod_solo{{/str}}</th></tr>
-          </thead>
-            <tbody>
-            <!-- <tr><td>{{#str}}stats_autogrammarscore, mod_solo{{/str}}</td><td>{{s.autogrammarscore}}%</td></tr> -->
-            <!-- <tr><td>{{#str}}stats_autospellscore, mod_solo{{/str}}</td><td>{{s.autospellscore}}%</td></tr> -->
-            <!-- <tr> <td>{{#str}}stats_ideacount, mod_solo{{/str}}</td><td>{{s.ideacount}}</td></tr> -->
-            <tr> <td>{{#str}}stats_cefrlevel, mod_solo{{/str}}</td><td>{{s.cefrlevel}}</td></tr>
-            <tr> <td>{{#str}}stats_relevance, mod_solo{{/str}}</td><td>{{s.relevance}}%</td></tr>
-            <tr> <td>{{#str}}stats_wpm, mod_solo{{/str}}</td><td>{{s.wpm}}</td></tr>
-          </tbody>
-        </table>
+    <section>
+        <h5>{{#str}}more_stats, mod_solo{{/str}}</h5>
+        <div class="row justify-content-center mod_solo_result_squaretiles">
+          <div class="card mod_solo_result_squaretile ">
+              <div class="card-header">{{#str}}stats_cefrlevel, mod_solo{{/str}}</div>
+              <div class="card-body">
+                  <h4 class="card-title">{{s.cefrlevel}}</h4>
+                  <p class="card-text">({{#str}}estimated, mod_solo{{/str}})</p>
+              </div>
+          </div>
+          <div class="card mod_solo_result_squaretile">
+              <div class="card-header">{{#str}}stats_relevance, mod_solo{{/str}}</div>
+              <div class="card-body">
+                  <h4 class="card-title">{{s.relevance}}%</h4>
+                  <p class="card-text">({{#str}}estimated, mod_solo{{/str}})</p>
+              </div>
+          </div>
+          <div class="card mod_solo_result_squaretile">
+              <div class="card-header">{{#str}}stats_wpm, mod_solo{{/str}}</div>
+              <div class="card-body">
+                  <h4 class="card-title">{{s.wpm}}</h4>
+              </div>
+          </div>
+        </div>
+      <section>
     </div>
 </div>

@@ -513,6 +513,20 @@ class aitranscriptutils{
             $cssspace = constants::M_CLASS . '_grading_correctionsspace';
         }
 
+        //original CSS classes
+        //The original classes are to show the original passage word before or after the corrections word
+        //because of the layout, "rewritten/added words" [corrections] will show in green, after the original words [red]
+        //but "removed(omitted) words" [corrections] will show as a green space  after the original words [red]
+        // so the span layout for each word in the corrections is:
+        // [original_preword][correctionsword][original_postword][correctionsspace]
+        // suggested word: (original)He eat apples => (corrected)He eats apples => 
+        //    [original_preword: "eat->"][correctionsword: "eats"][original_postword][correctionsspace]
+        // removed(omitted) word: (original)He eat devours the apples=> (corrected)He devours the apples =>
+        //    [original_preword: ][correctionsword: "He"][original_postword: "eat->" ][correctionsspace: " "]
+
+        $cssoriginal_preword = constants::M_CLASS . '_grading_original_preword';
+        $cssoriginal_postword = constants::M_CLASS . '_grading_original_postword';
+
         //init the text count
         $wordcount = 0;
         foreach ($nodes as $node) {
@@ -538,18 +552,42 @@ class aitranscriptutils{
                 }
 
                 $wordcount++;
+                //wordnode
                 $newnode = $doc->createElement('span', $word);
-                $spacenode = $doc->createElement('span', $seperator);
-                //$newnode->appendChild($spacenode);
-                //print_r($newnode);
                 $newnode->setAttribute('id', $cssword . '_' . $wordcount);
                 $newnode->setAttribute('data-wordnumber', $wordcount);
                 $newnode->setAttribute('class', $cssword);
+                //space node
+                $spacenode = $doc->createElement('span', $seperator);
                 $spacenode->setAttribute('id', $cssspace . '_' . $wordcount);
                 $spacenode->setAttribute('data-wordnumber', $wordcount);
                 $spacenode->setAttribute('class', $cssspace);
-                $node->parentNode->appendChild($newnode);
-                $node->parentNode->appendChild($spacenode);
+                //original pre node
+                if($markuptype!=='passage'){
+                    $originalprenode = $doc->createElement('span', '');
+                    $originalprenode->setAttribute('id', $cssoriginal_preword . '_' . $wordcount);
+                    $originalprenode->setAttribute('data-wordnumber', $wordcount);
+                    $originalprenode->setAttribute('class', $cssoriginal_preword);
+                  
+                }
+                //original post node
+                if($markuptype!=='passage'){
+                    $originalpostnode = $doc->createElement('span', '');
+                    $originalpostnode->setAttribute('id', $cssoriginal_postword . '_' . $wordcount);
+                    $originalpostnode->setAttribute('data-wordnumber', $wordcount);
+                    $originalpostnode->setAttribute('class', $cssoriginal_postword);
+                    
+                }
+                //add nodes to doc
+                if($markuptype=='passage'){
+                    $node->parentNode->appendChild($newnode);
+                    $node->parentNode->appendChild($spacenode);
+                }else{
+                    $node->parentNode->appendChild($originalprenode);
+                    $node->parentNode->appendChild($newnode);
+                    $node->parentNode->appendChild($originalpostnode);
+                    $node->parentNode->appendChild($spacenode);
+                }
                 //$newnode = $doc->createElement('span', $word);
             }
             $node->nodeValue = "";
@@ -671,7 +709,7 @@ class aitranscriptutils{
         //here we set up any info we need to pass into javascript
         $correctionsopts = Array();
         $correctionsopts['sessionerrors'] = $sessionerrors; //these are words different from those in original
-        $correctionsopts['sessionmatches'] = $sessionmatches; //these are words missing from the original
+        $correctionsopts['sessionmatches'] = $sessionmatches; //these are words matching the original
         $correctionsopts['insertioncount'] = $insertioncount; //these are words missing from the original
         $correctionsopts['opts_id'] = 'mod_solo_correctionopts';
 
