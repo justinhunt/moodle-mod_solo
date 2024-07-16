@@ -2384,6 +2384,17 @@ body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_perc
   margin-right: 2px;
 }
 
+.mod_solo_reports_star_half {
+	width: 48px;
+	height: 46px;
+	background: url([[pix:mod_solo|poodll-solo-reports-star-half]]);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+	margin-left: 2px;
+  margin-right: 2px;
+}
+
 .mod_solo_reports_star_off {
 	width: 48px;
 	height: 46px;

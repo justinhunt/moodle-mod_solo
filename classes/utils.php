@@ -1895,31 +1895,61 @@ class utils{
         }else{
             //star rating
             if($starrating){
+                $onlyhalf=false;
                 switch(true){
-                    case $attempt->grade > 79:
+                    case $attempt->grade > 89:
                         $message = get_string('rating_excellent',constants::M_COMPONENT);
                         $stars=5;
                         break;
-                    case $attempt->grade > 59:
+                    case $attempt->grade > 79:
+                        $message = get_string('rating_excellent',constants::M_COMPONENT);
+                        $onlyhalf=true;
+                        $stars=5;
+                        break;
+                    case $attempt->grade > 69:
                         $message = get_string('rating_verygood',constants::M_COMPONENT);
                         $stars=4;
                         break;
-                    case $attempt->grade > 39:
+                    case $attempt->grade > 59:
+                        $message = get_string('rating_verygood',constants::M_COMPONENT);
+                        $onlyhalf=true;
+                        $stars=4;
+                        break;
+                    case $attempt->grade > 49:
                         $message = get_string('rating_good',constants::M_COMPONENT);
                         $stars=3;
                         break;
-                    case $attempt->grade > 19:
+                    case $attempt->grade > 39:
+                        $message = get_string('rating_good',constants::M_COMPONENT);
+                        $onlyhalf=true;
+                        $stars=3;
+                        break;
+                    case $attempt->grade > 29:
                         $message = get_string('rating_fair',constants::M_COMPONENT);
                         $stars=2;
                         break;
+                    case $attempt->grade > 19:
+                        $message = get_string('rating_fair',constants::M_COMPONENT);
+                        $onlyhalf=true;
+                        $stars=2;
+                        break;
+                    case $attempt->grade > 9:
+                        $message = get_string('rating_fair',constants::M_COMPONENT);
+                        $stars=1;
+                        break;            
                     default:
                         $message = get_string('rating_poor',constants::M_COMPONENT);
+                        $onlyhalf=true;
                         $stars=1;
                 }
                 $displaystars ='';
                 for($i=0;$i<5;$i++){
                     if($i<$stars){
-                        $displaystars .= '<div class="mod_solo_reports_star_on"></div>';
+                        if($onlyhalf && $i==$stars-1){
+                            $displaystars .= '<div class="mod_solo_reports_star_half"></div>';
+                        }else{
+                            $displaystars .= '<div class="mod_solo_reports_star_on"></div>';
+                        }
                     }else{
                         $displaystars .= '<div class="mod_solo_reports_star_off"></div>';
                     }
