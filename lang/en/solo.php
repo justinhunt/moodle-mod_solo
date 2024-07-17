@@ -628,7 +628,7 @@ $string['mediaoptions'] = 'Media Options';
 $string['addmedia'] = 'Add Media';
 $string['addiframe'] = 'Add iFrame';
 $string['addttsaudio'] = 'Add TTS Audio';
-$string['addytclip'] = 'Add YouTube';
+$string['addytclip'] = 'Add YouTube/Vimeo';
 
 $string['speakingtargetsheader'] ='Speaking Targets';
 $string['languageandrecordingheader'] ='Language and Recording';
@@ -657,7 +657,7 @@ $string['content_ttsspeed'] ='Speaker speed';
 $string['content_ytid'] = "Youtube Video ID";
 $string['content_ytstart'] = "Start Secs";
 $string['content_ytend'] = "End Secs";
-$string['ytclipdetails'] = "Youtube Clip";
+$string['ytclipdetails'] = "Youtube/Vimeo Clip";
 $string['freetrial'] = "Get Cloud Poodll API Credentials and a Free Trial";
 $string['freetrial_desc'] = "A dialog should appear that allows you to register for a free trial with Poodll. After registering you should login to the members dashboard to get your API user and secret. And to register your site URL.";
 //$string['memberdashboard'] = "Member Dashboard";

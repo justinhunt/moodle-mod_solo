@@ -3163,7 +3163,7 @@ class utils{
 
         //Question YouTube Clip
         $ytarray=array();
-        $ytarray[] =& $mform->createElement('text', $cp . 'ytid', get_string('content_ytid', constants::M_COMPONENT),  array('size'=>15, 'placeholder'=>"Video ID"));
+        $ytarray[] =& $mform->createElement('text', $cp . 'ytid', get_string('content_ytid', constants::M_COMPONENT),  array('size'=>15, 'placeholder'=>"Video ID/URL"));
         $ytarray[] =& $mform->createElement('text', $cp . 'ytstart', get_string('content_ytstart', constants::M_COMPONENT),  array('size'=>3,'placeholder'=>"Start"));
         $ytarray[] =& $mform->createElement('html','s - ');
         $ytarray[] =& $mform->createElement('text', $cp . 'ytend', get_string('content_ytend', constants::M_COMPONENT),  array('size'=>3,'placeholder'=>"End"));
