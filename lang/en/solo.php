@@ -796,3 +796,5 @@ $string['autogradelog'] = 'AutoGrade Log';
 $string['yourtranscript'] = 'Your Transcript:';
 $string['estimated'] = 'estimated';
 $string['ideacount'] = 'Idea/concept';
+$string['ideacount'] = 'Idea/concept';
+$string['aigradepreviewheader'] = 'AI Grade Preview';

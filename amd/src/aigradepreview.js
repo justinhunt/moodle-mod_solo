@@ -16,6 +16,7 @@ import {get_strings} from 'core/str';
 import Ajax from 'core/ajax';
 import Log from 'core/log';
 import Notify from 'core/notification';
+import Templates from 'core/templates';
 
 /**
  * Question AI Text Edit Form Helper
@@ -87,7 +88,7 @@ export const init = (props) => {
         }
 
         //put  spinner in place
-        sampleanswereval.innerHTML='<i class="icon fa fa-spinner fa-spin fa-2x"></i>';
+        sampleanswereval.innerHTML='<i class="icon fa fa-spinner fa-spin fa-2x" style="margin: auto; padding: 10px;"></i>';
         Log.debug("calling ajax");
         Ajax.call([{
             methodname: 'mod_solo_fetch_ai_grade',
@@ -105,19 +106,11 @@ export const init = (props) => {
         }])[0].then(function(airesponse) {
             Log.debug(airesponse);
             if (airesponse.correctedtext) {
-                //To Do: pass the airesponse object to a nice mustache template for rendering
-                var responseText = airesponse.correctedtext + '<br>';
-                //if we have marks show them
-                if(airesponse.hasOwnProperty('marks') && airesponse.marks!==null){
-                    responseText += ' (GRADE: ' + airesponse.marks + '/' + 100 + ')' + '<br>';
-                }
-                //if we have feedback show it
-                if(airesponse.hasOwnProperty('feedback') && airesponse.feedback!==null){
-                    airesponse.feedback.forEach(element => {
-                        responseText += element + '<br>';
-                    });
-                }
-                sampleanswereval.innerHTML = responseText;
+                Templates.render('mod_solo/aigradepreview',airesponse).then(
+                    function(html,js){
+                        sampleanswereval.innerHTML=html;
+                    }
+                );
             }
         });
     });//end of click

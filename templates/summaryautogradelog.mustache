@@ -5,9 +5,11 @@
                 <h3 class="summaryheadertitle">{{#str}}autogradelog, mod_solo{{/str}}</h3>
             </div>
             <div class="mod_solo_autogradelog_content">
+                <ul>
                 {{#autogradelog}}
-                {{.}}<br/>
+                    <li>{{.}}</li>
                 {{/autogradelog}}
+                </ul>
             </div>
         </div>
     </section>

@@ -1,0 +1,17 @@
+
+<div class="mod_solo_aigradepreview">
+    <h5 class="summaryheadertitle">{{#str}}aigradepreviewheader, mod_solo{{/str}}</h5>
+    <div class="mod_solo_aigradepreview_content">
+        <i>{{#str}}grammarcorrection, mod_solo{{/str}}</i>
+        <div class="ms_aigradepreview_correctedtext">{{correctedtext}}</div>
+        <div class=""ms_aigradepreview_marks"><i>{{#str}}stats_aigrade, mod_solo{{/str}}:</i> {{marks}}</div>
+        <i>{{#str}}aifeedback, mod_solo{{/str}}</i>
+        <div class=""ms_aigradepreview_feedback">
+            <ul>
+            {{#feedback}}
+                <li>{{.}}</li>
+            {{/feedback}}
+            </ul>
+        </div>
+    </div>
+</div>

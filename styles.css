@@ -1063,7 +1063,7 @@ div.mod_solo_postattempt .mod_solo_grading_unreadspace {
 	margin: auto;
 }
 .mod_solo_activitycontent_image {
-	width: 100%;
+	/* width: 100%; */
 	max-width: 600px;
 	margin: auto;
 }
@@ -2858,4 +2858,15 @@ body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_perc
 .mod_solo_result_squaretile .card-header {
 	background: linear-gradient(85.14deg, #E6E6FE 15.61%, #E2E1FF 71.2%);
 	max-width: 200px;
+}
+
+.mod_solo_sampleanswereval {
+	padding: 5px;
+	margin: 5px;
+}
+
+.mod_solo_aigradepreview_content {
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
 }
