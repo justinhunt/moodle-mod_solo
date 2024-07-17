@@ -271,6 +271,7 @@ class utils{
         return $ret;
     }
 
+    //TO DO - remove this function, it is now in textanalyser
     public static function fetch_word_stats($text,$language, $stats) {
 
         //prepare data
@@ -662,12 +663,12 @@ class utils{
     }
 
     /*
-      * TO DO -  remove this
+      * TO DO - remove this function, it is now in textanalyser
       */
     public static function process_idea_count($moduleinstance,$attempt,$stats){
         global $DB;
 
-        //if there is a cefrlevel and its not null, then return that
+        //if there is an ideacount and its not null, then return that
         if(isset($stats->ideacount)&&$stats->ideacount!=null){
             return $stats->ideacount;
         }
@@ -1147,6 +1148,9 @@ class utils{
                 case 'sentence':
                     $bonusscore=$stats->turns;
                     break;
+                case 'ideacount':
+                    $bonusscore=$stats->ideacount;
+                    break;
                 case '--':
                 default:
                     $bonusscore=0;
@@ -1532,6 +1536,16 @@ class utils{
         return $rec_options;
     }
 
+    public static function is_textonlysubmission($moduleinstance){
+        if((int)$moduleinstance->step2!==constants::M_STEP_RECORD &&
+            (int)$moduleinstance->step3!==constants::M_STEP_RECORD &&
+            (int)$moduleinstance->step4!==constants::M_STEP_RECORD){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public static function fetch_total_step_count($moduleinstance,$context){
         for($step=2;$step<6;$step++){
 
@@ -1766,7 +1780,8 @@ class utils{
                 //'spellingmistake'=>get_string('spellingmistake',constants::M_COMPONENT),
                 //'grammarmistake'=>get_string('grammarmistake',constants::M_COMPONENT),
                 'targetwordspoken'=>get_string('targetwordspoken',constants::M_COMPONENT),
-                'sentence'=>get_string('sentence',constants::M_COMPONENT)
+                'sentence'=>get_string('sentence',constants::M_COMPONENT),
+                'ideacount'=>get_string('ideacount',constants::M_COMPONENT)
         );
     }
 
@@ -2949,6 +2964,7 @@ class utils{
         $aggroup1[] =& $mform->createElement('static', 'statictext00', '',$over_target_words );
         $aggroup1[] =& $mform->createElement('select', 'gradebasescore', '', $startgradeoptions);
         $aggroup1[] =& $mform->createElement('static', 'stext1', '','%');
+        $mform->setDefault('gradewordcount','totalwords');
         $mform->setDefault('gradebasescore',100);
         $mform->addGroup($aggroup1, 'aggroup', get_string('aggroup', constants::M_COMPONENT),'',false);
         $mform->addHelpButton('aggroup', 'aggroup', constants::M_MODNAME);
@@ -3031,7 +3047,6 @@ class utils{
             $mform->addGroup($bg, 'bonusgroup' . $bonusno,$grouptitle, '', false);
         }
 
-
         //grade options
         //for now we hard code this to latest attempt
         $mform->addElement('hidden', 'gradeoptions',constants::M_GRADELATEST);
@@ -3063,9 +3078,9 @@ class utils{
         $props['targetlanguageid']='#id_ttslanguage';
         $props['feedbacklanguageid']='#id_feedbacklanguage';
         $PAGE->requires->js_call_amd(constants::M_COMPONENT . '/aigradepreview', 'init', [$props]);
-
-
     } //end of add_mform_elements
+
+
 
     public static function prepare_content_toggle($contentprefix, $mform, $context){
         global $CFG;
@@ -3073,8 +3088,6 @@ class utils{
         //display media options for speaking prompt
         $cp = $contentprefix;
         $m35 = $CFG->version >= 2018051700;
-
-
 
         $togglearray=array();
         $togglearray[] =& $mform->createElement('advcheckbox',$cp . 'addmedia',get_string('addmedia',constants::M_COMPONENT),'');

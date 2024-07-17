@@ -1,6 +1,7 @@
 
 <div class="time-words-goals">
     {{! Target speaking time }}
+    {{^textonlysubmission}}
     <div class="mod_solo_step_card time-goal">
         <div class="mod_solo_step_card_tag">
             {{#str}}targetspeakingtime, mod_solo{{/str}}
@@ -10,6 +11,7 @@
         </div>
         <div class="mod_solo_timer_illustration"></div>
     </div>
+    {{/textonlysubmission}}
         
 
     {{! Total words goal }}

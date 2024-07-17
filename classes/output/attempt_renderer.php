@@ -163,7 +163,8 @@ class attempt_renderer extends \plugin_renderer_base {
         $attempt->targetwords = utils::fetch_targetwords($attempt->topictargetwords);
         $attempt->convlength = $moduleinstance->convlength;
         $attempt->speakingtopic = $moduleinstance->speakingtopic;
-        //$attempt->selftranscriptparts = utils::fetch_selftranscript_parts($attempt);
+        //we don't want to show target speaking time if its not a speaking activit
+        $attempt->textonlysubmission=utils::is_textonlysubmission($moduleinstance);
 
         if($userheader){
             $ret = $this->output->render_from_template( constants::M_COMPONENT . '/summaryuserattemptheader', $attempt);
@@ -193,6 +194,10 @@ class attempt_renderer extends \plugin_renderer_base {
             $moduleinstance->step4==constants::M_STEP_TRANSCRIBE){
             $tdata['studenteditstranscript']=true;
         }
+
+        //If no audio recording (this is a text submission) then we don't want to show WPM / Target Time etc
+        $tdata['textonlysubmission']=utils::is_textonlysubmission($moduleinstance);
+
 
         $tdata['spellingerrors'] = textanalyser::fetch_spellingerrors($stats,$attempt->selftranscript);
         $tdata['grammarerrors'] = textanalyser::fetch_grammarerrors($stats,$attempt->selftranscript);

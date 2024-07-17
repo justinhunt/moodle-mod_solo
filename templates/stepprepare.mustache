@@ -16,13 +16,18 @@
 
     {{! Prepare step instructions }}
     <div class="solo_stepinstructions">
-        {{#str}}step_prepareinstructions, mod_solo{{/str}}
+        {{#textonlysubmission}}
+            {{#str}}step_prepareinstructions_norecording, mod_solo{{/str}}
+        {{/textonlysubmission}}
+        {{^textonlysubmission}}
+            {{#str}}step_prepareinstructions, mod_solo{{/str}}
+        {{/textonlysubmission}}
     </div>
 
     {{! Speaking topic }}
     <div class="mod_solo_step_card speaking_topic">
         <div class="mod_solo_step_card_tag">
-            {{#str}}speakingtopic, mod_solo{{/str}}
+            {{#str}}topic, mod_solo{{/str}}
         </div>
         <div class="mod_solo_step_card_content mod_solo_readonly">
             <div class="mod_solo_speakingtopic_readonly">

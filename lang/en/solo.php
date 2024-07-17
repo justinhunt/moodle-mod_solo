@@ -381,6 +381,7 @@ $string['attempt_model'] = 'Model Answer';
 
 //$string['step_preparetitle']='Prepare';
 $string['step_prepareinstructions']='Check the speaking topic, target words and target speaking time from the options below. When you are ready, move to the next page and begin speaking';
+$string['step_prepareinstructions_norecording']='Check the topic and goals from the options below. When you are ready, move to the next page and begin.';
 //$string['step_mediarecordtitle']='Record';
 $string['step_mediarecordinstructions']='Use the recorder below to record yourself. Try to use the target words. Good luck.';
 $string['step_posttranscriberecordinstructions']='Use the recorder below to record yourself speaking.';
@@ -389,7 +390,7 @@ $string['step_posttranscriberecordinstructions']='Use the recorder below to reco
 //$string['step_selftranscribetitle']='Transcribe';
 $string['step_selftranscribeinstructions']='Listen to your recording and enter/check what you said in the editor below. Do not change what you said. You should fix any spelling or punctuation mistakes.';
 $string['step_prerecord_transcribeinstructions']='Check the instructions and speaking targets, then type your response in the text editor below.';
-$string['step_writtensubmissioninstructions']='Check the instructions and speaking targets, then type your response in the text editor below.';
+$string['step_writtensubmissioninstructions']='Check the instructions and goals, then type your response in the text editor below.';
 
 
 //$string['step_modeltitle']='Model Answer';
@@ -444,6 +445,7 @@ $string['attemptnumber']= '{$a}';
 $string['summaryuserattemptheadertitle']= 'Speech Details';
 $string['summaryuserattemptheaderintro']= '';
 $string['summaryheadertitle']= 'Your Speech Details';
+$string['summaryheadertitle_norecording']= 'Attempt Results';
 $string['summaryheaderintro']= 'Check the details and the results of your speech below. What do you think? You should be getting better each time.';
 //$string['leaveedittopic']= 'Edit (diff. activity)';
 $string['fonticonexplanation']= 'Add an icon graphic to represent the topic. Use FontAwesome for this. The pattern is fa-xxx where xxx is the icon name. Search for icons at: <a href="https://fontawesome.com/v4.7.0/icons">https://fontawesome.com/v4.7.0/icons</a>';
@@ -793,3 +795,4 @@ $string['aifeedback'] = 'AI Feedback:';
 $string['autogradelog'] = 'AutoGrade Log';
 $string['yourtranscript'] = 'Your Transcript:';
 $string['estimated'] = 'estimated';
+$string['ideacount'] = 'Idea/concept';

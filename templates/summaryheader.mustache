@@ -5,7 +5,12 @@
         <div class="mod_solo_activity_details_illustration"></div> 
         <div class="mod_solo_summaryheader">
             <h3 class="summaryheadertitle">
-                {{#str}}summaryheadertitle, mod_solo{{/str}}
+                {{^textonlysubmission}}
+                    {{#str}}summaryheadertitle, mod_solo{{/str}}
+                {{/textonlysubmission}}
+                {{#textonlysubmission}}
+                    {{#str}}summaryheadertitle_norecording, mod_solo{{/str}}
+                {{/textonlysubmission}}
             </h3>
             <div class="summaryheaderintro">
                 {{#str}}summaryheaderintro, mod_solo{{/str}}

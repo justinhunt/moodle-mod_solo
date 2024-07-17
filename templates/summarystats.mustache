@@ -27,7 +27,9 @@
     <section class='mod_solo_visual_stats'>
         {{>mod_solo/summarystatstargetwords}}
         {{#selftranscribe}}
-            {{>mod_solo/summarystatsspeakingclarity}}
+            {{^textonlysubmission}}
+                {{>mod_solo/summarystatsspeakingclarity}}
+            {{/textonlysubmission}}
         {{/selftranscribe}}
     </section>
     <section>
@@ -47,12 +49,14 @@
                   <p class="card-text">({{#str}}estimated, mod_solo{{/str}})</p>
               </div>
           </div>
-          <div class="card mod_solo_result_squaretile">
-              <div class="card-header">{{#str}}stats_wpm, mod_solo{{/str}}</div>
-              <div class="card-body">
-                  <h4 class="card-title">{{s.wpm}}</h4>
+            {{^textonlysubmission}}
+              <div class="card mod_solo_result_squaretile">
+                  <div class="card-header">{{#str}}stats_wpm, mod_solo{{/str}}</div>
+                  <div class="card-body">
+                      <h4 class="card-title">{{s.wpm}}</h4>
+                  </div>
               </div>
-          </div>
+            {{/textonlysubmission}}
         </div>
       <section>
     </div>

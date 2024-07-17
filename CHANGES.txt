@@ -1,6 +1,15 @@
+Version 1.0.51 (Build 2024071700)
+- Addition of Prepare -> Text -> Model mode (ie text only)
+- Addition of Vimeo media prompt in addition to YouTube clip in the activity media prompts
+- Addied ideacount to the bonus grade options
+
 Version 1.0.50 (Build 2024071100)
-- new AI grading
+- New AI grading feature
 - settings tidy up
+- improvements to results page
+- Better corrections markup
+- added an autograde log
+- removed manual transcript entry
 
 Version 1.0.49 (Build 2024070300)
 - fixed wrong trim function

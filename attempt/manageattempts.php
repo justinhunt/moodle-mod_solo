@@ -160,6 +160,11 @@ $stepcontent->nexturl = $redirecturl;
 if(!empty($moduleinstance->targetwords)) {
     $stepcontent->targetwords = utils::fetch_targetwords($moduleinstance->targetwords);
 }
+
+//we need to display some content differently if there is no recording (text only)
+//here .. we don't need speaking time target
+$stepcontent->textonlysubmission=utils::is_textonlysubmission($moduleinstance);
+
 //steps "prepare" and "record" use the same media prompt, prepare that here
 $topicmedia = [];
 $context = \context_module::instance($cm->id);
