@@ -2865,7 +2865,6 @@ class utils{
 
         //Model Answer
         $mform->addElement('header', 'modelanswerheader', get_string('modelanswerheader', constants::M_COMPONENT));
-        //$mform->addElement('html',"<div>" . get_string('modelanswerinstructions', constants::M_COMPONENT) . "</div>");
         $mform->addElement('static','modelanswerinstructions','', "<div>" . get_string('modelanswerinstructions', constants::M_COMPONENT) . "</div>");
         $mform->addElement('textarea', 'modelanswer', get_string('modelanswer', constants::M_COMPONENT), array('wrap' => 'virtual', 'style' => 'width: 100%;'));
         $mform->setType('modelanswer', PARAM_RAW);
@@ -3040,6 +3039,7 @@ class utils{
 
         //preview AI grade options
         $mform->addElement('header', 'prompttester', get_string('prompttester', constants::M_COMPONENT));
+        $mform->addElement('static','prompttesterinstructions','', "<div>" . get_string('sampleanswerinstructions', constants::M_COMPONENT) . "</div>");
         $mform->addElement('textarea', 'sampleanswer', get_string('sampleanswer', constants::M_COMPONENT),
             ['maxlen' => 50, 'rows' => 6, 'size' => 30]);
         $mform->setType('sampleanswer', PARAM_RAW);
