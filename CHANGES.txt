@@ -1,3 +1,6 @@
+Version 1.0.52 (Build 2024071800)
+- Better display of autograde log and preview autograde
+
 Version 1.0.51 (Build 2024071700)
 - Addition of Prepare -> Text -> Model mode (ie text only)
 - Addition of Vimeo media prompt in addition to YouTube clip in the activity media prompts
