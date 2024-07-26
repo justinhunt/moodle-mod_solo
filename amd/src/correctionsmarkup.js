@@ -181,7 +181,7 @@ define(['jquery', 'core/log'], function ($, log) {
 
         dehighlightoriginal: function (tpositionstring) {
             var that = this;
-            var correctionsclasses = [that.cd.aicorrected, that.cd.aiinserted, that.cd.aiomitted, that.cd.aisuggestion];
+            var correctionsclasses = [that.cd.aicorrected, that.cd.aiinserted, that.cd.aiomitted, that.cd.aisuggested];
             var tpositions = tpositionstring.split(',');
             $.each(tpositions, function (index, tposition) {
                 $('#' + that.cd.passagewordclass + '_' + tposition).removeClass(correctionsclasses);
@@ -322,7 +322,12 @@ define(['jquery', 'core/log'], function ($, log) {
                     
                     if(originalwords.length>0){
                         var originaltext=originalwords.join(' ') + '->';
-                        if($(this).hasClass(that.cd.suggestionclass)){
+                        if($(this).hasClass(that.cd.suggestionclass) && $(this).hasClass(that.cd.insertionclass)) {
+                            //if it is an inserted word a underscore(since original does not exist) shows before the current word
+                            //a space would be better, but then it would be 2 spaces which html collapses to 1 so it would be invisible
+                            $('#' + that.cd.originalprewordclass + '_' + wordnumber).text('_->');
+                            $('#' + that.cd.originalprewordclass + '_' + (wordnumber)).attr('data-tpositions', '');
+                        }else if($(this).hasClass(that.cd.suggestionclass)){
                             //if it is a suggested word it shows before the current word (green highlighted)
                             $('#' + that.cd.originalprewordclass + '_' + wordnumber).text(originaltext);
                             $('#' + that.cd.originalprewordclass + '_' + (wordnumber)).attr('data-tpositions',data_tpositions);
