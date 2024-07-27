@@ -315,6 +315,7 @@ switch($type) {
             $stepcontent->activityid =$moduleinstance->id;
             $stepcontent->audiorecording=true;
             $stepcontent->prerecording=true;
+            $stepcontent->token=$token;
         }else{
             //we will need an audio file to transcribe from
             $stepcontent->audiofilename=$attempt->filename;

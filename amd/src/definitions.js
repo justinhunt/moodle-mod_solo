@@ -37,7 +37,38 @@ This file contains class and ID definitions.
         cloudpoodllurl: 'https://cloud.poodll.com',
         //cloudpoodllurl: 'http://localhost/moodle',
         grammarsuggestionscont: 'mod_solo_corrections_cont',
-        checkgrammarbutton: 'mod_solo_checkgrammarbutton'
+        checkgrammarbutton: 'mod_solo_checkgrammarbutton',
+
+        //VOICES
+        voices: {'ar-AR': ['Zeina','Hala','Zayd'],
+            'de-DE': ['Hans','Marlene','Vicki'],
+            'en-US': ['Joey','Justin','Kevin','Matthew','Ivy','Joanna','Kendra','Kimberly','Salli'],
+            'en-GB': ['Brian','Amy', 'Emma','Arthur'],
+            'en-AU': ['Russell','Nicole','Olivia'],
+            'en-NZ': ['Aria'],
+            'en-ZA': ['Ayanda'],
+            'en-IN': ['Aditi','Raveena'],
+            'en-WL': ["Geraint"],
+            'es-US': ['Miguel','Penelope','Lupe','Pedro'],
+            'es-ES': [ 'Enrique','Conchita','Lucia'],
+            'fr-CA': ['Chantal','Gabrielle'],
+            'fr-FR': ['Mathieu','Celine','Lea','Remi'],
+            'hi-IN': ["Aditi"],
+            'it-IT': ['Carla','Bianca','Giorgio'],
+            'ja-JP': ['Takumi','Mizuki','Kazuha','Tomoko'],
+            'ko-KR': ['Seoyeon'],
+            'nl-BE': ["Lisa"],
+            'nl-NL': ["Ruben","Lotte"],
+            'pt-BR': ['Ricardo','Vitoria'],
+            'pt-PT': ["Ines",'Cristiano'],
+            'ru-RU': ["Tatyana","Maxim"],
+            'tr-TR': ['Filiz'],
+            'zh-CN': ['Zhiyu']
+        },
+
+        neural_voices: ["Amy","Emma","Brian","Olivia","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly",
+            "Salli","Joey","Justin","Kevin","Matthew","Camila","Lupe","Lucia","Gabrielle","Lea", "Vicki", "Seoyeon", "Takumi","Lucia",
+            "Lea","Bianca","Laura","Kajal","Suvi","Liam","Daniel","Hannah","Camila","Ida","Kazuha","Tomoko","Elin","Hala","Zayd"]
 
     };//end of return value
 });

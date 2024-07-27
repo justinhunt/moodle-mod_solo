@@ -2870,3 +2870,26 @@ body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_perc
     border-radius: 5px;
     padding: 10px;
 }
+
+.solo_ttspassageplayer {
+	width: 100%;
+	margin-top: 10px;
+	padding: 5px;
+	border: 1px solid grey;
+}
+.solo_ttspassageplayer button.passage-audio-player{
+	border: none;
+	color: #fff;
+	width: 50%;
+	height: 30px;
+	background-color: green;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 7px;
+}
+
+.solo_ttspassageplayer .passageplayer_activesentence {
+	background: #c5efcf;
+	/* font-weight: bold; */
+}

@@ -1,0 +1,19 @@
+<a id="{{uniqid}}_showttspassagebtn" class="btn mod_solo_showttspassagebtn" href="#">{{#str}}showttspassage, mod_solo{{/str}}</a>
+<div class="solo_ttspassageplayer container"  id="{{uniqid}}_ttspassageplayer" data-token="{{token}}" data-region="{{region}}">
+    <button type='button' id='{{uniqid}}_ttspassagebutton' data-currentsentence="0" class="passage-audio-player">
+        <audio id='{{uniqid}}_ttspassageaudio' class="passageaudio nomediaplugin">
+        </audio>
+        <i class="fa fa-volume-up" aria-hidden="true"></i>
+    </button>
+    <div id='{{uniqid}}_ttssentencecont' >
+        <div class='tbr_innerdiv {{rtl}}'>
+        </div>
+    </div>
+</div>
+{{^element.frozen}}
+    {{#js}}
+        require(['jquery', 'mod_solo/ttspassage'], function($, ttspassage) {
+            ttspassage.init('{{uniqid}}');
+        });
+    {{/js}}
+{{/element.frozen}}

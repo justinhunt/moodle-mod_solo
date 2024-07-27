@@ -798,3 +798,4 @@ $string['estimated'] = 'estimated';
 $string['ideacount'] = 'Idea/concept';
 $string['ideacount'] = 'Idea/concept';
 $string['aigradepreviewheader'] = 'AI Grade Preview';
+$string['showttspassage'] = 'Read Passage Aloud';
