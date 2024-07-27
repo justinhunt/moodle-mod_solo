@@ -4,7 +4,7 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
 
     log.debug('Solo TTS Passage: initialising');
 
-    return{
+    var app = {
         //controls
         controls: {},
         checking: '... checking ...',
@@ -14,11 +14,10 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
             this.uniqid=uniqid;
             this.ready=false;
             this.thesentence_number =0;
-            this.lettered= false;
             this.stoporpause='pause';
             
             //common selectors
-            this.sentenceselector = '#' + this.uniqid + '_textblock span.tbr_sentence';
+            this.sentenceselector = '#' + this.uniqid + '_ttssentencecont span.tbr_sentence';
             
             //init other stuff
             this.init_strings();
@@ -61,8 +60,12 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
         register_events: function() {
             var that = this;
             that.controls.showttspassagebtn.click(function(e){
-                that.markup_and_show();
-                return false;
+                e.preventDefault();
+                if(!that.controls.ttspassagecont.is(':visible')) {
+                    that.markup_and_show();
+                }
+                //show the widget
+                that.controls.ttspassagecont.toggle();
             });
 
             //AUDIO PLAYER events
@@ -81,7 +84,9 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
 
             //handle audio player button clicks
             that.controls.theaplayerbtn.click(function(){
+                that.controls.passagelines = $(that.sentenceselector);
                 if(!that.controls.aplayer[0].paused && !that.controls.aplayer[0].ended){
+                    log.debug('not paused and not ended');
                     that.controls.aplayer[0].pause();
                     if(that.stoporpause=='stop'){
                         that.controls.aplayer[0].load();
@@ -92,15 +97,13 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
 
                     //if paused and in limbo no src state
                 }else if(that.controls.aplayer[0].paused && that.controls.aplayer.attr('src')){
-                    that.controls.aplayer[0].play();
+                    log.debug('inlimbo');
+                    that.doplayaudio(that.thesentence_number);
                     that.controls.fa.removeClass('fa-volume-up');
                     that.controls.fa.addClass('fa-stop');
                     //play
                 }else{
-                    if(!that.lettered){
-                        //spanify_text_passage();
-                        that.lettered=true;
-                    }//end of if lettered
+                    log.debug('play');
                     if(that.stoporpause=='stop'){
                         that.thesentence_number=0;
                     }
@@ -111,7 +114,7 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
             });
 
             //handle sentence clicks
-            $('#' + that.uniqid + '_textblock  .tbr_innerdiv').on('click', '.tbr_sentence',function(){
+            $('#' + that.uniqid + '_ttssentencecont  .tbr_innerdiv').on('click', '.tbr_sentence',function(){
                 that.controls.aplayer[0].pause();
                 var sentenceindex = $(this).attr('data-sentenceindex');
                 that.controls.fa.removeClass('fa-volume-up');
@@ -138,12 +141,14 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
         //FUNCTION: play a single sentence and mark it active for display purposes
         doplayaudio: function(thesentence){
             log.debug(thesentence);
+            var audiourl = $(this.controls.passagelines[thesentence]).data('audiourl');
+            log.debug(audiourl);
             this.highlight_sentence(thesentence);
-            this.controls.aplayer.attr('src',$(this.controls.passagelines[thesentence]).data('audiourl'));
+            this.controls.aplayer.attr('src',audiourl);
             this.controls.aplayer[0].play();
         },
 
-        markup_and_show: function(){
+        markup_and_show: async function(){
             var that = this;
             //do the check
             var text = that.controls.selftranscript.val();
@@ -155,10 +160,12 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
             that.controls.ttssentencecont.empty();
 
             //split the text into sentences
-            var sentences = text.split(/[\.\!\?¿¡\.\.\.;]/);
+            //this is like split but it returns the delimiters too
+            var sentences = text.match(/[^\.\!\?¿¡\.\.\.;]*[\.\!\?¿¡\.\.\.;]/g);
             var slowspeed=1;
             for (var i=0; i<sentences.length; i++){
-                var audiourl = polly.fetch_polly_url(sentences[i],slowspeed,'Amy');
+                if(sentences[i].trim()===''){continue;}
+                var audiourl = await polly.fetch_polly_url(sentences[i],slowspeed,'Amy');
                 templates.render('mod_solo/ttssentence',
                     {sentence: sentences[i], audiourl: audiourl, sentenceindex: i}).then(
                     function(html,js){
@@ -170,4 +177,5 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
         }
 
     };//end of return value
+    return app;
 });

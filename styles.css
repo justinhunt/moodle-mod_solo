@@ -1872,7 +1872,7 @@ span.mod_solo_grading_original_preword,span.mod_solo_grading_original_postword {
 	}
 }
 
-.btn.mod_solo_checkgrammarbutton {
+.btn.mod_solo_checkgrammarbutton, .btn.mod_solo_showttspassagebtn {
 	background-color: #fff;
 	box-shadow: 0 0 0 0.5px rgba(0,0,0,.05), 0 1px 10px rgba(0,0,0,.12);
 	border-radius: 24px;
