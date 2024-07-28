@@ -41,8 +41,14 @@ define(['jquery', 'core/log','mod_solo/definitions','core/str','core/ajax','core
         register_events: function() {
             var that = this;
             that.controls.checkgrammarbutton.click(function(e){
+                e.preventDefault();
+                //quit if its empty
+                var text = that.controls.selftranscript.val();
+                if(!text || text==='' || text.trim()===''){
+                    return;
+                }
+                that.controls.grammarsuggestionscont.show();
                 that.check_grammar(that);
-                return false;
             });
         },//end of register events
 
@@ -63,26 +69,38 @@ define(['jquery', 'core/log','mod_solo/definitions','core/str','core/ajax','core
 
                 },
                 done: function (ajaxresult) {
+                    try {
+                        log.debug(ajaxresult);
+                        var payloadobject = JSON.parse(ajaxresult);
+                        if (payloadobject) {
+                            if(payloadobject.grammarerrors.length<3){
+                                //hacky but fast way to flag no errors
+                                that.controls.grammarsuggestionscont.text(that.nosuggestions);
+                                log.debug('grammar errors too short for errors');
+                            }else{
+                                that.controls.grammarsuggestionscont.html(payloadobject.suggestions);
+                                var opts = [];
+                                opts['sessionerrors'] = payloadobject.grammarerrors;
+                                opts['sessionmatches'] = payloadobject.grammarmatches;
+                                opts['insertioncount'] = payloadobject.insertioncount;
+                                log.debug('marking up corrections');
+                                correctionsmarkup.init(opts);
+                                //hacky way to hide empty original fields
+                                $('.mod_solo_corrections_cont .mod_solo_grading_original_preword').hide();
+                                $('.mod_solo_corrections_cont .mod_solo_grading_original_postword').hide();
+                            }
 
-                    var payloadobject = JSON.parse(ajaxresult);
-                    if (payloadobject) {
-                        if(payloadobject.grammarerrors.length<3){
-                            //hacky but fast way to flag no errors
-                            that.controls.grammarsuggestionscont.text(that.nosuggestions);
                         }else{
-                            that.controls.grammarsuggestionscont.html(payloadobject.suggestions);
-                            var opts = [];
-                            opts['sessionerrors'] = payloadobject.grammarerrors;
-                            opts['sessionmatches'] = payloadobject.grammarmatches;
-                            opts['insertioncount'] = payloadobject.insertioncount;
-                            correctionsmarkup.init(opts);
+                            //something went wrong, user does not really need to know details
+                            that.controls.grammarsuggestionscont.text(that.nosuggestions);
+                            log.debug('result not fetched');
                         }
-
-                    }else{
+                    } catch(e){
                         //something went wrong, user does not really need to know details
                         that.controls.grammarsuggestionscont.text(that.nosuggestions);
-                        log.debug('result not fetched');
+                        log.debug('something went wrong, result was not JSON');
                     }
+
 
                 },
                 fail: notification.exception

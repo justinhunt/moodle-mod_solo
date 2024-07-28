@@ -194,6 +194,21 @@ $string['is-is'] = 'Icelandic'; // Icelandic
 $string['mk-mk'] = 'Macedonian'; // Macedonian
 $string['no-no'] = 'Norwegian'; // Norwegian
 $string['sr-rs'] = 'Serbian'; // Serbian
+//less used Indial languages here
+$string['as-in'] = 'Assamese';
+$string['aw-aw'] = 'Awadhi';
+$string['bn-in'] = 'Bengali';
+$string['bh-in'] = 'Bhojpuri';
+$string['gu-in'] = 'Gujarati';
+$string['kn-in'] = 'Kannada';
+$string['ml-in'] = 'Malayalam';
+$string['mr-in'] = 'Marathi';
+$string['mw-in'] = 'Marwadi';
+$string['or-in'] = 'Odia (Oriya)';
+$string['pa-ing'] = 'Punjabi (Gurmukhi)';
+$string['pa-in'] = 'Punjabi (Shahmukhi)';
+$string['sa-in'] = 'Sanskrit';
+$string['ur-in'] = 'Urdu';
 
 $string['awsregion']='AWS Region';
 $string['region']='AWS Region';

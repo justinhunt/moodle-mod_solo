@@ -210,6 +210,22 @@ const M_LANG_SLSI = 'sl-SI';
 const M_LANG_ISIS = 'is-IS';
 const M_LANG_MKMK = 'mk-MK';
 const M_LANG_SRRS = 'sr-RS';
+//lesser used Indian languages
+const M_LANG_ASIN = 'as-IN';
+const M_LANG_AWAW = 'aw-AW';
+const M_LANG_BNIN = 'bn-IN';
+const M_LANG_BHIN = 'bh-IN';
+const M_LANG_GUIN = 'gu-IN';
+const M_LANG_KNIN = 'kn-IN';
+const M_LANG_MLIN = 'ml-IN';
+const M_LANG_MRIN = 'mr-IN';
+const M_LANG_MWIN = 'mw-IN';
+const M_LANG_ORIN = 'or-IN';
+const M_LANG_PAING = 'pa-ING';
+const M_LANG_PAIN = 'pa-IN';
+const M_LANG_SAIN = 'sa-IN';
+const M_LANG_URIN = 'ur-IN';
+
 
 const M_HIDDEN_PLAYER = 'mod_solo_hidden_player';
 const M_HIDDEN_PLAYER_BUTTON = 'mod_solo_hidden_player_button';

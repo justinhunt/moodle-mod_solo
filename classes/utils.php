@@ -1741,6 +1741,26 @@ class utils{
         );
     }
 
+    public static function get_aifeedback_lang_options() {
+        $otherlangs = array(
+            constants::M_LANG_ASIN => get_string('as-in', constants::M_COMPONENT),
+            constants::M_LANG_AWAW => get_string('aw-aw', constants::M_COMPONENT),
+            constants::M_LANG_BNIN => get_string('bn-in', constants::M_COMPONENT),
+            constants::M_LANG_BHIN => get_string('bh-in', constants::M_COMPONENT),
+            constants::M_LANG_GUIN => get_string('gu-in', constants::M_COMPONENT),
+            constants::M_LANG_KNIN => get_string('kn-in', constants::M_COMPONENT),
+            constants::M_LANG_MLIN => get_string('ml-in', constants::M_COMPONENT),
+            constants::M_LANG_MRIN => get_string('mr-in', constants::M_COMPONENT),
+            constants::M_LANG_MWIN => get_string('mw-in', constants::M_COMPONENT),
+            constants::M_LANG_ORIN => get_string('or-in', constants::M_COMPONENT),
+            constants::M_LANG_PAING => get_string('pa-ing', constants::M_COMPONENT),
+            constants::M_LANG_PAIN => get_string('pa-in', constants::M_COMPONENT),
+            constants::M_LANG_SAIN => get_string('sa-in', constants::M_COMPONENT),
+            constants::M_LANG_URIN => get_string('ur-in', constants::M_COMPONENT),
+        );
+        return self::get_lang_options() + $otherlangs;
+    }
+
     public static function fetch_topic_levels(){
         return array(
                 constants::M_TOPICLEVEL_COURSE=>get_string('topiclevelcourse',constants::M_COMPONENT),
@@ -3024,8 +3044,8 @@ class utils{
     $mform->setDefault('feedbackscheme', get_config(constants::M_COMPONENT, 'feedbackscheme'));
     $mform->addHelpButton('feedbackscheme', 'feedbackscheme', constants::M_COMPONENT);
      
-     //feedback options 
-   //  $langoptions = \mod_solo\utils::get_lang_options(); //already set earlier
+     //feedback options
+     $langoptions = \mod_solo\utils::get_aifeedback_lang_options();
      $mform->addElement('select', 'feedbacklanguage', get_string('feedbacklanguage', constants::M_COMPONENT), $langoptions);
      $mform->setDefault('feedbacklanguage',$config->feedbacklanguage);
 

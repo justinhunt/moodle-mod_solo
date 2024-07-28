@@ -316,6 +316,7 @@ switch($type) {
             $stepcontent->audiorecording=true;
             $stepcontent->prerecording=true;
             $stepcontent->token=$token;
+            $stepcontent->ttslanguage=$moduleinstance->ttslanguage;
         }else{
             //we will need an audio file to transcribe from
             $stepcontent->audiofilename=$attempt->filename;

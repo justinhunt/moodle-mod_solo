@@ -2450,7 +2450,13 @@ body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_perc
     top: -13px;
 	}
 }
-
+.mod_solo_corrections_cont.mod_solo_selfcheck {
+	border: solid 1px lightgrey;
+	padding: 5px;
+	margin-top: 10px;
+	border-radius: 5px;
+	display: none;
+}
 .mod_solo_corrections_cont {
 	margin-bottom: 48px;
 }
@@ -2874,6 +2880,7 @@ body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_perc
 .solo_ttspassageplayer {
 	width: 100%;
 	margin-top: 10px;
+	margin-bottom: 10px;
 	padding: 5px;
 	border: 1px solid grey;
 }

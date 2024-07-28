@@ -1,5 +1,7 @@
-Version 1.0.52 (Build 2024071800)
-- Better display of autograde log and preview autograde
+Version 1.0.53 (Build 2024072800)
+- Added TTS read aloud button for pre-preparing self transcript
+- Added more Indian languages for AI feedback
+- Improved the display of the suggestions corrections
 
 Version 1.0.51 (Build 2024071700)
 - Addition of Prepare -> Text -> Model mode (ie text only)

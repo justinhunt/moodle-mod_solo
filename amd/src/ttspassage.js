@@ -1,4 +1,4 @@
-define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'], function($,log,str,templates,polly) {
+define(['jquery','core/log','core/str','core/templates','mod_solo/definitions','mod_solo/pollyhelper'], function($,log,str,templates,def,polly) {
     "use strict"; // jshint ;_;
 
 
@@ -15,6 +15,7 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
             this.ready=false;
             this.thesentence_number =0;
             this.stoporpause='pause';
+            this.voice="Amy";//default voice
             
             //common selectors
             this.sentenceselector = '#' + this.uniqid + '_ttssentencecont span.tbr_sentence';
@@ -36,6 +37,10 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
             var token = this.controls.ttspassagecont.attr('data-token');
             var region = this.controls.ttspassagecont.attr('data-region');
             var owner = 'poodll';
+            var lang = this.controls.ttspassagecont.attr('data-ttslanguage');
+            var voices = def.voices[lang];
+            var randomIndex = Math.floor(Math.random() * voices.length);
+            this.voice = voices[randomIndex];
             polly.init(token, region,owner);
         },
 
@@ -45,6 +50,8 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
             this.controls.showttspassagebtn =  $('#' + this.uniqid + '_showttspassagebtn');
             this.controls.selftranscript = $("textarea[name='selftranscript']");
             this.controls.ttssentencecont= $('#' + this.uniqid + '_ttssentencecont .tbr_innerdiv');
+            this.controls.ttssentencespinner= $('#' + this.uniqid + '_ttssentence_spinner');
+
             
             //audio player declarations
             this.controls.aplayer = $('#' +  this.uniqid + '_ttspassageaudio');
@@ -61,7 +68,13 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
             var that = this;
             that.controls.showttspassagebtn.click(function(e){
                 e.preventDefault();
+
                 if(!that.controls.ttspassagecont.is(':visible')) {
+                    //Quit if its empty
+                    var text = that.controls.selftranscript.val();
+                    if(!text || text==='' || text.trim()===''){
+                        return;
+                    }
                     that.markup_and_show();
                 }
                 //show the widget
@@ -163,17 +176,23 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/pollyhelper'],
             //this is like split but it returns the delimiters too
             var sentences = text.match(/[^\.\!\?¿¡\.\.\.;]*[\.\!\?¿¡\.\.\.;]/g);
             var slowspeed=1;
+            that.controls.ttssentencecont.empty();
+            //show spinner and hide sentences that are processing
+            that.controls.ttssentencespinner.show();
+            that.controls.ttssentencecont.hide();
             for (var i=0; i<sentences.length; i++){
                 if(sentences[i].trim()===''){continue;}
-                var audiourl = await polly.fetch_polly_url(sentences[i],slowspeed,'Amy');
+                var audiourl = await polly.fetch_polly_url(sentences[i],slowspeed,that.voice);
                 templates.render('mod_solo/ttssentence',
                     {sentence: sentences[i], audiourl: audiourl, sentenceindex: i}).then(
                     function(html,js){
-                        //that.controls.player.html(html);
                         templates.appendNodeContents(that.controls.ttssentencecont, html, js);
                     }
                 );
             }
+            //hide spinner and show sentences
+            that.controls.ttssentencespinner.hide();
+            that.controls.ttssentencecont.show();
         }
 
     };//end of return value
