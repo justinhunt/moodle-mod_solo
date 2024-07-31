@@ -67,7 +67,7 @@ class textanalyser {
          * The class constructor.
          *
          */
-    public function __construct($token,$passage, $region,  $language,$targetembedding=false, $userlanguage=false,$targettopic=false,){
+    public function __construct($token,$passage, $region,  $language,$targetembedding=false, $userlanguage=false,$targettopic=false){
         $this->token = $token;
         $this->region = $region;
         $this->passage = $passage;

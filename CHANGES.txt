@@ -1,3 +1,6 @@
+1.0.54 (Build 2024073100)
+- Fixed bug which would kill text processing on PHP7.x
+
 Version 1.0.53 (Build 2024072800)
 - Added TTS read aloud button for pre-preparing self transcript
 - Added more Indian languages for AI feedback
