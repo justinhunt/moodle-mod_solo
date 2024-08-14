@@ -558,20 +558,8 @@ function xmldb_solo_upgrade($oldversion) {
                     }//end of graderatioitem
 
                     //AI Grade
-                    if($forceaigrade) {
-                        $agoptions->aigradeitem = constants::AIGRADE_USE;
-                    }else{
-                        switch ($agoptions->suggestionsgrade) {
-                            case constants::SUGGEST_GRADE_USE:
-                                $agoptions->aigradeitem = constants::AIGRADE_USE;
-                                break;
-                            case constants::SUGGEST_GRADE_NONE:
-                            default:
-                                //Sorry. EVERYONE gets AI grading by default from now on
-                                $agoptions->aigradeitem = constants::AIGRADE_USE;
-                                //$agoptions->aigradeitem = constants::AIGRADE_NONE;
-                        }
-                    }
+                    $agoptions->aigradeitem = constants::AIGRADE_USE;
+
 
                     //Bonus Grades
                     //we don't do negative grading anymore ..so no spelling or grammar processing,

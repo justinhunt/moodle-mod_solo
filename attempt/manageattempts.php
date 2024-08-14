@@ -38,6 +38,7 @@ $attemptid = optional_param('attemptid',0 ,PARAM_INT);
 $id     = required_param('id', PARAM_INT);         // Course Module ID
 $stepno  = optional_param('stepno', constants::STEP_NONE, PARAM_INT);
 $action = optional_param('action','edit',PARAM_TEXT);
+$embed     = optional_param('embed',0, PARAM_INT);  //are we embedding
 
 // get the objects we need
 $cm = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, MUST_EXIST);
@@ -61,8 +62,10 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 //Get admin settings
 $config = get_config(constants::M_COMPONENT);
-if($config->enablesetuptab){
+if($config->enablesetuptab || $embed==2){
     $PAGE->set_pagelayout('popup');
+}else if($embed==1){
+    $PAGE->set_pagelayout('embedded');
 }else{
     $PAGE->set_pagelayout('course');
 }
