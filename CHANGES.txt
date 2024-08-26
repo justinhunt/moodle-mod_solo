@@ -1,3 +1,6 @@
+1.0.55 (Build 2024082600)
+- Fix for layout(display of introduction) issue on Adaptable theme
+
 1.0.54 (Build 2024073100)
 - Fixed bug which would kill text processing on PHP7.x
 

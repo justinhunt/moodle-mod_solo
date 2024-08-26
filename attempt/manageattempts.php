@@ -67,7 +67,7 @@ if($config->enablesetuptab || $embed==2){
 }else if($embed==1){
     $PAGE->set_pagelayout('embedded');
 }else{
-    $PAGE->set_pagelayout('course');
+    $PAGE->set_pagelayout('incourse');
 }
 $PAGE->force_settings_menu(true);
 

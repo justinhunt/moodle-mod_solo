@@ -63,7 +63,7 @@ $config = get_config(constants::M_COMPONENT);
 if($config->enablesetuptab){
     $PAGE->set_pagelayout('popup');
 }else{
-    $PAGE->set_pagelayout('course');
+    $PAGE->set_pagelayout('incourse');
 }
 
 $PAGE->requires->jquery();
