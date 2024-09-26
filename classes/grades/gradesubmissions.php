@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace mod_solo\grades;
 
@@ -23,13 +37,12 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getSubmissionData($userid, $cmid) {
+    public function getsubmissiondata($userid, $cmid) {
         global $DB;
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
-        $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
         $modulecontext = \context_module::instance($cm->id);
-        $totalsteps = utils::fetch_total_step_count($moduleinstance,$modulecontext);
-
+        $totalsteps = utils::fetch_total_step_count($moduleinstance, $modulecontext);
 
         $sql = "SELECT pa.id AS attemptid,
                     u.lastname,
@@ -68,9 +81,9 @@ class gradesubmissions {
                 order by pa.id DESC";
 
         $alldata = $DB->get_records_sql($sql, [$cmid, $userid, $moduleinstance->id, $totalsteps]);
-        if($alldata){
+        if ($alldata) {
             return [reset($alldata)];
-        }else{
+        } else {
             return [];
         }
 
@@ -83,13 +96,13 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getStudentsToGrade($moduleinstance,$groupid,$modulecontext) {
+    public function getstudentstograde($moduleinstance, $groupid, $modulecontext) {
         global $DB;
 
-        $totalsteps = utils::fetch_total_step_count($moduleinstance,$modulecontext);
+        $totalsteps = utils::fetch_total_step_count($moduleinstance, $modulecontext);
 
-        //fetch all finished attempts
-        if($groupid>0) {
+        // fetch all finished attempts
+        if ($groupid > 0) {
             list($groupswhere, $groupparams) = $DB->get_in_or_equal($groupid);
             $sql = "SELECT pa.id AS id, pa.userid as userid
                     FROM {solo_attempts} pa                    
@@ -97,8 +110,8 @@ class gradesubmissions {
                      WHERE pa.solo = ? AND pa.completedsteps = " . $totalsteps .
                      " AND gm.groupid $groupswhere 
                       ORDER BY pa.id DESC";
-            $results = $DB->get_records_sql($sql, array_merge([$moduleinstance->id],$groupparams));
-        }else{
+            $results = $DB->get_records_sql($sql, array_merge([$moduleinstance->id], $groupparams));
+        } else {
             $sql = "SELECT pa.id AS id, pa.userid AS userid
                     FROM {solo_attempts} pa
                     WHERE pa.solo = ? AND pa.completedsteps = " . $totalsteps .
@@ -106,22 +119,24 @@ class gradesubmissions {
             $results = $DB->get_records_sql($sql, [$moduleinstance->id]);
         }
 
-        //if we do not have results just return
-        if(!$results){return $results;}
+        // if we do not have results just return
+        if (!$results) {
+            return $results;
+        }
 
-        //we ony take the most recent attempt
-        $latestresults=array();
-        $user_attempt_totals = array();
+        // we ony take the most recent attempt
+        $latestresults = [];
+        $userattempttotals = [];
         foreach ($results as $thedata) {
-            if (array_key_exists($thedata->userid, $user_attempt_totals)) {
-                $user_attempt_totals[$thedata->userid] = $user_attempt_totals[$thedata->userid] + 1;
+            if (array_key_exists($thedata->userid, $userattempttotals)) {
+                $userattempttotals[$thedata->userid] = $userattempttotals[$thedata->userid] + 1;
                 continue;
             }
-            $user_attempt_totals[$thedata->userid] = 1;
+            $userattempttotals[$thedata->userid] = 1;
             $latestresults[] = $thedata;
         }
 
-        //if we looped and did not get 3 lets just return what we got
+        // if we looped and did not get 3 lets just return what we got
         return $latestresults;
 
     }//end of function
@@ -132,26 +147,26 @@ class gradesubmissions {
      * @return array
      * @throws dml_exception
      */
-    public function getPageOfStudents($students, $studentid=0,$perpage=1) {
-        $currentpagemembers=[];
-        $pages=[];
-        $studentpage=-1;
-        //build array of 3 student pages
-        foreach($students as $student){
-            if(count($currentpagemembers)>=$perpage){
-                $pages[]=$currentpagemembers;
-                $currentpagemembers=[];
+    public function getpageofstudents($students, $studentid=0, $perpage=1) {
+        $currentpagemembers = [];
+        $pages = [];
+        $studentpage = -1;
+        // build array of 3 student pages
+        foreach ($students as $student) {
+            if (count($currentpagemembers) >= $perpage) {
+                $pages[] = $currentpagemembers;
+                $currentpagemembers = [];
             }
-            $currentpagemembers[]=$student->userid;
-            if($studentid>0 && $student->userid ==$studentid ){
-                $studentpage=count($pages);
+            $currentpagemembers[] = $student->userid;
+            if ($studentid > 0 && $student->userid == $studentid ) {
+                $studentpage = count($pages);
             }
         }
-        if(count($currentpagemembers)>0){
-            $pages[]=$currentpagemembers;
+        if (count($currentpagemembers) > 0) {
+            $pages[] = $currentpagemembers;
         }
-        //return page details
-        $ret = [$pages,$studentpage];
+        // return page details
+        $ret = [$pages, $studentpage];
         return $ret;
     }
 }//end of class
