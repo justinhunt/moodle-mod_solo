@@ -210,6 +210,7 @@ const M_LANG_SLSI = 'sl-SI';
 const M_LANG_ISIS = 'is-IS';
 const M_LANG_MKMK = 'mk-MK';
 const M_LANG_SRRS = 'sr-RS';
+const M_LANG_VIVN = 'vi-VN';
 //lesser used Indian languages
 const M_LANG_ASIN = 'as-IN';
 const M_LANG_AWAW = 'aw-AW';

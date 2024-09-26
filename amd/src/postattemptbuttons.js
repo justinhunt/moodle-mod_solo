@@ -35,14 +35,18 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
                 return;
             }
 
-            //if its a reattempt, confirm and proceed
+            //if it's a reattempt, confirm and proceed
             ModalFactory.create({
                 type: ModalFactory.types.SAVE_CANCEL,
                 title: that.strings.reattempttitle,
                 body: that.strings.reattemptbody
             })
             .then(function(modal) {
-                modal.setSaveButtonText(that.strings.reattempt);
+                //old and odd Moodles may not have this function
+                if(modal.setSaveButtonText) {
+                    log.debug('setting reattempt button text');
+                    modal.setSaveButtonText(that.strings.reattempt);
+                }
                 var root = modal.getRoot();
                 root.on(ModalEvents.save, function() {
                     window.location.href = buttonhref;

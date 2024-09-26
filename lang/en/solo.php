@@ -194,6 +194,8 @@ $string['is-is'] = 'Icelandic'; // Icelandic
 $string['mk-mk'] = 'Macedonian'; // Macedonian
 $string['no-no'] = 'Norwegian'; // Norwegian
 $string['sr-rs'] = 'Serbian'; // Serbian
+$string['vi-vn'] = 'Vietnamese'; // Serbian
+
 //less used Indial languages here
 $string['as-in'] = 'Assamese';
 $string['aw-aw'] = 'Awadhi';

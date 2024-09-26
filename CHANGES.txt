@@ -1,3 +1,8 @@
+1.0.56 (Build 2024092500)
+- Added Vietnamese Language Support
+- Changed the display of the Attempt No. to show the attempt number(ie 1, 2, 3) instead of the attempt id
+- Small hack to skip "Confirm New Attempt" dialog on non-compliant Moodle versions
+
 1.0.55 (Build 2024082600)
 - Fix for layout(display of introduction) issue on Adaptable theme
 

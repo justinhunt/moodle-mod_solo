@@ -106,9 +106,9 @@ class attempt_renderer extends \plugin_renderer_base {
          return $this->output->render_from_template( constants::M_COMPONENT . '/activityintrobuttons', ['introcontent'=>$introcontent,'stepdata'=>$stepdata, 'buttons'=>$buttons]);
     }
 
-    function show_userattemptsummary($moduleinstance,$attempt,$aidata, $stats){
+    function show_userattemptsummary($moduleinstance,$attempt){
         $userheader=true;
-        return $this->show_summary($moduleinstance,$attempt,$aidata, $stats,$userheader);
+        return $this->show_summary($moduleinstance,$attempt,$userheader);
     }
 
     public function show_placeholdereval($attemptid){
@@ -159,7 +159,8 @@ class attempt_renderer extends \plugin_renderer_base {
         return $this->output->render_from_template( constants::M_COMPONENT . '/summarygrammareval', $data);
     }
 
-    function show_summary($moduleinstance,$attempt,$aidata, $stats,$userheader=false){
+    function show_summary($moduleinstance,$attempt,$userheader=false){
+
         $attempt->targetwords = utils::fetch_targetwords($attempt->topictargetwords);
         $attempt->convlength = $moduleinstance->convlength;
         $attempt->speakingtopic = $moduleinstance->speakingtopic;

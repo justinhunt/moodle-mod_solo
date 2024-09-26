@@ -46,9 +46,6 @@ if ($id) {
     print_error('You must specify a course_module ID or an instance ID');
 }
 
-$attempthelper = new \mod_solo\attempthelper($cm);
-$attempts = $attempthelper->fetch_attempts();
-
 //mode is necessary for tabs
 $mode='attempts';
 //Set page url before require login, so post login will return here
@@ -93,6 +90,11 @@ if($config->enablesetuptab && empty($moduleinstance->speakingtopic)){
     return;
 }
 
+//get some attempt details for later
+$attempthelper = new \mod_solo\attempthelper($cm);
+$attempts = $attempthelper->fetch_attempts();
+$totalsteps = utils::fetch_total_step_count($moduleinstance,$context);
+
 //Do we do continue an attempt or start a new one
 $start_or_continue=false;
 if(count($attempts)==0){
@@ -105,8 +107,6 @@ if(count($attempts)==0){
     $attemptid = 0;
 }else{
     $latestattempt = $attempt = $attempthelper->fetch_latest_attempt();
-    $totalsteps = utils::fetch_total_step_count($moduleinstance,$context);
-
     if ($latestattempt && $latestattempt->completedsteps < $totalsteps){
         $start_or_continue=true;
         $nextstep=$latestattempt->completedsteps+1;
@@ -119,8 +119,6 @@ if($start_or_continue) {
     $redirecturl = new moodle_url(constants::M_URL . '/attempt/manageattempts.php',
             array('id'=>$cm->id, 'attemptid' => $attemptid, 'stepno' => $nextstep));
     redirect($redirecturl);
-
-
 }else{
 
 
@@ -132,20 +130,18 @@ if($start_or_continue) {
 
     echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
 
-
     $attempt = $attempthelper->fetch_latest_complete_attempt();
     $stats=false;
-
 
     if($attempt) {
         //do all the processing (grades, diffs, etc) if needed and return the attempt
         $attempt = utils::process_attempt($moduleinstance,$attempt,$context->id,$cm->id);
-
+        $attempt->attemptnumber= $attempthelper->fetch_attempt_number($attempt);
         $stats=utils::fetch_stats($attempt,$moduleinstance);
         $aidata = $DB->get_record(constants::M_AITABLE,array('attemptid'=>$attempt->id));
 
-
-        echo $attempt_renderer->show_summary($moduleinstance,$attempt,$aidata, $stats);
+        $userheader=false;
+        echo $attempt_renderer->show_summary($moduleinstance,$attempt,$userheader);
 
         //open the summary results div
         echo html_writer::start_div('mod_solo_summaryresults');

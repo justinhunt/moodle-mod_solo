@@ -105,6 +105,21 @@ class attempthelper
         }
     }
 
+    public function fetch_attempt_number($attempt){
+        global $DB;
+
+        $attempts = $DB->get_records(constants::M_ATTEMPTSTABLE,
+            array(constants::M_MODNAME => $this->mod->id,'userid'=>$attempt->userid),
+            'id DESC');
+        $count = 0;
+        foreach ($attempts as $a){
+            $count++;
+            if($a->id == $attempt->id){
+                return $count;
+            }
+        }
+        return 0;
+    }
 
     //Delete an attempt
     public function delete_attempt($attemptid) {

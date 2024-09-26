@@ -1736,7 +1736,7 @@ class utils{
                 constants::M_LANG_TEIN => get_string('te-in', constants::M_COMPONENT),
                 constants::M_LANG_TRTR => get_string('tr-tr', constants::M_COMPONENT),
                 constants::M_LANG_UKUA => get_string('uk-ua',constants::M_COMPONENT),
-
+                constants::M_LANG_VIVN => get_string('vi-vn',constants::M_COMPONENT),
 
         );
     }
@@ -2151,6 +2151,7 @@ class utils{
             constants::M_LANG_TEIN => ['te-IN-Standard-A'=>'Anandi_g','te-IN-Standard-B'=>'Kai_g'],
             constants::M_LANG_TRTR => ['Filiz'=>'Filiz'],
             constants::M_LANG_UKUA => ['uk-UA-Wavenet-A'=>'Katya_g'],
+            constants::M_LANG_VIVN => ['vi-VN-Wavenet-A'=>'Huyen_g','vi-VN-Wavenet-B'=>'Duy_g'],
         );
         if (array_key_exists($langcode, $alllang) && !$showall) {
             return $alllang[$langcode];

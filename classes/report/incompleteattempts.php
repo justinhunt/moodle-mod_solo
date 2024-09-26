@@ -107,7 +107,8 @@ class incompleteattempts extends basereport
                 $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at';
                 $sql .= ' INNER JOIN {groups_members} gm ON at.userid=gm.userid';
                 $sql .= ' WHERE gm.groupid ' . $groupswhere . ' AND at.solo = ?';
-                $sql .= ' AND at.completedsteps < ?';
+                $sql .= ' AND (at.completedsteps < ?';
+                $sql .= ' OR (at.manualgraded = 0 AND at.jsontranscript = ""))';
                 $sql .= ' ORDER BY at.timemodified DESC';
                 $allparams[]=$formdata->soloid;
                 $allparams[]=$totalsteps;
@@ -119,7 +120,8 @@ class incompleteattempts extends basereport
             $sql = 'SELECT at.id,at.userid, at.completedsteps, at.timemodified ';
                 $sql .= '  FROM {' . constants::M_ATTEMPTSTABLE . '} at';
                 $sql .= ' WHERE at.solo = :soloid';
-                $sql .= ' AND at.completedsteps < :totalsteps';
+                $sql .= ' AND (at.completedsteps < :totalsteps';
+                $sql .= ' OR (at.manualgraded = 0 AND at.jsontranscript = ""))';
                 $sql .= ' ORDER BY at.timemodified DESC';
                 $alldata = $DB->get_records_sql($sql, array('soloid' => $formdata->soloid,'totalsteps'=>$totalsteps));
          }

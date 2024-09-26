@@ -22,8 +22,10 @@
                 </div>
 
                 <div>
-                    <h5>{{#str}}attemptnumberheader, mod_solo, {{id}}{{/str}}</h5>
-                    <p>{{#str}}attemptnumber, mod_solo, {{id}}{{/str}}</p>
+                    {{#attemptnumber}}
+                    <h5>{{#str}}attemptnumberheader, mod_solo{{/str}}</h5>
+                    <p>{{#str}}attemptnumber, mod_solo, {{attemptnumber}}{{/str}}</p>
+                    {{/attemptnumber}}
                 </div>
             </div>
 
