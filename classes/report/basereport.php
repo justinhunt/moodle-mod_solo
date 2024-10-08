@@ -49,7 +49,9 @@ abstract class basereport {
     protected $rawdata=null;
     protected $fields = array();
     protected $dbcache=array();
-
+    protected $cm;
+    protected $mod;
+    protected $context;
 
     abstract function process_raw_data($formdata);
     abstract function fetch_formatted_heading();

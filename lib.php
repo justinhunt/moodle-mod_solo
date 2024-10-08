@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -49,19 +48,27 @@ use mod_solo\utils;
  */
 function solo_supports($feature) {
     switch($feature) {
-        case FEATURE_MOD_INTRO:         return true;
-        case FEATURE_SHOW_DESCRIPTION:  return true;
-		case FEATURE_COMPLETION_HAS_RULES: return false;
-        case FEATURE_COMPLETION_TRACKS_VIEWS: return false;
-        case FEATURE_GRADE_HAS_GRADE:         return true;
-        case FEATURE_ADVANCED_GRADING:        return true;
-        case FEATURE_GRADE_OUTCOMES:          return false;
-        case FEATURE_BACKUP_MOODLE2:          return true;
+        case FEATURE_MOD_INTRO:
+return true;
+        case FEATURE_SHOW_DESCRIPTION:
+return true;
+        case FEATURE_COMPLETION_HAS_RULES:
+return false;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+return false;
+        case FEATURE_GRADE_HAS_GRADE:
+return true;
+        case FEATURE_ADVANCED_GRADING:
+return true;
+        case FEATURE_GRADE_OUTCOMES:
+return false;
+        case FEATURE_BACKUP_MOODLE2:
+return true;
         case FEATURE_GROUPS:
             return true;
         default:
-            //cute hack to work on M4.0 and above
-            if(defined('FEATURE_MOD_PURPOSE') && defined('MOD_PURPOSE_ASSESSMENT') && $feature=='mod_purpose'){
+            // cute hack to work on M4.0 and above
+            if(defined('FEATURE_MOD_PURPOSE') && defined('MOD_PURPOSE_ASSESSMENT') && $feature == 'mod_purpose'){
                 return "assessment";
             }else{
                 return null;
@@ -77,7 +84,7 @@ function solo_supports($feature) {
  */
 function solo_reset_course_form_definition(&$mform) {
     $mform->addElement('header', constants::M_MODNAME . 'header', get_string('modulenameplural', constants::M_COMPONENT));
-    $mform->addElement('advcheckbox', 'reset_' . constants::M_MODNAME , get_string('deletealluserdata',constants::M_COMPONENT));
+    $mform->addElement('advcheckbox', 'reset_' . constants::M_MODNAME , get_string('deletealluserdata', constants::M_COMPONENT));
 }
 
 /**
@@ -86,21 +93,21 @@ function solo_reset_course_form_definition(&$mform) {
  * @return array
  */
 function solo_reset_course_form_defaults($course) {
-    return array('reset_' . constants::M_MODNAME =>1);
+    return ['reset_' . constants::M_MODNAME => 1];
 }
 
 
-function solo_editor_with_files_options($context){
-	return array('maxfiles' => EDITOR_UNLIMITED_FILES,
-               'noclean' => true, 'context' => $context, 'subdirs' => true);
+function solo_editor_with_files_options($context) {
+    return ['maxfiles' => EDITOR_UNLIMITED_FILES,
+               'noclean' => true, 'context' => $context, 'subdirs' => true];
 }
 
-function solo_editor_no_files_options($context){
-	return array('maxfiles' => 0, 'noclean' => true,'context'=>$context);
+function solo_editor_no_files_options($context) {
+    return ['maxfiles' => 0, 'noclean' => true, 'context' => $context];
 }
-function solo_filemanager_options($context){
-    return array('maxfiles' => EDITOR_UNLIMITED_FILES,
-        'noclean' => true, 'context' => $context, 'subdirs' => true, 'accepted_types' => array('image','audio','video'));
+function solo_filemanager_options($context) {
+    return ['maxfiles' => EDITOR_UNLIMITED_FILES,
+        'noclean' => true, 'context' => $context, 'subdirs' => true, 'accepted_types' => ['image', 'audio', 'video']];
 }
 
 /**
@@ -117,8 +124,8 @@ function solo_reset_gradebook($courseid, $type='') {
     $sql = "SELECT l.*, cm.idnumber as cmidnumber, l.course as courseid
               FROM {" . constants::M_TABLE . "} l, {course_modules} cm, {modules} m
              WHERE m.name='" . constants::M_MODNAME . "' AND m.id=cm.module AND cm.instance=l.id AND l.course=:course";
-    $params = array ("course" => $courseid);
-    if ($moduleinstances = $DB->get_records_sql($sql,$params)) {
+    $params = ["course" => $courseid];
+    if ($moduleinstances = $DB->get_records_sql($sql, $params)) {
         foreach ($moduleinstances as $moduleinstance) {
             solo_grade_item_update($moduleinstance, 'reset');
         }
@@ -138,14 +145,14 @@ function solo_reset_userdata($data) {
     global $CFG, $DB;
 
     $componentstr = get_string('modulenameplural', constants::M_COMPONENT);
-    $status = array();
+    $status = [];
 
     if (!empty($data->{'reset_' . constants::M_MODNAME})) {
         $sql = "SELECT l.id
                          FROM {".constants::M_TABLE."} l
                         WHERE l.course=:course";
 
-        $params = array ("course" => $data->courseid);
+        $params = ["course" => $data->courseid];
         $DB->delete_records_select(constants::M_ATTEMPTSTABLE, constants::M_MODNAME . " IN ($sql)", $params);
         $DB->delete_records_select(constants::M_STATSTABLE, constants::M_MODNAME . " IN ($sql)", $params);
         $DB->delete_records_select(constants::M_AITABLE, "moduleid IN ($sql)", $params);
@@ -155,24 +162,24 @@ function solo_reset_userdata($data) {
             solo_reset_gradebook($data->courseid);
         }
 
-        $status[] = array('component'=>$componentstr, 'item'=>get_string('deletealluserdata', constants::M_COMPONENT), 'error'=>false);
+        $status[] = ['component' => $componentstr, 'item' => get_string('deletealluserdata', constants::M_COMPONENT), 'error' => false];
     }
 
     /// updating dates - shift may be negative too
     if ($data->timeshift) {
-        shift_course_mod_dates(constants::M_MODNAME, array('available', 'deadline'), $data->timeshift, $data->courseid);
-        $status[] = array('component'=>$componentstr, 'item'=>get_string('datechanged'), 'error'=>false);
+        shift_course_mod_dates(constants::M_MODNAME, ['available', 'deadline'], $data->timeshift, $data->courseid);
+        $status[] = ['component' => $componentstr, 'item' => get_string('datechanged'), 'error' => false];
     }
 
     return $status;
 }
 
-function solo_get_filemanagernames(){
-    return array('topicmedia','modelmedia');
+function solo_get_filemanagernames() {
+    return ['topicmedia', 'modelmedia'];
 }
 
-function solo_get_editornames(){
-	return array('tips');
+function solo_get_editornames() {
+    return ['tips'];
 }
 
 /**
@@ -191,9 +198,9 @@ function solo_add_instance(stdClass $moduleinstance, mod_solo_mod_form $mform = 
     global $DB;
 
     $moduleinstance->timecreated = time();
-	$moduleinstance = solo_process_editors($moduleinstance,$mform);
-    $moduleinstance = solo_process_filemanagers($moduleinstance,$mform);
-    $moduleinstance = solo_process_autogradeoptions($moduleinstance,$mform);
+    $moduleinstance = solo_process_editors($moduleinstance, $mform);
+    $moduleinstance = solo_process_filemanagers($moduleinstance, $mform);
+    $moduleinstance = solo_process_autogradeoptions($moduleinstance, $mform);
     $moduleinstance = utils::sequence_to_steps($moduleinstance);
     $moduleinstance = utils::process_modelanswer_stats($moduleinstance);
     $moduleinstance->id = $DB->insert_record(constants::M_TABLE, $moduleinstance);
@@ -205,37 +212,37 @@ function solo_add_instance(stdClass $moduleinstance, mod_solo_mod_form $mform = 
     }
 
     solo_grade_item_update($moduleinstance);
-	return $moduleinstance->id;
+    return $moduleinstance->id;
 }
 
 
 function solo_process_editors(stdClass $moduleinstance, $mform = null) {
-	global $DB;
+    global $DB;
     $cmid = $moduleinstance->coursemodule;
     $context = context_module::instance($cmid);
-	$editors = solo_get_editornames();
-	$itemid=0;
-	$edoptions = solo_editor_no_files_options($context);
-	foreach($editors as $editor){
-		$moduleinstance = file_postupdate_standard_editor( $moduleinstance, $editor, $edoptions,$context,constants::M_COMPONENT,$editor,$itemid);
-	}
-	return $moduleinstance;
+    $editors = solo_get_editornames();
+    $itemid = 0;
+    $edoptions = solo_editor_no_files_options($context);
+    foreach($editors as $editor){
+        $moduleinstance = file_postupdate_standard_editor( $moduleinstance, $editor, $edoptions, $context, constants::M_COMPONENT, $editor, $itemid);
+    }
+    return $moduleinstance;
 }
 
 function solo_process_autogradeoptions(stdClass $moduleinstance, $mform) {
-    $ag_options = new \stdClass();
-    $ag_options->graderatioitem = $moduleinstance->graderatioitem;
-    $ag_options->gradewordcount = $moduleinstance->gradewordcount;
-    $ag_options->gradebasescore = $moduleinstance->gradebasescore;
-    $ag_options->aigradeitem = $moduleinstance->aigradeitem;
-    $ag_options->relevancegrade = $moduleinstance->relevancegrade;
+    $agoptions = new \stdClass();
+    $agoptions->graderatioitem = $moduleinstance->graderatioitem;
+    $agoptions->gradewordcount = $moduleinstance->gradewordcount;
+    $agoptions->gradebasescore = $moduleinstance->gradebasescore;
+    $agoptions->aigradeitem = $moduleinstance->aigradeitem;
+    $agoptions->relevancegrade = $moduleinstance->relevancegrade;
 
-    for ($bonusno=1;$bonusno<=4;$bonusno++) {
-        $ag_options->{'bonuspoints' . $bonusno}  = $moduleinstance->{'bonuspoints' . $bonusno};
-        $ag_options->{'bonus' . $bonusno} = $moduleinstance->{'bonus' . $bonusno};
+    for ($bonusno = 1; $bonusno <= 4; $bonusno++) {
+        $agoptions->{'bonuspoints' . $bonusno}  = $moduleinstance->{'bonuspoints' . $bonusno};
+        $agoptions->{'bonus' . $bonusno} = $moduleinstance->{'bonus' . $bonusno};
     }
 
-    $moduleinstance->autogradeoptions=json_encode($ag_options);
+    $moduleinstance->autogradeoptions = json_encode($agoptions);
     return $moduleinstance;
 
 }
@@ -244,7 +251,7 @@ function solo_process_filemanagers(stdClass $moduleinstance, $mform = null) {
     global $DB;
     $cmid = $moduleinstance->coursemodule;
     $context = context_module::instance($cmid);
-    $itemid=0;
+    $itemid = 0;
     $filemanagers = solo_get_filemanagernames();
     $filemanageroptions = solo_filemanager_options($context);
     foreach($filemanagers as $fm){
@@ -274,8 +281,7 @@ function solo_process_filemanagers(stdClass $moduleinstance, $mform = null) {
 function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform = null) {
     global $DB;
 
-
-    $params = array('id' => $moduleinstance->instance);
+    $params = ['id' => $moduleinstance->instance];
     $oldmod = $DB->get_record(constants::M_TABLE, $params);
     $oldgrade = $oldmod->grade;
     $oldmodeltts = $oldmod->modeltts;
@@ -283,14 +289,14 @@ function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform
     $moduleinstance->timemodified = time();
     $moduleinstance->id = $moduleinstance->instance;
 
-	$moduleinstance = solo_process_editors($moduleinstance,$mform);
-    $moduleinstance = solo_process_filemanagers($moduleinstance,$mform);
-    $moduleinstance = solo_process_autogradeoptions($moduleinstance,$mform);
+    $moduleinstance = solo_process_editors($moduleinstance, $mform);
+    $moduleinstance = solo_process_filemanagers($moduleinstance, $mform);
+    $moduleinstance = solo_process_autogradeoptions($moduleinstance, $mform);
     $moduleinstance = utils::sequence_to_steps($moduleinstance);
-    if( isset($moduleinstance->modeltts) && ($oldmodeltts !== $moduleinstance->modeltts)) {
-        $moduleinstance =  utils::process_modelanswer_stats($moduleinstance);
+    if ( isset($moduleinstance->modeltts) && ($oldmodeltts !== $moduleinstance->modeltts)) {
+        $moduleinstance = utils::process_modelanswer_stats($moduleinstance);
     }
-	$success = $DB->update_record(constants::M_TABLE, $moduleinstance);
+    $success = $DB->update_record(constants::M_TABLE, $moduleinstance);
     solo_grade_item_update($moduleinstance);
     if (class_exists('\core_completion\api')) {
         $completionexpected = (empty($moduleinstance->completionexpected) ? null : $moduleinstance->completionexpected);
@@ -298,12 +304,12 @@ function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform
             $completionexpected);
     }
 
-    $update_grades = ($moduleinstance->grade === $oldgrade ? false : true);
-    if ($update_grades) {
+    $updategrades = ($moduleinstance->grade === $oldgrade ? false : true);
+    if ($updategrades) {
         solo_update_grades($moduleinstance, 0, false);
     }
 
-	return $success;
+    return $success;
 }
 
 /**
@@ -319,21 +325,21 @@ function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform
 function solo_delete_instance($id) {
     global $DB;
 
-    if (! $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $id))) {
+    if (! $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $id])) {
         return false;
     }
 
-    # Delete any dependent records here #
+    // Delete any dependent records here #
 
-    $DB->delete_records(constants::M_TABLE, array('id' => $moduleinstance->id));
-    $DB->delete_records(constants::M_ATTEMPTSTABLE, array(constants::M_MODNAME => $moduleinstance->id));
-    $DB->delete_records(constants::M_STATSTABLE, array(constants::M_MODNAME => $moduleinstance->id));
-    $DB->delete_records(constants::M_AITABLE, array('moduleid' => $moduleinstance->id));
-    $DB->delete_records(constants::M_SELECTEDTOPIC_TABLE, array('moduleid' => $moduleinstance->id));
+    $DB->delete_records(constants::M_TABLE, ['id' => $moduleinstance->id]);
+    $DB->delete_records(constants::M_ATTEMPTSTABLE, [constants::M_MODNAME => $moduleinstance->id]);
+    $DB->delete_records(constants::M_STATSTABLE, [constants::M_MODNAME => $moduleinstance->id]);
+    $DB->delete_records(constants::M_AITABLE, ['moduleid' => $moduleinstance->id]);
+    $DB->delete_records(constants::M_SELECTEDTOPIC_TABLE, ['moduleid' => $moduleinstance->id]);
     $DB->delete_records_select(constants::M_SELECTEDTOPIC_TABLE,
             "topicid IN (SELECT id FROM {".constants::M_TOPIC_TABLE."} t WHERE t.moduleid = ?)",
-            array('moduleid' => $moduleinstance->id));
-    $DB->delete_records(constants::M_TOPIC_TABLE, array('moduleid' => $moduleinstance->id));
+            ['moduleid' => $moduleinstance->id]);
+    $DB->delete_records(constants::M_TOPIC_TABLE, ['moduleid' => $moduleinstance->id]);
 
     return true;
 }
@@ -376,7 +382,7 @@ function solo_user_complete($course, $user, $mod, $moduleinstance) {
  * @return boolean
  */
 function solo_print_recent_activity($course, $viewfullnames, $timestart) {
-    return false;  //  True if anything was printed, otherwise false
+    return false;  // True if anything was printed, otherwise false
 }
 
 /**
@@ -429,7 +435,7 @@ function solo_cron () {
  * @return array
  */
 function solo_get_extra_capabilities() {
-    return array();
+    return [];
 }
 
 
@@ -449,7 +455,7 @@ function solo_get_extra_capabilities() {
  * @return array of [(string)filearea] => (string)description
  */
 function solo_get_file_areas($course, $cm, $context) {
-    return array_merge(solo_get_editornames(),solo_get_filemanagernames());
+    return array_merge(solo_get_editornames(), solo_get_filemanagernames());
 }
 
 /**
@@ -487,7 +493,7 @@ function solo_get_file_info($browser, $areas, $course, $cm, $context, $filearea,
  * @param bool $forcedownload whether or not force download
  * @param array $options additional options affecting the file serving
  */
-function solo_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options=array()) {
+function solo_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options=[]) {
        global $DB, $CFG;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -496,7 +502,7 @@ function solo_pluginfile($course, $cm, $context, $filearea, array $args, $forced
 
     require_login($course, true, $cm);
 
-	$itemid = (int)array_shift($args);
+    $itemid = (int)array_shift($args);
 
     require_course_login($course, true, $cm);
 
@@ -504,14 +510,13 @@ function solo_pluginfile($course, $cm, $context, $filearea, array $args, $forced
         return false;
     }
 
-
         $fs = get_file_storage();
         $relativepath = implode('/', $args);
         $fullpath = "/$context->id/mod_solo/$filearea/$itemid/$relativepath";
 
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-          return false;
-        }
+    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+        return false;
+    }
 
         // finally send the file
         send_stored_file($file, null, 0, $forcedownload, $options);
@@ -564,7 +569,7 @@ function solo_grade_item_update($moduleinstance, $grades=null) {
     global $CFG;
     require_once($CFG->dirroot.'/lib/gradelib.php');
 
-    $params = array('itemname' => $moduleinstance->name);
+    $params = ['itemname' => $moduleinstance->name];
     if (array_key_exists('cmidnumber', (array)$moduleinstance)) {
         $params['idnumber'] = $moduleinstance->cmidnumber;
     }
@@ -596,25 +601,25 @@ function solo_grade_item_update($moduleinstance, $grades=null) {
         $params['gradetype'] = GRADE_TYPE_NONE;
     }
 
-    if ($grades  === 'reset') {
+    if ($grades === 'reset') {
         $params['reset'] = true;
         $grades = null;
     } else if (!empty($grades)) {
         // Need to calculate raw grade (Note: $grades has many forms)
         if (is_object($grades)) {
-            $grades = array($grades->userid => $grades);
+            $grades = [$grades->userid => $grades];
         } else if (array_key_exists('userid', $grades)) {
-            $grades = array($grades['userid'] => $grades);
+            $grades = [$grades['userid'] => $grades];
         }
         foreach ($grades as $key => $grade) {
             if (!is_array($grade)) {
                 $grades[$key] = $grade = (array) $grade;
             }
-            //check raw grade isnt null otherwise we insert a grade of 0
+            // check raw grade isnt null otherwise we insert a grade of 0
             if ($grade['rawgrade'] !== null) {
                 $grades[$key]['rawgrade'] = ($grade['rawgrade'] * $params['grademax'] / 100);
             } else {
-                //setting rawgrade to null just in case user is deleting a grade
+                // setting rawgrade to null just in case user is deleting a grade
                 $grades[$key]['rawgrade'] = null;
             }
         }
@@ -646,7 +651,7 @@ function solo_update_grades($moduleinstance, $userid=0, $nullifnone=true) {
     } else if ($grades = solo_get_user_grades($moduleinstance, $userid)) {
         // do nothing
     } else if ($userid && $nullifnone) {
-        $grades = (object)array('userid' => $userid, 'rawgrade' => null);
+        $grades = (object)['userid' => $userid, 'rawgrade' => null];
     } else {
         $grades = null;
     }
@@ -667,28 +672,25 @@ function solo_get_user_grades($moduleinstance, $userid=0) {
 
     global $CFG, $DB;
 
-
-
-    $params = array("moduleid" => $moduleinstance->id);
+    $params = ["moduleid" => $moduleinstance->id];
 
     if (!empty($userid)) {
         $params["userid"] = $userid;
         $user = "AND u.id = :userid";
     }
     else {
-        $user="";
+        $user = "";
     }
 
-    //grade_sql
-    //added MAX to grade to keep postgresql happy
-    $grade_sql = "SELECT u.id, u.id AS userid, MAX(grade) AS rawgrade
+    // grade_sql
+    // added MAX to grade to keep postgresql happy
+    $gradesql = "SELECT u.id, u.id AS userid, MAX(grade) AS rawgrade
                       FROM {user} u, {". constants::M_ATTEMPTSTABLE ."} a
                      WHERE a.id= (SELECT max(id) FROM {". constants::M_ATTEMPTSTABLE ."} ia WHERE ia.userid=u.id AND ia.solo = a.solo)  AND u.id = a.userid AND a.solo = :moduleid
                            $user
                   GROUP BY u.id";
 
-
-    $results = $DB->get_records_sql($grade_sql, $params);
+    $results = $DB->get_records_sql($gradesql, $params);
     return $results;
 }
 
@@ -707,7 +709,7 @@ function solo_scale_used($moduleid, $scaleid) {
     global $DB;
 
     /** @example */
-    if ($scaleid and $DB->record_exists(constants::M_TABLE, array('id' => $moduleid, 'grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists(constants::M_TABLE, ['id' => $moduleid, 'grade' => -$scaleid])) {
         return true;
     } else {
         return false;
@@ -726,7 +728,7 @@ function solo_scale_used_anywhere($scaleid) {
     global $DB;
 
     /** @example */
-    if ($scaleid and $DB->record_exists(constants::M_TABLE, array('grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists(constants::M_TABLE, ['grade' => -$scaleid])) {
         return true;
     } else {
         return false;
@@ -770,17 +772,17 @@ function mod_solo_output_fragment_rubric_grade_form($args) {
         where cm.id = ?";
 
     $modulecontext = context_module::instance($args->cmid);
-    $attempt = $DB->get_record_sql($sql, array($args->studentid, $args->cmid));
+    $attempt = $DB->get_record_sql($sql, [$args->studentid, $args->cmid]);
 
     if (!$attempt) {
         return "";
     }
 
-    $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $attempt->solo));
+    $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $attempt->solo]);
     $gradingdisabled = false;
     $gradinginstance = utils::get_grading_instance($attempt->attemptid, $gradingdisabled, $moduleinstance, $modulecontext);
 
-    $mform = new rubric_grade_form(null, array('gradinginstance' => $gradinginstance), 'post', '', null, true, $formdata);
+    $mform = new rubric_grade_form(null, ['gradinginstance' => $gradinginstance], 'post', '', null, true, $formdata);
 
     if ($mform->is_cancelled()) {
         // Window closes.
@@ -835,13 +837,13 @@ function mod_solo_output_fragment_simple_grade_form($args) {
         where cm.id = ?";
 
     $modulecontext = context_module::instance($args->cmid);
-    $attempt = $DB->get_record_sql($sql, array($args->studentid, $args->cmid));
+    $attempt = $DB->get_record_sql($sql, [$args->studentid, $args->cmid]);
 
     if (!$attempt) {
         return "";
     }
 
-    $mform = new simple_grade_form(null, array(), 'post', '', null, true, $formdata);
+    $mform = new simple_grade_form(null, [], 'post', '', null, true, $formdata);
 
     if ($mform->is_cancelled()) {
         // Window closes.
@@ -875,11 +877,11 @@ function mod_solo_output_fragment_simple_grade_form($args) {
  * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
  * @return bool True if completed, false if not, $type if conditions not set.
  */
-function solo_get_completion_state($course,$cm,$userid,$type) {
-    global $CFG,$DB;
+function solo_get_completion_state($course, $cm, $userid, $type) {
+    global $CFG, $DB;
 
     // Get  module details
-    $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
+    $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
     $attempthelper = new \mod_solo\attempthelper($cm);
 
     // If completion option is enabled, evaluate it and return true/false
@@ -897,18 +899,18 @@ function solo_get_completion_state($course,$cm,$userid,$type) {
 }
 
 function mod_solo_cm_info_dynamic(cm_info $cm) {
-    global $USER,$DB;
+    global $USER, $DB;
 
-        $moduleinstance= $DB->get_record('solo', array('id' => $cm->instance,), '*', MUST_EXIST);
-        if(method_exists($cm,'override_customdata')) {
-            $cm->override_customdata('duedate', $moduleinstance->viewend);
-            $cm->override_customdata('allowsubmissionsfromdate', $moduleinstance->viewstart);
-        }
+        $moduleinstance = $DB->get_record('solo', ['id' => $cm->instance], '*', MUST_EXIST);
+    if(method_exists($cm, 'override_customdata')) {
+        $cm->override_customdata('duedate', $moduleinstance->viewend);
+        $cm->override_customdata('allowsubmissionsfromdate', $moduleinstance->viewstart);
+    }
 }
 function solo_get_coursemodule_info($coursemodule) {
     global $DB;
 
-    if(!$moduleinstance= $DB->get_record('solo', array('id' => $coursemodule->instance,), '*')){
+    if(!$moduleinstance = $DB->get_record('solo', ['id' => $coursemodule->instance], '*')){
         return false;
     }
     $result = new cached_cm_info();

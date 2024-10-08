@@ -28,32 +28,30 @@
 
 {{^element.frozen}}
     {{#js}}
+        require(['jquery'], function($) {
+            $(".mod_solo_start_audio_player_button").on("click", function() {
+                /* Start recording button hides */
+                $(".mod_solo_start_audio_player_button").removeClass("button_visible").addClass("button_hidden");
+                            
+                /* The element containing the animation (.mod_solo_audio_player_animaton), get its animation started. */
+                $(".mod_solo_audio_player_animaton").addClass("animation_running");
+
+                /* Text at the bottom changes accordingly */
+                $(".mod_solo_audio_player_text").html('{{#str}}stoprecording, mod_solo{{/str}}');
+            });
 
 
-        $(".mod_solo_start_audio_player_button").on("click", function() {
-            /* Start recording button hides */
-            $(".mod_solo_start_audio_player_button").removeClass("button_visible").addClass("button_hidden");
-                        
-            /* The element containing the animation (.mod_solo_audio_player_animaton), get its animation started. */
-            $(".mod_solo_audio_player_animaton").addClass("animation_running");
+            /* When the stop button (.mod_solo_start_audio_player_button) is clicked */
+            $(".mod_solo_stop_audio_player_button").on("click", function() {
+                
+                $(".mod_solo_stop_audio_player_button").addClass("button_inactive");
+                
+                /* 2. The element containing the animation (.mod_solo_audio_player_animaton), get its animation started. */
 
-            /* Text at the bottom changes accordingly */
-            $(".mod_solo_audio_player_text").html('{{#str}}stoprecording, mod_solo{{/str}}');
+                $(".mod_solo_audio_player_animaton").removeClass("animation_running");
+
+            });
         });
-
-
-        /* When the stop button (.mod_solo_start_audio_player_button) is clicked */
-        $(".mod_solo_stop_audio_player_button").on("click", function() {
-            
-            $(".mod_solo_stop_audio_player_button").addClass("button_inactive");
-            
-            /* 2. The element containing the animation (.mod_solo_audio_player_animaton), get its animation started. */
-
-            $(".mod_solo_audio_player_animaton").removeClass("animation_running");
-
-        });
-
-
        
     {{/js}}
 {{/element.frozen}}
