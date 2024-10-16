@@ -67,13 +67,35 @@ class provider implements
      */
     public static function _get_metadata(collection $collection) {
 
-        $userdetail = [
+        $detail = [
             'id' => 'privacy:metadata:attemptid',
-            'solo' => 'privacy:metadata:solo',
+            'solo' => 'privacy:metadata:soloid',
             'userid' => 'privacy:metadata:userid',
-            'timemodified' => 'privacy:metadata:timemodified'
+            'transcript' => 'privacy:metadata:transcript',
+            'grade' => 'privacy:metadata:grade',
+            'aigrade' => 'privacy:metadata:aigrade',
+            'timemodified' => 'privacy:metadata:timemodified',
         ];
-        $collection->add_database_table(constants::M_ATTEMPTSTABLE, $userdetail, 'privacy:metadata:attemptstable');
+        $collection->add_database_table(constants::M_ATTEMPTSTABLE, $detail, 'privacy:metadata:attemptstable');
+
+        $detail = [
+            'id' => 'privacy:metadata:attemptid',
+            'solo' => 'privacy:metadata:soloid',
+            'words' => 'privacy:metadata:words',
+            'uniquewords' => 'privacy:metadata:uniquewords',
+            'longwords' => 'privacy:metadata:longwords',
+            'turns' => 'privacy:metadata:turns',
+            'avturn' => 'privacy:metadata:avturn',
+            'longestturn' => 'privacy:metadata:longestturn',
+            'targetwords' => 'privacy:metadata:targetwords',
+            'totaltargetwords' => 'privacy:metadata:totaltargetwords',
+            'aiaccuracy' => 'privacy:metadata:aiaccuracy',
+            'cefrlevel' => 'privacy:metadata:cefrlevel',
+            'wpm' => 'privacy:metadata:wpm',
+            'speakingtime' => 'privacy:metadata:speakingtime',
+            'relevance' => 'privacy:metadata:relevance',
+        ];
+        $collection->add_database_table(constants::M_STATSTABLE, $detail, 'privacy:metadata:attemptstatstable');
 
 
         $collection->add_external_location_link('cloud.poodll.com', [
@@ -163,9 +185,26 @@ class provider implements
                        cm.id AS cmid,
                        usert.userid AS userid,
                        usert.filename,
+                       usert.transcript,
+                       usert.grade,
+                       usert.aigrade,
+                       statt.words,
+                       statt.uniquewords,
+                       statt.longwords,
+                       statt.turns,
+                       statt.avturn,
+                       statt.longestturn,
+                       statt.targetwords,
+                       statt.totaltargetwords,
+                       statt.aiaccuracy,
+                       statt.cefrlevel,
+                       statt.wpm,
+                       statt.speakingtime,
+                       statt.relevance,
                        usert.timemodified
                   FROM {" . constants::M_ATTEMPTSTABLE . "} usert
                   JOIN {" . constants::M_TABLE . "} actt ON usert.solo = actt.id
+                  JOIN {" . constants::M_STATSTABLE . "} statt ON usert.id = statt.attemptid
                   JOIN {course_modules} cm ON actt.id = cm.instance
                   JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
                   JOIN {context} c ON cm.id = c.instanceid AND c.contextlevel = :contextlevel

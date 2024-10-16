@@ -3113,6 +3113,22 @@ break;
         // We assume they want to use some media
         $mform->setDefault($cp . 'addmedia', 1);
 
+        //text area for a text block (really for model answer)
+        $someid = \html_writer::random_id();
+        $edoptions = constants::ITEMTEXTAREA_EDOPTIONS;
+        //a bug prevents hideif working, but putting it in a group works dandy
+        $groupelements= [];
+        $groupelements[] = &$mform->createElement('editor', constants::QUESTIONTEXTAREA . '_editor',
+                get_string('itemtextarea', constants::M_COMPONENT),
+                array('id' => $someid, 'wrap' => 'virtual', 'style' => 'width: 100%;', 'rows' => '5'),
+                $edoptions);
+        $this->_form->setDefault(constants::QUESTIONTEXTAREA . '_editor', array('text' => '', 'format' => FORMAT_HTML));
+        $mform->setType(constants::QUESTIONTEXTAREA, PARAM_RAW);
+        $mform->addGroup($groupelements, 'groupelements', get_string('itemtextarea', constants::M_COMPONENT), array(' '), false);
+        $mform->addElement('html',$fieldsetbottom,[]);
+
+
+
         // Speaking topic upload
         $filemanageroptions = solo_filemanager_options($context);
         $mform->addElement('filemanager',
