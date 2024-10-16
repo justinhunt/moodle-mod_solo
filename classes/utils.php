@@ -1110,7 +1110,7 @@ break;
         }
 
         // AI Grade
-        if ($agoptions->aigradeitem == constants::AIGRADE_USE & $attempt->aigrade !== null) {
+        if ($agoptions->aigradeitem == constants::AIGRADE_USE && $attempt->aigrade !== null) {
             $aglog[] = "AI Grade% = is calculated from the following guideline: \"$moduleinstance->markscheme\"";
             $aglog[] = "AI Grade% = is $attempt->aigrade%";
             $aigraderatio = $attempt->aigrade * .01;

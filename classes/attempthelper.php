@@ -19,6 +19,8 @@ class attempthelper
     protected $context;
     protected $mod;
     protected $attempts;
+    protected $course;
+
 
     public function __construct($cm) {
         global $DB;

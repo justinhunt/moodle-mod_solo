@@ -1,3 +1,6 @@
+1.0.57 (Build 2025100700)
+- Support for PHP 8.2 and 8.3
+
 1.0.56 (Build 2024092500)
 - Added Vietnamese Language Support
 - Changed the display of the Attempt No. to show the attempt number(ie 1, 2, 3) instead of the attempt id
