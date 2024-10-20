@@ -670,6 +670,7 @@ $string['uploading'] = ' ... uploading ... ';
 // media toggles
 $string['mediaoptions'] = 'Media Options';
 $string['addmedia'] = 'Add Media';
+$string['addtext'] = 'Add Text';
 $string['addiframe'] = 'Add iFrame';
 $string['addttsaudio'] = 'Add TTS Audio';
 $string['addytclip'] = 'Add YouTube/Vimeo';
@@ -695,6 +696,8 @@ $string['content_media_help'] = 'Upload an audio/video or image file that will b
 $string['content_tts_help'] = 'Text to speech content.';
 $string['content_media'] = 'Image, audio or video content';
 $string['content_iframe'] = 'Embed iframe code';
+$string['content_text'] = 'Text content';
+$string['content_text_help'] = 'Add text content to accompany your topic';
 $string['content_tts'] = 'TTS text';
 $string['content_ttsvoice'] = 'Speaker\'s voice';
 $string['content_ttsspeed'] = 'Speaker speed';

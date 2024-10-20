@@ -500,8 +500,18 @@ class aitranscriptutils {
         $doc = new \DOMDocument;
         // it will assume ISO-8859-1  encoding, so we need to hint it:
         // see: http://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
+
+        //The old way ... throws errors on PHP 8.2+
+        //$safepassage = mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8');
+        //@$doc->loadHTML($safepassage, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+
+        //This could work, but on some occasions the doc has a meta header already .. hmm
+        //$safepassage = mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8');
+        //@$doc->loadHTML('<?xml encoding="utf-8" ? >' . $safepassage, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+
+        //The new way .. incomprehensible but works
         $safepassage = htmlspecialchars($passage, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
-        @$doc->loadHTML($safepassage, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+        @$doc->loadHTML(mb_encode_numericentity($safepassage, [0x80, 0x10FFFF, 0, ~0], 'UTF-8'));
 
         // select all the text nodes
         $xpath = new \DOMXPath($doc);

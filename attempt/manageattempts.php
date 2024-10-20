@@ -175,6 +175,11 @@ $context = \context_module::instance($cm->id);
 //Prepare speaking topic text
 $topicmedia['itemtext']=$moduleinstance->speakingtopic;
 
+//Prepare topic text
+if(!empty($moduleinstance->topictext) && !empty(utils::super_trim($moduleinstance->topictext))){
+    $topicmedia['itemextratext']=format_text(nl2br($moduleinstance->topictext));
+}
+
 //Prepare IFrame
 if(!empty($moduleinstance->topiciframe) && !empty(utils::super_trim($moduleinstance->topiciframe))){
     $topicmedia['itemiframe']=$moduleinstance->topiciframe;
@@ -332,6 +337,12 @@ switch($type) {
         
     case constants::STEP_MODEL:
         $modelmedia = [];
+
+        //Prepare model text
+        if(!empty($moduleinstance->modeltext) && !empty(utils::super_trim($moduleinstance->modeltext))){
+            $modelmedia['itemextratext']=format_text(nl2br($moduleinstance->modeltext));
+        }
+
         //Prepare IFrame
         if(!empty(utils::super_trim($moduleinstance->modeliframe))){
             $modelmedia['itemiframe']=$moduleinstance->modeliframe;

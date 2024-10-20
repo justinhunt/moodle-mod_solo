@@ -26,6 +26,8 @@
         <FIELD NAME="convlength" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="maxconvlength" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" DEFAULT="0" />
         <FIELD NAME="speakingtopic" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="topictext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="topictextformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the topictext field (MOODLE, HTML, MARKDOWN...)"/>
         <FIELD NAME="topictts" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="topicttsvoice" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="topicttsspeed" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
@@ -34,6 +36,8 @@
         <FIELD NAME="topicytstart" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="topicytend" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="modelanswer" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="modeltext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="modeltextformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the modeltext field (MOODLE, HTML, MARKDOWN...)"/>
         <FIELD NAME="modeltts" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="modelttsvoice" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="modelttsspeed" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>

@@ -51,8 +51,8 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
         // root element describing solo instance
         $oneactivity = new backup_nested_element(constants::M_MODNAME, array('id'), array(
             'course','name','intro','introformat','grade','gradeoptions','manualgraded','mingrade',
-                'convlength','maxconvlength','speakingtopic','topictts','topicttsvoice','topicttsspeed','topiciframe','targetwords','tips','tipsformat',
-            'topicytid','topicytstart','topicytend','modeltts','modelttsvoice','modelttsspeed','modeliframe','modelytid','modelytstart','modelytend',
+                'convlength','maxconvlength','speakingtopic','topictext','topictts','topicttsvoice','topicttsspeed','topiciframe','targetwords','tips','tipsformat',
+            'topicytid','topicytstart','topicytend','modeltext','modeltts','modelttsvoice','modelttsspeed','modeliframe','modelytid','modelytstart','modelytend',
             'ttslanguage','recorderskin','recordertype','enableai','enabletranscribe','expiredays','region','transcriber','multiattempts',
                 'enabletranscription','enablesharing','enableautograde','gradewordgoal','autogradeoptions','completionallsteps',
                 'postattemptedit','step2','step3','step4','step5','foriframe','timecreated','timemodified','viewstart','viewend',

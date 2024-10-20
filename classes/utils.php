@@ -1573,6 +1573,8 @@ break;
         }
         if(!empty(self::super_trim($moduleinstance->modeltts))) {return true;
         }
+        if(!empty(self::super_trim($moduleinstance->modeltext))) {return true;
+        }
         $itemid = 0;
         $filearea = 'modelmedia';
         $mediaurls = self::fetch_media_urls($context->id, $filearea, $itemid);
@@ -3105,6 +3107,7 @@ break;
 
         $togglearray = [];
         $togglearray[] =& $mform->createElement('advcheckbox', $cp . 'addmedia', get_string('addmedia', constants::M_COMPONENT), '');
+        $togglearray[] =& $mform->createElement('advcheckbox', $cp . 'addtext', get_string('addtext', constants::M_COMPONENT), '');
         $togglearray[] =& $mform->createElement('advcheckbox', $cp . 'addiframe', get_string('addiframe', constants::M_COMPONENT), '');
         $togglearray[] =& $mform->createElement('advcheckbox', $cp . 'addttsaudio', get_string('addttsaudio', constants::M_COMPONENT), '');
         $togglearray[] =& $mform->createElement('advcheckbox', $cp . 'addytclip', get_string('addytclip', constants::M_COMPONENT), '');
@@ -3115,18 +3118,21 @@ break;
 
         //text area for a text block (really for model answer)
         $someid = \html_writer::random_id();
-        $edoptions = constants::ITEMTEXTAREA_EDOPTIONS;
+        $edoptions = solo_editor_no_files_options($context);
         //a bug prevents hideif working, but putting it in a group works dandy
         $groupelements= [];
-        $groupelements[] = &$mform->createElement('editor', constants::QUESTIONTEXTAREA . '_editor',
-                get_string('itemtextarea', constants::M_COMPONENT),
+        $groupelements[] = &$mform->createElement('editor', $cp . 'text_editor',
+                get_string('content_text', constants::M_COMPONENT),
                 array('id' => $someid, 'wrap' => 'virtual', 'style' => 'width: 100%;', 'rows' => '5'),
                 $edoptions);
-        $this->_form->setDefault(constants::QUESTIONTEXTAREA . '_editor', array('text' => '', 'format' => FORMAT_HTML));
-        $mform->setType(constants::QUESTIONTEXTAREA, PARAM_RAW);
-        $mform->addGroup($groupelements, 'groupelements', get_string('itemtextarea', constants::M_COMPONENT), array(' '), false);
-        $mform->addElement('html',$fieldsetbottom,[]);
-
+        $mform->setDefault($cp . 'text_editor',['text' => '', 'format' => FORMAT_HTML]);
+        $mform->setType($cp . 'text_editor', PARAM_RAW);
+        $mform->addGroup($groupelements, $cp .  'text', get_string('content_text', constants::M_COMPONENT), array(' '), false);
+        if($m35){
+            $mform->hideIf($cp . 'text', $cp .  'addtext', 'neq', 1);
+        }else {
+            $mform->disabledIf($cp . 'text', $cp .  'addtext', 'neq', 1);
+        }
 
 
         // Speaking topic upload
@@ -3262,6 +3268,11 @@ break;
                 $moduleinstance->{$prefix.'addmedia'} = 1;
             } else {
                 $moduleinstance->{$prefix.'addmedia'} = 0;
+            }
+            if (!empty($moduleinstance->{$prefix.'text'})) {
+                $moduleinstance->{$prefix.'addtext'} = 1;
+            } else {
+                $moduleinstance->{$prefix.'addtext'} = 0;
             }
             if (!empty($moduleinstance->{$prefix.'tts'})) {
                 $moduleinstance->{$prefix.'addttsaudio'} = 1;

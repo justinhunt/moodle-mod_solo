@@ -582,6 +582,23 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2024071101, 'solo');
     }
 
+    if($oldversion < 2025100703) {
+        $table = new xmldb_table(constants::M_TABLE);
+        $fields = [];
+        $fields[] = new xmldb_field('topictext', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('topictextformat', XMLDB_TYPE_INTEGER, 4, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('modeltext', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('modeltextformat', XMLDB_TYPE_INTEGER, 4, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2025100703, 'solo');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

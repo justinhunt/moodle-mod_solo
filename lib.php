@@ -179,7 +179,7 @@ function solo_get_filemanagernames() {
 }
 
 function solo_get_editornames() {
-    return ['tips'];
+    return ['tips','topictext','modeltext'];
 }
 
 /**
@@ -224,7 +224,11 @@ function solo_process_editors(stdClass $moduleinstance, $mform = null) {
     $itemid = 0;
     $edoptions = solo_editor_no_files_options($context);
     foreach($editors as $editor){
-        $moduleinstance = file_postupdate_standard_editor( $moduleinstance, $editor, $edoptions, $context, constants::M_COMPONENT, $editor, $itemid);
+        // Hidden tinymce submits $moduleinstance->{$editor . '_editor'}[] as an empty array.
+        // That will "warning" when it hits file_postupdate_standard_editor .. so we check for that.
+        if(isset($moduleinstance->{$editor . '_editor'}) && isset($moduleinstance->{$editor . '_editor'}['text'])){
+            $moduleinstance = file_postupdate_standard_editor($moduleinstance, $editor, $edoptions, $context, constants::M_COMPONENT, $editor, $itemid);
+        }
     }
     return $moduleinstance;
 }
