@@ -30,10 +30,11 @@ require_once($CFG->dirroot.'/mod/solo/lib.php');
 
 use \mod_solo\constants;
 use \mod_solo\utils;
+use \mod_solo\attempthelper;
 
 global $USER,$DB;
 
-// first get the nfo passed in to set up the page
+// first get the info passed in to set up the page
 $attemptid = optional_param('attemptid',0 ,PARAM_INT);
 $id     = required_param('id', PARAM_INT);         // Course Module ID
 $stepno  = optional_param('stepno', constants::STEP_NONE, PARAM_INT);
@@ -44,8 +45,10 @@ $embed     = optional_param('embed',0, PARAM_INT);  //are we embedding
 $cm = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $moduleinstance = $DB->get_record(constants::M_MODNAME, array('id' => $cm->instance), '*', MUST_EXIST);
-if($stepno<2){
-    $type = constants::M_STEP_PREPARE;
+
+if($stepno==0){
+    //$type = constants::M_STEP_PREPARE;
+    $type = $moduleinstance->{'step1'};
 }else {
     $type = $moduleinstance->{'step' . $stepno};
 }

@@ -42,6 +42,7 @@ const M_SEQ_PRM=1;
 const M_SEQ_PTRM=2;
 const M_SEQ_PRMT=3;
 const M_SEQ_PTM=4;
+const M_SEQ_RM=5;
 
 const AIGRADE_NONE=0;
 const AIGRADE_USE=1;

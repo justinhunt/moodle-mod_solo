@@ -1540,7 +1540,8 @@ break;
     }
 
     public static function is_textonlysubmission($moduleinstance) {
-        if((int)$moduleinstance->step2 !== constants::M_STEP_RECORD &&
+        if((int)$moduleinstance->step1 !== constants::M_STEP_RECORD &&
+            (int)$moduleinstance->step2 !== constants::M_STEP_RECORD &&
             (int)$moduleinstance->step3 !== constants::M_STEP_RECORD &&
             (int)$moduleinstance->step4 !== constants::M_STEP_RECORD){
             return true;
@@ -1550,7 +1551,7 @@ break;
     }
 
     public static function fetch_total_step_count($moduleinstance, $context) {
-        for($step = 2; $step < 6; $step++){
+        for($step = 1; $step < 6; $step++){
 
             switch($moduleinstance->{'step' . $step}){
                 case constants::STEP_NONE:
@@ -2087,11 +2088,12 @@ break;
         $ret[constants::M_SEQ_PRM] = get_string('seq_PRM', constants::M_COMPONENT);
         $ret[constants::M_SEQ_PTRM] = get_string('seq_PTRM', constants::M_COMPONENT);
         $ret[constants::M_SEQ_PTM] = get_string('seq_PTM', constants::M_COMPONENT);
+        $ret[constants::M_SEQ_RM] = get_string('seq_RM', constants::M_COMPONENT);
         // $ret[constants::M_SEQ_PRMT]=get_string('seq_PRMT',constants::M_COMPONENT);
         return $ret;
     }
     public static function fetch_step_no($moduleinstance, $type) {
-        $steps = [2, 3, 4, 5];
+        $steps = [1, 2, 3, 4, 5];
         foreach($steps as $step){
             if($moduleinstance->{'step' . $step} == $type){
                 return $step;
@@ -2680,31 +2682,43 @@ break;
         switch($moduleinstance->activitysteps){
 
             case constants::M_SEQ_PTRM:
+                $moduleinstance->step1 = constants::M_STEP_PREPARE;
                 $moduleinstance->step2 = constants::M_STEP_TRANSCRIBE;
                 $moduleinstance->step3 = constants::M_STEP_RECORD;
                 $moduleinstance->step4 = constants::M_STEP_MODEL;
                 $moduleinstance->step5 = constants::M_STEP_NONE;
                 break;
             case constants::M_SEQ_PRMT:
+                $moduleinstance->step1 = constants::M_STEP_PREPARE;
                 $moduleinstance->step2 = constants::M_STEP_RECORD;
                 $moduleinstance->step3 = constants::M_STEP_MODEL;
                 $moduleinstance->step4 = constants::M_STEP_TRANSCRIBE;
                 $moduleinstance->step5 = constants::M_STEP_NONE;
                 break;
             case constants::M_SEQ_PTM:
+                $moduleinstance->step1 = constants::M_STEP_PREPARE;
                 $moduleinstance->step2 = constants::M_STEP_TRANSCRIBE;
                 $moduleinstance->step3 = constants::M_STEP_MODEL;
                 $moduleinstance->step4 = constants::M_STEP_NONE;
                 $moduleinstance->step5 = constants::M_STEP_NONE;
                 break;
             case constants::M_SEQ_PRTM:
+                $moduleinstance->step1 = constants::M_STEP_PREPARE;
                 $moduleinstance->step2 = constants::M_STEP_RECORD;
                 $moduleinstance->step3 = constants::M_STEP_TRANSCRIBE;
                 $moduleinstance->step4 = constants::M_STEP_MODEL;
                 $moduleinstance->step5 = constants::M_STEP_NONE;
                 break;
+            case constants::M_SEQ_RM:
+                $moduleinstance->step1 = constants::M_STEP_RECORD;
+                $moduleinstance->step2 = constants::M_STEP_MODEL;
+                $moduleinstance->step3 = constants::M_STEP_NONE;
+                $moduleinstance->step4 = constants::M_STEP_NONE;
+                $moduleinstance->step5 = constants::M_STEP_NONE;
+                break;
             case constants::M_SEQ_PRM:
             default:
+                $moduleinstance->step1 = constants::M_STEP_PREPARE;
                 $moduleinstance->step2 = constants::M_STEP_RECORD;
                 $moduleinstance->step3 = constants::M_STEP_MODEL;
                 $moduleinstance->step4 = constants::M_STEP_NONE;
@@ -2717,12 +2731,13 @@ break;
 
     public static function steps_to_sequence($moduleinstance) {
         // this just uses function sequence_to_steps to figure out the sequence (activitysteps)
-        $sequences = [constants::M_SEQ_PRM, constants::M_SEQ_PTRM, constants::M_SEQ_PRMT, constants::M_SEQ_PRTM, constants::M_SEQ_PTM];
+        $sequences = [constants::M_SEQ_PRM, constants::M_SEQ_PTRM, constants::M_SEQ_PRMT, constants::M_SEQ_PRTM, constants::M_SEQ_PTM, constants::M_SEQ_RM];
         foreach ($sequences as $sequence){
             $fakemodule = new \stdClass();
             $fakemodule->activitysteps = $sequence;
             $fakemodule = self::sequence_to_steps($fakemodule);
-            if($fakemodule->step2 == $moduleinstance->step2
+            if($fakemodule->step1 == $moduleinstance->step1
+                && $fakemodule->step2 == $moduleinstance->step2
                 && $fakemodule->step3 == $moduleinstance->step3
                 && $fakemodule->step4 == $moduleinstance->step4
                 && $fakemodule->step5 == $moduleinstance->step5){

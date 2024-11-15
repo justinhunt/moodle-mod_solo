@@ -153,8 +153,6 @@ class attempthelper
         $ret = new \stdClass();
 
         if ($data ) {
-            require_sesskey();
-
             $newattempt = $data;
             $newattempt->solo = $this->mod->id;
             $newattempt->userid = $USER->id;

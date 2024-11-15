@@ -382,9 +382,21 @@ class mod_solo_external extends external_api {
     public static function submit_step($cmid,$step,$action,$data) {
           $params = self::validate_parameters(self::submit_step_parameters(),
             array('cmid'=>$cmid,'step'=>$step,'action'=>$action, 'data'=>$data));
+
+        //make sure we have a sesskey and are really logged in
+        try{
+            require_sesskey();
+        }catch(Exception $e){
+            $ret = new \stdClass();
+            $ret->message = "Could not insert solo attempt! " . $e->getMessage();
+            $ret->success = false;
+            return json_encode($ret);
+        }
+
         $dataobject=json_decode($data);
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
         $attempt_helper =  new attempthelper($cm);
+
         $ret = $attempt_helper->submit_step($step,$dataobject);
         return json_encode($ret);
     }

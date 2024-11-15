@@ -600,6 +600,24 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2025100703, 'solo');
     }
 
+    if($oldversion < 2025100704) {
+        $table = new xmldb_table(constants::M_TABLE);
+        $fields = [];
+        $fields[]= new xmldb_field('step1', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        //init fields
+        $DB->set_field(constants::M_TABLE,'step1',constants::M_STEP_PREPARE);
+
+        upgrade_mod_savepoint(true, 2025100704, 'solo');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

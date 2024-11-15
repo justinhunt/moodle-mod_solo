@@ -74,8 +74,8 @@ class attempt_renderer extends \plugin_renderer_base {
       //stepdata
      $stepdata=new \stdClass();
      //get total steps
-     $stepdata->totalsteps = 1;//we always have a prepare step (and a finished step but we dont count that)
-     $steps = [2,3,4,5];
+     $stepdata->totalsteps = 0;//we should always have one step
+     $steps = [1,2,3,4,5];
      foreach($steps as $step) {
          if ($solo->{'step' . $step} != constants::M_STEP_NONE) {
              $stepdata->totalsteps++;
@@ -92,8 +92,9 @@ class attempt_renderer extends \plugin_renderer_base {
 
         //init buttons
      $buttons = [];
-     $steps = [1,2,3,4];
-     foreach($steps as $step) {
+     $allsteps=$stepdata->totalsteps + 1;//we show an icon for finished step
+     for ($step=1;$step<=$allsteps;$step++){
+     //foreach($steps as $step) {
         $button = new \stdClass();
         if($step <= $stepdata->currentstep ) {
             $button->class = 'activeordone';
@@ -190,7 +191,8 @@ class attempt_renderer extends \plugin_renderer_base {
         $tdata=array('a'=>$attempt, 's'=>$stats, 'audiofilename'=>$attempt->filename, 'autotranscriptready'=>$autotranscriptready);
 
         //if user doesn't edit transcript don't bother explaining how transcript matching works
-        if($moduleinstance->step2==constants::M_STEP_TRANSCRIBE ||
+        if($moduleinstance->step1==constants::M_STEP_TRANSCRIBE ||
+            $moduleinstance->step2==constants::M_STEP_TRANSCRIBE ||
             $moduleinstance->step3==constants::M_STEP_TRANSCRIBE ||
             $moduleinstance->step4==constants::M_STEP_TRANSCRIBE){
             $tdata['studenteditstranscript']=true;
