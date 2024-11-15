@@ -1,3 +1,6 @@
+1.0.60 (Build 2025100704)
+ - Rebuilt js and denamed the AMD so pre M3.9 can use it
+ 
 1.0.59 (Build 2025100703)
 - Added text option to media elements (topic and model)
 - Fixed a bug that would break add/edit solo activities on edit form load
