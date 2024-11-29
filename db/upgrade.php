@@ -514,7 +514,7 @@ function xmldb_solo_upgrade($oldversion) {
 
                     //relevance option is now just "model" or "question" or "none"
                     //nobody understood the other options and they were hard predict the outcomes
-                    switch($agoptions->relevancegrade){
+                    switch(isset($agoptions->relevancegrade) && $agoptions->relevancegrade){
                             case constants::RELEVANCE_BROAD:
                             case constants::RELEVANCE_QUITE:
                             case constants::RELEVANCE_VERY:
