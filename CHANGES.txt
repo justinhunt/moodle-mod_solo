@@ -1,3 +1,6 @@
+1.0.61 (Build 2025100705)
+- Added a "Record->model(if set)" mode, ie no prepare step
+
 1.0.60 (Build 2025100704)
  - Rebuilt js and denamed the AMD so pre M3.9 can use it
  
