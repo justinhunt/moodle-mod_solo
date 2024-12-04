@@ -18,6 +18,7 @@ const M_TABLE='solo';
 const M_ATTEMPTSTABLE='solo_attempts';
 const M_STATSTABLE='solo_attemptstats';
 const M_TOPIC_TABLE='solo_topics';
+const M_AUTHTABLE='solo_auth';
 const M_SELECTEDTOPIC_TABLE='solo_selectedtopics';
 const M_AITABLE='solo_ai_result';
 const M_MODNAME='solo';

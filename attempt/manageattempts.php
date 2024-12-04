@@ -59,7 +59,7 @@ $context = context_module::instance($cm->id);
 require_capability('mod/solo:view', $context);
 
 //set up the page object
-$PAGE->set_url('/mod/solo/attempt/manageattempts.php', array('attemptid'=>$attemptid, 'id'=>$id, 'stepno'=>$stepno));
+$PAGE->set_url('/mod/solo/attempt/manageattempts.php', array('attemptid'=>$attemptid, 'id'=>$id, 'stepno'=>$stepno,'embed'=>$embed));
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
@@ -108,9 +108,9 @@ $attempthelper = new \mod_solo\attempthelper($cm);
 //handle delete actions
 if($action == 'confirmdelete'){
     $usecount = $DB->count_records(constants::M_ATTEMPTSTABLE,array(constants::M_MODNAME =>$cm->instance));
-    echo $renderer->header($moduleinstance, $cm, 'attempts', null, get_string('confirmattemptdeletetitle', constants::M_COMPONENT));
+    echo $renderer->header($moduleinstance, $cm, 'attempts', null, get_string('confirmattemptdeletetitle', constants::M_COMPONENT),$embed);
     echo $attempt_renderer->confirm(get_string("confirmattemptdelete",constants::M_COMPONENT),
-            new moodle_url('/mod/solo/attempt/manageattempts.php', array('action'=>'delete','id'=>$cm->id,'attemptid'=>$attemptid)),
+            new moodle_url('/mod/solo/attempt/manageattempts.php', array('action'=>'delete','id'=>$cm->id,'attemptid'=>$attemptid,'embed'=>$embed)),
             $redirecturl);
     echo $renderer->footer();
     return;
@@ -126,11 +126,11 @@ if($action == 'confirmdelete'){
 $siteconfig = get_config(constants::M_COMPONENT);
 $token= utils::fetch_token($siteconfig->apiuser,$siteconfig->apisecret);
 
-$PAGE->navbar->add(get_string('edit'), new moodle_url('/mod/solo/view.php', array('id'=>$id)));
+$PAGE->navbar->add(get_string('edit'), new moodle_url('/mod/solo/view.php', array('id'=>$id,'embed'=>$embed)));
 $PAGE->navbar->add(get_string('editingattempt', constants::M_COMPONENT, utils::get_steplabel($type)));
 $mode='attempts';
 
-echo $renderer->header($moduleinstance, $cm,$mode, null, get_string('edit', constants::M_COMPONENT));
+echo $renderer->header($moduleinstance, $cm,$mode, null, get_string('edit', constants::M_COMPONENT),$embed);
 
 //show open close dates
 $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart>0;

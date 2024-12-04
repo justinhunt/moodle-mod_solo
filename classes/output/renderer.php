@@ -23,7 +23,7 @@ class renderer extends \plugin_renderer_base {
      * @param string $extrapagetitle String to append to the page title.
      * @return string
      */
-    public function header($moduleinstance, $cm, $currenttab = '', $itemid = null, $extrapagetitle = null) {
+    public function header($moduleinstance, $cm, $currenttab = '', $itemid = null, $extrapagetitle = null,$embed=0) {
         global $CFG;
 
         $activityname = format_string($moduleinstance->name, true, $moduleinstance->course);
@@ -40,7 +40,9 @@ class renderer extends \plugin_renderer_base {
         $this->page->set_title($title);
         $this->page->set_heading($this->page->course->fullname);
         $output = $this->output->header();
-        $output .= $this->fetch_title($moduleinstance,$activityname);
+        if(!$embed) {
+            $output .= $this->fetch_title($moduleinstance, $activityname);
+        }
 
         if (has_capability('mod/solo:selecttopics', $context) || has_capability('mod/solo:viewreports', $context)) {
 

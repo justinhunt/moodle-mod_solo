@@ -27,10 +27,24 @@ require_once($CFG->dirroot.'/mod/solo/lib.php');
 
 use mod_solo\constants;
 use mod_solo\utils;
+use \mod_solo\mobile_auth;
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // solo instance ID
 $reattempt = optional_param('reattempt', 0, PARAM_INT);
+$embed = optional_param('embed', 0, PARAM_INT); // embed or not
+
+// Allow login through an authentication token.
+$userid = optional_param('user_id', null, PARAM_ALPHANUMEXT);
+$secret  = optional_param('secret', null, PARAM_RAW);
+//formerly had !isloggedin() check, but we want tologin afresh on each embedded access
+if(!empty($userid) && !empty($secret) ) {
+    if (mobile_auth::has_valid_token($userid, $secret)) {
+        $user = get_complete_user_data('id', $userid);
+        complete_user_login($user);
+        $embed = 2;
+    }
+}
 
 if ($id) {
     $cm = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, MUST_EXIST);
@@ -45,10 +59,13 @@ if ($id) {
     print_error('You must specify a course_module ID or an instance ID');
 }
 
+//We are in embedded mode in Moodle Mobile App and some other cases
+$embedded = $embed > 0 || $CFG->enablesetuptab ? 2 : 0;
+
 // mode is necessary for tabs
 $mode = 'attempts';
 // Set page url before require login, so post login will return here
-$PAGE->set_url(constants::M_URL . '/view.php', ['id' => $cm->id, 'mode' => $mode]);
+$PAGE->set_url(constants::M_URL . '/view.php', ['id' => $cm->id, 'mode' => $mode, 'embed' => $embedded]);
 $PAGE->force_settings_menu(true);
 
 
@@ -66,7 +83,7 @@ require_capability('mod/solo:view', $context);
 
 // Get an admin settings
 $config = get_config(constants::M_COMPONENT);
-if($config->enablesetuptab){
+if($embedded){
     $PAGE->set_pagelayout('popup');
 }else{
     $PAGE->set_pagelayout('incourse');
@@ -78,8 +95,9 @@ if($config->layout == constants::M_LAYOUT_NARROW) {
     $PAGE->add_body_class('mod-solo-layout-standard');
 }
 
+//this is a special case where the activity has been made with just a title and no speaking topic (placeholder)
 if($config->enablesetuptab && empty($moduleinstance->speakingtopic)){
-    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
+    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT),$embed);
     if (has_capability('mod/solo:manage', $context)) {
         echo $renderer->show_no_content($cm, true);
     }else{
@@ -116,7 +134,7 @@ if(count($attempts) == 0){
 // either redirect to a form handler for the attempt step, or show our attempt summary
 if($startorcontinue) {
     $redirecturl = new moodle_url(constants::M_URL . '/attempt/manageattempts.php',
-            ['id' => $cm->id, 'attemptid' => $attemptid, 'stepno' => $nextstep]);
+            ['id' => $cm->id, 'attemptid' => $attemptid, 'stepno' => $nextstep, 'embed'=>$embedded]);
     redirect($redirecturl);
 }else{
 
@@ -127,7 +145,7 @@ if($startorcontinue) {
 
     $PAGE->navbar->add(get_string('attempts', constants::M_COMPONENT));
 
-    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
+    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT),$embed);
 
     $attempt = $attempthelper->fetch_latest_complete_attempt();
     $stats = false;
