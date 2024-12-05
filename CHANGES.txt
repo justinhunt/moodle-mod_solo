@@ -1,3 +1,6 @@
+1.0.62 (Build 2025100706)
+- Added Mobile App Support
+
 1.0.61 (Build 2025100705)
 - Added a "Record->model(if set)" mode, ie no prepare step
 
