@@ -59,13 +59,13 @@ if ($id) {
     print_error('You must specify a course_module ID or an instance ID');
 }
 
-//We are in embedded mode in Moodle Mobile App and some other cases
-$embedded = $embed > 0 || $CFG->enablesetuptab ? 2 : 0;
+// Get an admin settings
+$config = get_config(constants::M_COMPONENT);
 
 // mode is necessary for tabs
 $mode = 'attempts';
 // Set page url before require login, so post login will return here
-$PAGE->set_url(constants::M_URL . '/view.php', ['id' => $cm->id, 'mode' => $mode, 'embed' => $embedded]);
+$PAGE->set_url(constants::M_URL . '/view.php', ['id' => $cm->id, 'mode' => $mode, 'embed' => $embed]);
 $PAGE->force_settings_menu(true);
 
 
@@ -81,10 +81,12 @@ $attemptrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'attempt');
 // We need view permission to be here
 require_capability('mod/solo:view', $context);
 
-// Get an admin settings
-$config = get_config(constants::M_COMPONENT);
-if($embedded){
+//embedded mode or not
+if($moduleinstance->foriframe == 1 || $embed == 1) {
+    $PAGE->set_pagelayout('embedded');
+}elseif($config->enablesetuptab || $embed == 2){
     $PAGE->set_pagelayout('popup');
+    $PAGE->add_body_class('poodll-solo-embed');
 }else{
     $PAGE->set_pagelayout('incourse');
 }
@@ -134,7 +136,7 @@ if(count($attempts) == 0){
 // either redirect to a form handler for the attempt step, or show our attempt summary
 if($startorcontinue) {
     $redirecturl = new moodle_url(constants::M_URL . '/attempt/manageattempts.php',
-            ['id' => $cm->id, 'attemptid' => $attemptid, 'stepno' => $nextstep, 'embed'=>$embedded]);
+            ['id' => $cm->id, 'attemptid' => $attemptid, 'stepno' => $nextstep, 'embed'=>$embed]);
     redirect($redirecturl);
 }else{
 
@@ -145,7 +147,7 @@ if($startorcontinue) {
 
     $PAGE->navbar->add(get_string('attempts', constants::M_COMPONENT));
 
-    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT),$embed);
+    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
 
     $attempt = $attempthelper->fetch_latest_complete_attempt();
     $stats = false;

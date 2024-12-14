@@ -100,7 +100,7 @@ if ($attemptid) {
 }
 
 //we always head back to the solo attempts page
-$redirecturl = new moodle_url('/mod/solo/view.php', array('id'=>$cm->id));
+$redirecturl = new moodle_url('/mod/solo/view.php', array('id'=>$cm->id,'embed'=>$embed));
 //just init this when we need it.
 $topichelper=false;
 $attempthelper = new \mod_solo\attempthelper($cm);
@@ -130,7 +130,7 @@ $PAGE->navbar->add(get_string('edit'), new moodle_url('/mod/solo/view.php', arra
 $PAGE->navbar->add(get_string('editingattempt', constants::M_COMPONENT, utils::get_steplabel($type)));
 $mode='attempts';
 
-echo $renderer->header($moduleinstance, $cm,$mode, null, get_string('edit', constants::M_COMPONENT),$embed);
+echo $renderer->header($moduleinstance, $cm,$mode, null, get_string('edit', constants::M_COMPONENT));
 
 //show open close dates
 $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart>0;
