@@ -59,17 +59,14 @@ if ($id) {
     print_error('You must specify a course_module ID or an instance ID');
 }
 
-// Get admin settings
+// Get an admin settings
 $config = get_config(constants::M_COMPONENT);
-
-//We are in embedded mode in Moodle Mobile App and some other cases
-$embedded = $embed > 0 || $config->enablesetuptab ? 2 : 0;
 
 // mode is necessary for tabs
 $mode = 'attempts';
 
 // Set page url before require login, so post login will return here
-$PAGE->set_url(constants::M_URL . '/view.php', ['id' => $cm->id, 'mode' => $mode, 'embed' => $embedded]);
+$PAGE->set_url(constants::M_URL . '/view.php', ['id' => $cm->id, 'mode' => $mode, 'embed' => $embed]);
 $PAGE->force_settings_menu(true);
 
 
@@ -85,8 +82,12 @@ $attemptrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'attempt');
 // We need view permission to be here
 require_capability('mod/solo:view', $context);
 
-if($embedded){
+//embedded mode or not
+if($moduleinstance->foriframe == 1 || $embed == 1) {
+    $PAGE->set_pagelayout('embedded');
+}elseif($config->enablesetuptab || $embed == 2){
     $PAGE->set_pagelayout('popup');
+    $PAGE->add_body_class('poodll-solo-embed');
 }else{
     $PAGE->set_pagelayout('incourse');
 }
@@ -99,10 +100,10 @@ if($config->layout == constants::M_LAYOUT_NARROW) {
 
 //this is a special case where the activity has been made with just a title and no speaking topic (placeholder)
 if($config->enablesetuptab && empty($moduleinstance->speakingtopic)){
-    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT),$embed);
+    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
     if (has_capability('mod/solo:manage', $context)) {
         echo $renderer->show_no_content($cm, true);
-    }else{
+    } else {
         echo $renderer->show_no_content($cm, false);
     }
     echo $renderer->footer();
@@ -136,18 +137,16 @@ if(count($attempts) == 0){
 // either redirect to a form handler for the attempt step, or show our attempt summary
 if($startorcontinue) {
     $redirecturl = new moodle_url(constants::M_URL . '/attempt/manageattempts.php',
-            ['id' => $cm->id, 'attemptid' => $attemptid, 'stepno' => $nextstep, 'embed'=>$embedded]);
+            ['id' => $cm->id, 'attemptid' => $attemptid, 'stepno' => $nextstep, 'embed' => $embed]);
     redirect($redirecturl);
 }else{
-
-
     // if we need datatables we need to set that up before calling $renderer->header
     $tableid = '' . constants::M_CLASS_ITEMTABLE . '_' . '_opts_9999';
     $attemptrenderer->setup_datatables($tableid);
 
     $PAGE->navbar->add(get_string('attempts', constants::M_COMPONENT));
 
-    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT),$embed);
+    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
 
     $attempt = $attempthelper->fetch_latest_complete_attempt();
     $stats = false;
@@ -206,12 +205,12 @@ if($startorcontinue) {
     $tdata = new \stdClass();
     if((!$attempt->manualgraded && $moduleinstance->multiattempts) || has_capability('mod/solo:manageattempts', $context)){
         $reattempturl = new \moodle_url(constants::M_URL . '/view.php',
-                ['id' => $cm->id, 'reattempt' => 1]);
+                ['id' => $cm->id, 'reattempt' => 1, 'embed' => $embed]);
         $tdata->reattempturl = $reattempturl->out();
     }
 
     // show back to course button if we are not in an LTI window
-    if(!$config->enablesetuptab) {
+    if(!$config->enablesetuptab && $embed == 0) {
         $tdata->courseurl = $CFG->wwwroot . '/course/view.php?id=' . $moduleinstance->course . '#section-'. ($cm->section - 1);
         $tdata->backtocourse = true;
     }

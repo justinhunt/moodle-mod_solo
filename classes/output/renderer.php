@@ -14,6 +14,21 @@ use \mod_solo\attempthelper;
 
 class renderer extends \plugin_renderer_base {
 
+    //Use page layout to reconstruct embed flag so we can generate links that maintain it
+    public function get_embed_flag() {
+        switch($this->page->pagelayout){
+            case 'popup':
+                $embed = 2;
+                break;
+            case 'embedded':
+                $embed = 1;
+                break;
+            default:
+                $embed = 0;
+        }
+        return $embed;
+    }
+
     /**
      * Returns the header for the module
      *
@@ -23,8 +38,11 @@ class renderer extends \plugin_renderer_base {
      * @param string $extrapagetitle String to append to the page title.
      * @return string
      */
-    public function header($moduleinstance, $cm, $currenttab = '', $itemid = null, $extrapagetitle = null,$embed=0) {
+    public function header($moduleinstance, $cm, $currenttab = '', $itemid = null, $extrapagetitle = null) {
         global $CFG;
+
+        // Get our embed param
+        $embed = $this->get_embed_flag();
 
         $activityname = format_string($moduleinstance->name, true, $moduleinstance->course);
         if (empty($extrapagetitle)) {
@@ -36,18 +54,16 @@ class renderer extends \plugin_renderer_base {
         // Build the buttons
         $context = \context_module::instance($cm->id);
 
-        /// Header setup
+        // Header setup
         $this->page->set_title($title);
         $this->page->set_heading($this->page->course->fullname);
         $output = $this->output->header();
-        if(!$embed) {
+        if (!$embed == 2) {
             $output .= $this->fetch_title($moduleinstance, $activityname);
         }
 
         if (has_capability('mod/solo:selecttopics', $context) || has_capability('mod/solo:viewreports', $context)) {
-
-
-            if (!empty($currenttab)) {
+            if (!empty($currenttab) && $embed !== 2) {
                 ob_start();
                 include($CFG->dirroot.'/mod/solo/tabs.php');
                 $output .= ob_get_contents();
