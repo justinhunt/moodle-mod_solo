@@ -59,11 +59,15 @@ if ($id) {
     print_error('You must specify a course_module ID or an instance ID');
 }
 
+// Get admin settings
+$config = get_config(constants::M_COMPONENT);
+
 //We are in embedded mode in Moodle Mobile App and some other cases
-$embedded = $embed > 0 || $CFG->enablesetuptab ? 2 : 0;
+$embedded = $embed > 0 || $config->enablesetuptab ? 2 : 0;
 
 // mode is necessary for tabs
 $mode = 'attempts';
+
 // Set page url before require login, so post login will return here
 $PAGE->set_url(constants::M_URL . '/view.php', ['id' => $cm->id, 'mode' => $mode, 'embed' => $embedded]);
 $PAGE->force_settings_menu(true);
@@ -81,8 +85,6 @@ $attemptrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'attempt');
 // We need view permission to be here
 require_capability('mod/solo:view', $context);
 
-// Get an admin settings
-$config = get_config(constants::M_COMPONENT);
 if($embedded){
     $PAGE->set_pagelayout('popup');
 }else{
@@ -169,7 +171,7 @@ if($startorcontinue) {
         $gradinginfo = grade_get_grades($moduleinstance->course, 'mod', 'solo', $moduleinstance->id, $USER->id);
         if($attempt && !empty($gradinginfo ) && $attempt->grade != null) {
             $feedback = $attempt->feedback;
-            $starrating = true;
+            $starrating = $moduleinstance->starrating == constants::M_STAR_RATING_USE;
             $graderesults = utils::display_studentgrade($context, $moduleinstance, $attempt, $gradinginfo, $starrating);
             if ($attempt->manualgraded) {
                 $evaluator = get_string("teachereval", constants::M_COMPONENT);

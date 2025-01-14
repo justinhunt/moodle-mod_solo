@@ -57,7 +57,8 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
                 'enabletranscription','enablesharing','enableautograde','gradewordgoal','autogradeoptions','completionallsteps',
                 'postattemptedit','step2','step3','step4','step5','foriframe','timecreated','timemodified','viewstart','viewend',
             'enablesuggestions','enabletts','nopasting','modelttsembedding','modelttsideacount','preloadtranscript',
-            'showgrammar','showspelling','modelanswer','sampleanswer','feedbacklanguage','feedbackscheme','markscheme'
+            'showgrammar','showspelling','modelanswer','sampleanswer','feedbacklanguage','feedbackscheme','markscheme',
+            'starrating','showcefrlevel','showieltslevel','showtoefllevel','showgenericlevel'
 			));
 
         // attempt

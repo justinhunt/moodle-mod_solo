@@ -2290,7 +2290,8 @@ span.mod_solo_grading_original_preword,span.mod_solo_grading_original_postword {
 	}
 }
 
-.mod_solo_automatic_evaluation_chart {
+.mod_solo_automatic_evaluation_chart,
+.mod_solo_automatic_evaluation_nochart {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -2322,13 +2323,13 @@ span.mod_solo_grading_original_preword,span.mod_solo_grading_original_postword {
 }
 
 /* Grade chart will not display in the reports view page (intended for teachers) yet will be still visible in any other page (which will actually be the #page-mod-solo-view page, intended for students). */
-body:not(#page-mod-solo-reports) #chart_container,
-body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_header {
+.mod_solo_automatic_evaluation_nochart #chart_container,
+.mod_solo_automatic_evaluation_nochart .mod_solo_automatic_evaluation_chart_grade_header {
 	display: none;
 }
 
 /* This rule affects both the percentage number in the #page-mod-solo-reports (intended for teachers) view and the success message in the #page-mod-solo-view (intended for students); so here we "destylize" the first to style the second */
-body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_percent {
+.mod_solo_automatic_evaluation_nochart .mod_solo_automatic_evaluation_chart_grade_percent {
 	position: static;
 	top: 0;
 	font-weight: normal;
@@ -2337,7 +2338,7 @@ body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_perc
 }
 
 @media screen and (min-width: 768px) {
-	body:not(#page-mod-solo-reports) .mod_solo_automatic_evaluation_chart_grade_percent {
+	.mod_solo_automatic_evaluation_nochart .mod_solo_automatic_evaluation_chart_grade_percent {
 		font-size: 20px;
 	}
 }

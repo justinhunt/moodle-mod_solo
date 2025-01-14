@@ -640,6 +640,27 @@ function xmldb_solo_upgrade($oldversion) {
         upgrade_mod_savepoint(true, $newversion, 'solo');
     }
 
+    $newversion = 2025100708;
+    if ($oldversion < $newversion) {
+
+        $table = new xmldb_table(constants::M_TABLE);
+
+        // Add fields.
+        $fields = [];
+        $fields[] = new xmldb_field('starrating', XMLDB_TYPE_INTEGER, 4, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('showcefrlevel', XMLDB_TYPE_INTEGER, 2, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 1);
+        $fields[] = new xmldb_field('showieltslevel', XMLDB_TYPE_INTEGER, 2, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('showtoefllevel', XMLDB_TYPE_INTEGER, 2, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('showgenericlevel', XMLDB_TYPE_INTEGER, 2, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, $newversion, 'solo');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

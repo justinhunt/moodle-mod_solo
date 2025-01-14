@@ -8,8 +8,7 @@
 
 {{^element.frozen}}
     {{#js}}
-        //<script>
-        require(['jquery', 'core/log','https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.js'],
+        require(['jquery', 'core/log','core/chartjs'],
         function($, log, chartjs) {
             var make_chart =function(thedata){
                 var ctx = document.getElementById("chart_canvas_automatic_evaluation").getContext("2d");

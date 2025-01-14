@@ -902,6 +902,86 @@ break;
         if($stats && $stats->aiaccuracy < 0){
             $stats->aiaccuracy = '--';
         }
+
+        //CEFR Mapping
+        if($stats && isset($stats->cefrlevel) && $moduleinstance){
+            $isenglish = self::is_english($moduleinstance->ttslanguage);
+            switch(strtoupper($stats->cefrlevel)){
+                case 'A1':
+                    if ($isenglish && $moduleinstance->showieltslevel) {
+                        $stats->ieltslevel = '0 - 3.5';
+                    }
+                    if ($isenglish && $moduleinstance->showtoefllevel) {
+                        $stats->toefllevel = '0 - 30';
+                    }
+                    if ($moduleinstance->showgenericlevel) {
+                        $stats->genericlevel = get_string('beginner', constants::M_COMPONENT);
+                    }
+                    break;
+                case 'A2':
+                    if ($isenglish && $moduleinstance->showieltslevel) {
+                        $stats->ieltslevel = '4 - 4.5';
+                    }
+                    if ($isenglish && $moduleinstance->showtoefllevel) {
+                        $stats->toefllevel = '31 - 59';
+                    }
+                    if ($moduleinstance->showgenericlevel) {
+                        $stats->genericlevel = get_string('intermediate', constants::M_COMPONENT);
+                    }
+                    break;
+                case 'B1':
+                    if ($isenglish && $moduleinstance->showieltslevel) {
+                        $stats->ieltslevel = '5 - 5.5';
+                    }
+                    if ($isenglish && $moduleinstance->showtoefllevel) {
+                        $stats->toefllevel = '60 - 78';
+                    }
+                    if ($moduleinstance->showgenericlevel) {
+                        $stats->genericlevel = get_string('highintermediate', constants::M_COMPONENT);
+                    }
+                    break;
+                case 'B2':
+                    if ($isenglish && $moduleinstance->showieltslevel) {
+                        $stats->ieltslevel = '6 - 6.5';
+                    }
+                    if ($isenglish && $moduleinstance->showtoefllevel) {
+                        $stats->toefllevel = '79 - 93';
+                    }
+                    if ($moduleinstance->showgenericlevel) {
+                        $stats->genericlevel = get_string('lowadvanced', constants::M_COMPONENT);
+                    }
+                    break;
+                case 'C1':
+                    if ($isenglish && $moduleinstance->showieltslevel) {
+                        $stats->ieltslevel = '7 - 7.5';
+                    }
+                    if ($isenglish && $moduleinstance->showtoefllevel) {
+                        $stats->toefllevel = '94 - 114';
+                    }
+                    if ($moduleinstance->showgenericlevel) {
+                        $stats->genericlevel = get_string('advanced', constants::M_COMPONENT);
+                    }
+                    break;
+                case 'C2':
+                    if ($isenglish && $moduleinstance->showieltslevel) {
+                        $stats->ieltslevel = '8 - 9';
+                    }
+                    if ($isenglish && $moduleinstance->showtoefllevel) {
+                        $stats->toefllevel = '115 - 120';
+                    }
+                    if ($moduleinstance->showgenericlevel) {
+                        $stats->genericlevel = get_string('upperadvanced', constants::M_COMPONENT);
+                    }
+                    break;
+                default:
+                    $stats->cefrlevel = '';
+            }
+            if (!$moduleinstance->showcefrlevel) {
+                unset($stats->cefrlevel);
+            }
+        }//end of cefr mapping
+
+
         return $stats;
     }
 
@@ -1776,6 +1856,13 @@ break;
                 constants::M_TOPICLEVEL_CUSTOM => get_string('topiclevelcustom', constants::M_COMPONENT),
         ];
 
+    }
+
+    public static function get_starrating_options() {
+        return [
+            constants::M_STAR_RATING_USE => get_string('starrating_use', constants::M_COMPONENT),
+            constants::M_STAR_RATING_NONE => get_string('starrating_none', constants::M_COMPONENT),
+        ];
     }
 
     public static function get_conversationlength_options() {
@@ -2849,6 +2936,31 @@ break;
         $name = 'viewend';
         $label = get_string($name, constants::M_COMPONENT);
         $mform->addElement('date_time_selector', $name, $label, $dateoptions);
+        $mform->addHelpButton($name, $name , constants::M_COMPONENT);
+
+        $name = 'resultsdisplay';
+        $label = get_string($name, constants::M_COMPONENT);
+        $mform->addElement('header', $name, $label);
+        $mform->setExpanded($name, false);
+        // -----------------------------------------------------------------------------
+
+        $name = 'leveltypes';
+        $label = get_string($name, constants::M_COMPONENT);
+        $leveltypes = [];
+        $leveltypes[] =& $mform->createElement('advcheckbox', 'showcefrlevel', get_string('showcefrlevel', constants::M_COMPONENT), '');
+        $leveltypes[] =& $mform->createElement('advcheckbox', 'showieltslevel', get_string('showieltslevel', constants::M_COMPONENT), '');
+        $leveltypes[] =& $mform->createElement('advcheckbox', 'showtoefllevel', get_string('showtoefllevel', constants::M_COMPONENT), '');
+        $leveltypes[] =& $mform->createElement('advcheckbox', 'showgenericlevel', get_string('showgenericlevel', constants::M_COMPONENT), '');
+        $mform->addGroup($leveltypes, $name, get_string($name, constants::M_COMPONENT), [' '], false);
+
+        // We assume they want to use some media
+        $mform->setDefault('showcefrlevel', 1);
+        $mform->addHelpButton($name, $name, constants::M_COMPONENT);
+
+        $name = 'starrating';
+        $options = self::get_starrating_options();
+        $label = get_string($name, constants::M_COMPONENT);
+        $mform->addElement('select', $name, $label, $options, []);
         $mform->addHelpButton($name, $name , constants::M_COMPONENT);
 
         // Speaking Targets

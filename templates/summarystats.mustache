@@ -35,6 +35,7 @@
     <section>
         <h5>{{#str}}more_stats, mod_solo{{/str}}</h5>
         <div class="row justify-content-center mod_solo_result_squaretiles">
+          {{#s.cefrlevel}}
           <div class="card mod_solo_result_squaretile ">
               <div class="card-header">{{#str}}stats_cefrlevel, mod_solo{{/str}}</div>
               <div class="card-body">
@@ -42,6 +43,34 @@
                   <p class="card-text">({{#str}}estimated, mod_solo{{/str}})</p>
               </div>
           </div>
+            {{/s.cefrlevel}}
+            {{#s.ieltslevel}}
+          <div class="card mod_solo_result_squaretile ">
+              <div class="card-header">{{#str}}stats_ieltslevel, mod_solo{{/str}}</div>
+              <div class="card-body">
+                    <h4 class="card-title">{{s.ieltslevel}}</h4>
+                    <p class="card-text">({{#str}}estimated, mod_solo{{/str}})</p>
+              </div>
+          </div>
+            {{/s.ieltslevel}}
+            {{#s.toefllevel}}
+          <div class="card mod_solo_result_squaretile ">
+              <div class="card-header">{{#str}}stats_toefllevel, mod_solo{{/str}}</div>
+              <div class="card-body">
+                    <h4 class="card-title">{{s.toefllevel}}</h4>
+                    <p class="card-text">({{#str}}estimated, mod_solo{{/str}})</p>
+              </div>
+          </div>
+            {{/s.toefllevel}}
+            {{#s.genericlevel}}
+            <div class="card mod_solo_result_squaretile ">
+                <div class="card-header">{{#str}}stats_genericlevel, mod_solo{{/str}}</div>
+                <div class="card-body">
+                    <h4 class="card-title">{{s.genericlevel}}</h4>
+                    <p class="card-text">({{#str}}estimated, mod_solo{{/str}})</p>
+                </div>
+            </div>
+            {{/s.genericlevel}}
           <div class="card mod_solo_result_squaretile">
               <div class="card-header">{{#str}}stats_relevance, mod_solo{{/str}}</div>
               <div class="card-body">

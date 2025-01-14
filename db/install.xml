@@ -74,6 +74,11 @@
         <FIELD NAME="feedbackscheme" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="feedbacklanguage" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="en-US" SEQUENCE="false" COMMENT="the AI feedback language"/>
         <FIELD NAME="sampleanswer" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="starrating" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="showcefrlevel" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="showieltslevel" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="showtoefllevel" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="showgenericlevel" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
