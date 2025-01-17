@@ -64,6 +64,7 @@ $config = get_config(constants::M_COMPONENT);
 
 // mode is necessary for tabs
 $mode = 'attempts';
+
 // Set page url before require login, so post login will return here
 $PAGE->set_url(constants::M_URL . '/view.php', ['id' => $cm->id, 'mode' => $mode, 'embed' => $embed]);
 $PAGE->force_settings_menu(true);
@@ -169,7 +170,7 @@ if($startorcontinue) {
         $gradinginfo = grade_get_grades($moduleinstance->course, 'mod', 'solo', $moduleinstance->id, $USER->id);
         if($attempt && !empty($gradinginfo ) && $attempt->grade != null) {
             $feedback = $attempt->feedback;
-            $starrating = true;
+            $starrating = $moduleinstance->starrating == constants::M_STAR_RATING_USE;
             $graderesults = utils::display_studentgrade($context, $moduleinstance, $attempt, $gradinginfo, $starrating);
             if ($attempt->manualgraded) {
                 $evaluator = get_string("teachereval", constants::M_COMPONENT);

@@ -90,7 +90,8 @@ if ($attemptid) {
     if(!$attempt){
         print_error('could not find attempt of id:' . $attemptid);
     }
-    // This wopuld force a step, if we needed to
+
+    //This would force a step, if we needed to
     $lateststep = $attempt->completedsteps;
     $edit = true;
 } else {

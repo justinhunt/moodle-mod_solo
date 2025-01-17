@@ -1,3 +1,6 @@
+1.0.63 (Build 2025100708)
+- Added options for display of results to student (star rating, cefr level etc)
+
 1.0.62 (Build 2025100706)
 - Added Mobile App Support
 
