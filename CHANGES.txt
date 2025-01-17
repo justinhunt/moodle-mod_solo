@@ -1,3 +1,6 @@
+1.0.65 (Build 20251007XX)
+- Fixed issue with activity step sequence setting not backing up / restoring properly
+
 1.0.63 (Build 2025100708)
 - Added options for display of results to student (star rating, cefr level etc)
 
