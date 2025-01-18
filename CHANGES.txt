@@ -1,4 +1,4 @@
-1.0.65 (Build 20251007XX)
+1.0.65 (Build 2025100709)
 - Fixed issue with activity step sequence setting not backing up / restoring properly
 
 1.0.63 (Build 2025100708)
