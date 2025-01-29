@@ -531,14 +531,14 @@ break;
         //Feedback language for AI instructions
         //its awful but we hijack the wordcard's student native language setting
         $feedbacklanguage = $moduleinstance->feedbacklanguage;
-        if($siteconfig->setnativelanguage) {
-            $userprefdeflanguage = get_user_preferences('wordcards_deflang',null,$attempt->userid);
+        if ($siteconfig->setnativelanguage) {
+            $userprefdeflanguage = get_user_preferences('wordcards_deflang', null, $attempt->userid);
             if (!empty($userprefdeflanguage)) {
                 //the WC language is 2 char (eg 'en') but Poodll AI expects a locale code (eg 'en-US')
-                $wc_language = self::lang_to_locale($userprefdeflanguage);
+                $wclanguage = self::lang_to_locale($userprefdeflanguage);
                 //if we did get a locale code back lets use that.
-                if ($wc_language !== $userprefdeflanguage && $wc_language !== $feedbacklanguage) {
-                    $feedbacklanguage = $wc_language;
+                if ($wclanguage !== $userprefdeflanguage && $wclanguage !== $feedbacklanguage) {
+                    $feedbacklanguage = $wclanguage;
                 }
             }
         }
