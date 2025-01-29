@@ -551,7 +551,7 @@ break;
         if ($attempt->aigrade == null && !empty($studentresponse) && !empty($moduleinstance->feedbackscheme) && !empty($moduleinstance->markscheme)) {
             $instructions = new \stdClass();
             $instructions->feedbackscheme = $moduleinstance->feedbackscheme;
-            $instructions->feedbacklanguage = $moduleinstance->feedbacklanguage;
+            $instructions->feedbacklanguage = $feedbacklanguage;
             $instructions->markscheme = $moduleinstance->markscheme;
             $instructions->maxmarks = $maxmarks;
             $instructions->questiontext = strip_tags($moduleinstance->speakingtopic);
