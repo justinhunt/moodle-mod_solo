@@ -154,6 +154,6 @@ if ($ADMIN->fulltree) {
 
     //Native Language Setting
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/setnativelanguage',
-        get_string('enablenativelanguage', constants::M_COMPONENT), get_string('enablenativelanguage_details',constants::M_COMPONENT), 0));
+        get_string('enablenativelanguage', constants::M_COMPONENT), get_string('enablenativelanguage_details',constants::M_COMPONENT), 1));
 
 }
