@@ -857,7 +857,7 @@ $string['leveltypes_help'] = 'This setting affects which certification level est
 $string['showcefrlevel'] = 'CEFR Level';
 $string['showieltslevel'] = 'IELTS Level';
 $string['showtoefllevel'] = 'TOEFL Level';
-$string['showgenericlevel'] = 'Level';
+$string['showgenericlevel'] = 'Generic Level';
 $string['beginner'] = 'Beginner';
 $string['intermediate'] = 'Intermediate';
 $string['highintermediate'] = 'High Intermediate';
@@ -866,6 +866,6 @@ $string['advanced'] = 'Advanced';
 $string['upperadvanced'] = 'Upper Advanced';
 $string['stats_ieltslevel'] = 'IELTS Level';
 $string['stats_toefllevel'] = 'TOEFL Level';
-$string['stats_genericlevel'] = 'Generic Level';
+$string['stats_genericlevel'] = 'Language Level';
 $string['enablenativelanguage'] = "Enable Native Language";
 $string['enablenativelanguage_details'] = 'If set, the student can choose their native language, this will override the default language of the feedback language that AI returns with the results. The language must currently be <a href="https://support.poodll.com/en/support/solutions/articles/19000163890-definitions-in-user-s-native-language">set in Poodll WordCards</a>, and it is picked up here.';

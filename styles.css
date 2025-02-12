@@ -2901,3 +2901,8 @@ span.mod_solo_grading_original_preword,span.mod_solo_grading_original_postword {
 	background: #c5efcf;
 	/* font-weight: bold; */
 }
+
+.mod_solo_rtl {
+	direction: rtl;
+	text-align: right;
+}

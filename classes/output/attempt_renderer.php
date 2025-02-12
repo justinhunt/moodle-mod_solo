@@ -253,6 +253,11 @@ class attempt_renderer extends \plugin_renderer_base {
         if(!empty($attempt->aifeedback)&&utils::is_json($attempt->aifeedback)){
             $tdata['hasaifeedback']=true;
             $tdata['aifeedback'] = json_decode($attempt->aifeedback);
+            // For right to left languages we want to add the RTL direction and right justify.
+            $feedbacklanguage = utils::fetch_feedback_language($moduleinstance, $attempt);
+            if(utils::is_rtl($feedbacklanguage)){
+                $tdata['rtl'] = constants::M_CLASS . '_rtl';
+            }
         }
 
         //send data to template
