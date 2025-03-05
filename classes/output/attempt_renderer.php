@@ -136,7 +136,13 @@ class attempt_renderer extends \plugin_renderer_base {
                 $data->unfilled = 100 - $percentage;
             }
         }
-        return $this->output->render_from_template( constants::M_COMPONENT . '/summaryteachereval', $data);
+        // Hacky check for rubric and show different layout depending on that.
+        if (\core_text::strpos($graderesults, 'rubric') !== false) {
+            return $this->output->render_from_template( constants::M_COMPONENT . '/summaryrubriceval', $data);
+        } else {
+            return $this->output->render_from_template( constants::M_COMPONENT . '/summaryteachereval', $data);
+        }
+
     }
 
     function show_spellingerrors($spellingerrors){
