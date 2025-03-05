@@ -1,3 +1,6 @@
+1.0.67 (Build 2025100711)
+- added rubric results template
+
 1.0.66 (Build 2025100711)
 - Added proper justification for R2L languages as feedback
 - Better title for Generic level
