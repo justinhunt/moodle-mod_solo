@@ -1,6 +1,7 @@
-1.0.66
+1.0.66 (Build 2025100711)
 - Added proper justification for R2L languages as feedback
 - Better title for Generic level
+- Fix for broken rubric grading (when P-Chat not installed)
 
 1.0.65 (Build 2025100710)
 - Added native language setting for AI graded feedback

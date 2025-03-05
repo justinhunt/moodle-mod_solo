@@ -2023,7 +2023,7 @@ break;
 
 
     /**
-     * fetch a summary of rubric grade for thje student
+     * fetch a summary of rubric grade for the student
      *
      * @param \context_module| $modulecontext
      * @param \stdClass| $moduleinstance
@@ -2050,7 +2050,7 @@ break;
         $method = $gradingmanager->get_active_method();
         if($method == 'rubric') {
             if ($controller = $gradingmanager->get_active_controller()) {
-                $menu = \mod_pchat\utils::make_grades_menu($moduleinstance->grade);
+                $menu = \mod_solo\utils::make_grades_menu($moduleinstance->grade);
                 $controller->set_grade_range($menu, $moduleinstance->grade > 0);
                 $gradefordisplay = $controller->render_grade($PAGE,
                         $gradeid,
@@ -2149,7 +2149,7 @@ break;
 
         $raterid = $USER->id;
 
-        $grademenu = \mod_pchat\utils::make_grades_menu($moduleinstance->grade);
+        $grademenu = \mod_solo\utils::make_grades_menu($moduleinstance->grade);
         $allowgradedecimals = $moduleinstance->grade > 0;
 
         $advancedgradingwarning = false;
@@ -3518,6 +3518,36 @@ break;
             return false;
         }
     }
+    /**
+     * Creates an array that represents all the current grades that
+     * can be chosen using the given grading type.
+     *  COPY of same function in moodlelib .. modified to handle decimal numbers
+     *
+     * Negative numbers
+     * are scales, zero is no grade, and positive numbers are maximum
+     * grades.
+     *
+     * @param int $gradingtype
+     * @return array
+     */
+    public static function make_grades_menu($gradingtype) {
+        global $DB;
+
+        $grades = array();
+        if ($gradingtype < 0) {
+            if ($scale = $DB->get_record('scale', array('id'=> (-$gradingtype)))) {
+                return make_menu_from_list($scale->scale);
+            }
+        } else if ($gradingtype > 0) {
+            for ($i=$gradingtype; $i>=0; $i=$i-.5) {
+                $grades[$i . ''] = $i .' / '. $gradingtype;
+            }
+            return $grades;
+        }
+        return $grades;
+    }
+
+
 
     /**
      *
