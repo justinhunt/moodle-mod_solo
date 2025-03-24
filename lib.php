@@ -902,6 +902,17 @@ function solo_get_completion_state($course, $cm, $userid, $type) {
     }
 }
 
+
+/**
+ * Whether the activity is branded.
+ * This information is used, for instance, to decide if a filter should be applied to the icon or not.
+ *
+ * @return bool True if the activity is branded, false otherwise.
+ */
+function solo_is_branded(){
+    return true;
+}
+
 function mod_solo_cm_info_dynamic(cm_info $cm) {
     global $USER, $DB;
 
