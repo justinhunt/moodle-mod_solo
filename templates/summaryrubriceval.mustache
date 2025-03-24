@@ -1,0 +1,17 @@
+
+{{! Rubric Evaluation }}
+<section class="mod_solo_report_card mod_solo_automatic_evaluation">
+    <div class="mod_solo_report_card_header">
+        <div class="mod_solo_automatic_evaluation_illustration"></div>  
+        <div class="mod_solo_summaryheader">
+            <h3 class="summaryheadertitle">{{evaluator}}</h3>
+        </div>
+    </div>    
+    <div class="mod_solo_report_card_content mod_solo_report_card_rubric_content">
+        {{>mod_solo/summarystatsautomaticnocharts}}
+        <h5>{{#str}}teacherfeedback , mod_solo{{/str}}</h5>
+        <div class="mod_solo_report_card_teacher_feedback">
+         {{feedback}}
+        </div>
+    </div>
+</section>

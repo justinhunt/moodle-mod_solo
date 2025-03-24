@@ -2266,6 +2266,14 @@ span.mod_solo_grading_original_preword,span.mod_solo_grading_original_postword {
 		padding-bottom: 36px;
 		width: 50%;
 	}
+
+	.mod_solo_report_card.mod_solo_automatic_evaluation .mod_solo_report_card_content.mod_solo_report_card_rubric_content {
+		width:80%;
+		display: block;
+	}
+}
+.mod_solo_report_card_rubric_content .mod_solo_automatic_evaluation_chart_grade_percent {
+	margin-bottom: 10px;
 }
 
 .mod_solo_automatic_evaluation_illustration {
