@@ -1,5 +1,10 @@
 <div class='mod_solo_hiddenaudioplayer_cont'>
-    <audio id='{{UNIQID}}_mod_solo_hiddenaudioplayer' src='{{audiofilename}}' class="nomediaplugin nopoodll" crossorigin="anonymous"></audio>
+    {{#isaudiosubmission}}
+        <audio id='{{UNIQID}}_mod_solo_hiddenaudioplayer' src='{{audiofilename}}' class="nomediaplugin nopoodll" crossorigin="anonymous"></audio>
+    {{/isaudiosubmission}}
+    {{#isvideosubmission}}
+        <video id='{{UNIQID}}_mod_solo_hiddenaudioplayer' src='{{audiofilename}}' class="nomediaplugin nopoodll" crossorigin="anonymous"></video>
+    {{/isvideosubmission}}
 </div>
 
 <div id="{{UNIQID}}_mod_solo_audioplayer" class="mod_solo_audioplayer">

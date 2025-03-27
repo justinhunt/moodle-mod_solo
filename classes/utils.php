@@ -1649,7 +1649,7 @@ break;
 
     public static function get_recorders_options() {
         $recoptions = [ constants::REC_AUDIO => get_string("recorderaudio", constants::M_COMPONENT),
-               // constants::REC_VIDEO  => get_string("recordervideo", constants::M_COMPONENT)
+                constants::REC_VIDEO  => get_string("recordervideo", constants::M_COMPONENT)
         ];
         return $recoptions;
     }
@@ -1705,7 +1705,7 @@ break;
             case constants::STEP_PREPARE:
                 return get_string('userselections', constants::M_COMPONENT);
             case constants::STEP_MEDIARECORDING:
-                return get_string('audiorecording', constants::M_COMPONENT);
+                return get_string('voicerecording', constants::M_COMPONENT);
             case constants::STEP_SELFTRANSCRIBE:
                 return get_string('selftranscribe', constants::M_COMPONENT);
             case constants::STEP_MODEL:

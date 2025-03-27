@@ -41,12 +41,11 @@
      data-fallback="{{rec.fallback}}"
      data-hints="{{rec.hints}}"
      data-token="{{rec.token}}">
-
 </div>
 </div>
 {{^element.frozen}}
     {{#js}}
-        //this inits the M.mod_solo recoorder controller, after the page has loaded.
+        //this inits the M.mod_solo recorder controller, after the page has loaded.
         //we put the opts in a hidden html on the page, that is later parsed in JS, because moodle/AMD doesn't like lots of opts in js
         var recopts ={};
         recopts.widgetid='{{rec.widgetid}}';

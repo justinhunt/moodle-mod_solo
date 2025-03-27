@@ -171,7 +171,7 @@ class attempt_renderer extends \plugin_renderer_base {
         $attempt->targetwords = utils::fetch_targetwords($attempt->topictargetwords);
         $attempt->convlength = $moduleinstance->convlength;
         $attempt->speakingtopic = $moduleinstance->speakingtopic;
-        //we don't want to show target speaking time if its not a speaking activit
+        //we don't want to show target speaking time if its not a speaking activity
         $attempt->textonlysubmission=utils::is_textonlysubmission($moduleinstance);
 
         if($userheader){
@@ -207,6 +207,9 @@ class attempt_renderer extends \plugin_renderer_base {
         //If no audio recording (this is a text submission) then we don't want to show WPM / Target Time etc
         $tdata['textonlysubmission']=utils::is_textonlysubmission($moduleinstance);
 
+        //If this is audio, show an audio recorder, if this is video, show a video recorder
+        $tdata['isaudiosubmission']  =$moduleinstance->recordertype == constants::REC_AUDIO;
+        $tdata['isvideosubmission'] = $moduleinstance->recordertype == constants::REC_VIDEO;
 
         $tdata['spellingerrors'] = textanalyser::fetch_spellingerrors($stats,$attempt->selftranscript);
         $tdata['grammarerrors'] = textanalyser::fetch_grammarerrors($stats,$attempt->selftranscript);

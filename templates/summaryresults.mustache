@@ -17,13 +17,20 @@
         <div class="mod_solo_report_card_content">
             {{^textonlysubmission}}
             <p>
-                <a data-toggle="collapse" href="#collapseAudioPlayer" role="button" aria-expanded="false" aria-controls="collapseAudioPlayer">
-                    {{#str}}replay, mod_solo{{/str}}
+                <a data-toggle="collapse" href="#collapseMediaPlayer" role="button" aria-expanded="false" aria-controls="collapseAudioPlayer">
+                    {{#isaudiosubmission}}
+                        {{#str}}audioreplay, mod_solo{{/str}}
+                    {{/isaudiosubmission}}
+                    {{#isvideosubmission}}
+                        {{#str}}videoreplay, mod_solo{{/str}}
+                    {{/isvideosubmission}}
                 </a>
             </p>
             
-            <div class="collapse" id="collapseAudioPlayer">
-                <div>{{>mod_solo/audioplayer}}</div>
+            <div class="collapse" id="collapseMediaPlayer">
+                <div>
+                 {{>mod_solo/mediasubmissionplayer}}
+                </div>
             </div>
             {{/textonlysubmission}}
 

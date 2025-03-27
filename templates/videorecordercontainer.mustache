@@ -15,30 +15,55 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 
-<div class="assignsubmission_cloudpoodll_rec_outer">
+<div class="mod_solo_rec_outer">
 
-<div class="assignsubmission_cloudpoodll_videorec_cont"
-     id="{{recid}}"
-     data-id="{{dataid}}"
-     data-parent="{{parent}}"
-     data-localloader="{{localloader}}"
-     data-media="{{recordertype}}"
-     data-appid="{{appid}}"
-     data-owner="{{owner}}"
-     data-type="{{recorderskin}}"
-     data-width="{{width}}"
-     data-height="{{height}}"
-     data-iframeclass="{{iframeclass}}"
-     data-updatecontrol="{{updatecontrol}}"
-     data-timelimit="{{timelimit}}"
-     data-transcode="{{transcode}}"
-     data-transcribe="{{transcribe}}"
-     data-subtitle="{{subtitle}}"
-     data-language="{{language}}"
-     data-expiredays="{{expiredays}}"
-     data-region="{{awsregion}}"
-     data-fallback="{{fallback}}"
-data-hints="{{string_hints}}" data-token="{{token}}">
-    <div class="assignsubmission_cloudpoodll_placeholder assignsubmission_cloudpoodll_placeholder_video"></div>
+<div class="solo_videorec_cont"
+     id="{{rec.widgetid}}"
+     data-id="{{rec.id}}"
+     data-parent="{{rec.parent}}"
+     data-localloading="{{rec.localloading}}"
+     data-localloader="{{rec.localloader}}"
+     data-media="{{rec.recordertype}}"
+     data-appid="{{rec.appid}}"
+     data-owner="{{rec.owner}}"
+     data-type="{{rec.recorderskin}}"
+     data-width="{{rec.width}}"
+     data-height="{{rec.height}}"
+     data-iframeclass="{{rec.iframeclass}}"
+     data-updatecontrol="{{rec.updatecontrol}}"
+     data-timelimit="{{rec.timelimit}}"
+     data-transcode="{{rec.transcode}}"
+     data-transcribe="{{rec.transcribe}}"
+     data-subtitle="{{rec.subtitle}}"
+     data-language="{{rec.language}}"
+     data-expiredays="{{rec.expiredays}}"
+     data-region="{{rec.region}}"
+     data-fallback="{{rec.fallback}}"
+     data-hints="{{rec.hints}}"
+     data-token="{{rec.token}}">
 </div>
 </div>
+{{^element.frozen}}
+   {{#js}}
+        //this inits the M.mod_solo recorder controller, after the page has loaded.
+        //we put the opts in a hidden html on the page, that is later parsed in JS, because moodle/AMD doesn't like lots of opts in js
+        var recopts ={};
+        recopts.widgetid='{{rec.widgetid}}';
+        recopts.recorderid='{{rec.widgetid}}';
+        recopts.transcriber='{{rec.transcriber}}';
+        recopts.language='{{rec.ttslanguage}}';
+        recopts.region= '{{rec.region}}';
+        recopts.token='{{rec.token}}';
+        recopts.parent='{{rec.parent}}';
+        recopts.owner='{{rec.owner}}';
+        recopts.localposturl='{{rec.localposturl}}';
+        recopts.appid='{{rec.appid}}';
+        recopts.expiretime='{{rec.expiretime}}';
+        recopts.cmid='{{rec.cmid}}';
+
+        require(['jquery', 'core/modal_factory', 'core/ajax','core/templates', 'mod_solo/recordercontroller'],
+        function($, ModalFactory, ajax, templates, recordercontroller) {
+        recordercontroller.init(recopts);
+        });
+   {{/js}}
+{{/element.frozen}}

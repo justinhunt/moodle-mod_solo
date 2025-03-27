@@ -271,11 +271,9 @@ switch($type) {
         break;
     case constants::STEP_MEDIARECORDING:
 
-        $media = 'audio';
-        if ($media == 'video') {
+        if ($moduleinstance->recordertype == constants::REC_VIDEO) {
             $stepcontent->recordvideo = 1;
-        }
-        else{
+        } else {
             $stepcontent->recordaudio = 1;
         }
 
@@ -293,7 +291,7 @@ switch($type) {
                 $stepcontent->selftranscript = '';
             }
         }
-        $stepcontent->rec = utils::fetch_recorder_data($cm, $moduleinstance, $media, $token);
+        $stepcontent->rec = utils::fetch_recorder_data($cm, $moduleinstance, $moduleinstance->recordertype, $token);
         echo $renderer->render_from_template(constants::M_COMPONENT . '/stepmediarecord', $stepcontent);
         break;
 

@@ -2914,3 +2914,7 @@ span.mod_solo_grading_original_preword,span.mod_solo_grading_original_postword {
 	direction: rtl;
 	text-align: right;
 }
+
+.mod_solo_hiddenaudioplayer_cont video {
+	width: 100%;
+}
