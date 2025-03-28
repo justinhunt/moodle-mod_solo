@@ -1,3 +1,8 @@
+1.0.68 (Build 2025100713)
+- Added the option to record video
+- Better handling when activity has no target words
+- Fixed for target words not working when step_prepare not present in activity
+
 1.0.67 (Build 2025100711)
 - added rubric results template
 
