@@ -11,6 +11,7 @@
                 </div>
                 {{/textonlysubmission}}
 
+                {{#hastargetwords}}
                 <div class="mod_solo_summarychoices_group_target_words">
                     <h5>{{#str}}targetwords , mod_solo{{/str}}</h5>
                     <div>
@@ -20,8 +21,9 @@
                         
                     </div>
                 </div>
+                {{/hastargetwords}}
 
-                <div>
+                <div class="mod_solo_summarychoices_group_attempt_number">
                     {{#attemptnumber}}
                     <h5>{{#str}}attemptnumberheader, mod_solo{{/str}}</h5>
                     <p>{{#str}}attemptnumber, mod_solo, {{attemptnumber}}{{/str}}</p>

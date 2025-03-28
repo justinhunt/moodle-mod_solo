@@ -167,6 +167,7 @@ $stepcontent->cmid = $cm->id;
 $stepcontent->nexturl = $redirecturl->out(false);
 if(!empty($moduleinstance->targetwords)) {
     $stepcontent->targetwords = utils::fetch_targetwords($moduleinstance->targetwords);
+    $stepcontent->hastargetwords = true;
 }
 
 // we need to display some content differently if there is no recording (text only)

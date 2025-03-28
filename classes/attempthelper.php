@@ -182,6 +182,7 @@ class attempthelper
             }else{
                 $newattempt->timecreated=time();
                 $newattempt->createdby=$USER->id;
+                $newattempt->topictargetwords = $this->mod->targetwords;
 
                 //try to insert it
                 if (!$newattempt->id = $DB->insert_record(constants::M_ATTEMPTSTABLE,$newattempt)){
@@ -194,7 +195,6 @@ class attempthelper
             //type specific settings
             switch($data->activitytype) {
                 case constants::STEP_PREPARE:
-                    $newattempt->topictargetwords = $this->mod->targetwords;
                     break;
 
                 case constants::STEP_MEDIARECORDING:

@@ -167,8 +167,8 @@ class attempt_renderer extends \plugin_renderer_base {
     }
 
     function show_summary($moduleinstance,$attempt,$userheader=false){
-
         $attempt->targetwords = utils::fetch_targetwords($attempt->topictargetwords);
+        $attempt->hastargetwords = !empty($attempt->targetwords);
         $attempt->convlength = $moduleinstance->convlength;
         $attempt->speakingtopic = $moduleinstance->speakingtopic;
         //we don't want to show target speaking time if its not a speaking activity

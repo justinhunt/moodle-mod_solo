@@ -1238,7 +1238,7 @@ audio#mod_solo_passageaudioplayer {
 	}
 
 	.solo_videorec_cont {
-		padding-top: min(540px,150%);
+		padding-top: min(380px,150%); /* 540px */
 	}
 	.solo_video_cont {
 		padding-bottom: min(360px,75%);
@@ -1249,7 +1249,7 @@ audio#mod_solo_passageaudioplayer {
 		padding-top: 300px;
 	}
 	.solo_videorec_cont {
-		padding-top: 540px;
+		padding-top: 380px; /* 540px */
 	}
 	.solo_video_cont {
 		padding-bottom: 360px;
@@ -1258,7 +1258,7 @@ audio#mod_solo_passageaudioplayer {
 
 @media screen and (max-width: 667px) {
 	.solo_videorec_cont {
-		padding-top: 150%;
+		padding-top: 120%;/* 150% */
 	}
 	.solo_audiorec_cont {
 		padding-top: 90%;

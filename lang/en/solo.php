@@ -424,10 +424,10 @@ $string['attempt_model'] = 'Model Answer';
 // $string['attempt_review'] = 'Review';
 
 // $string['step_preparetitle']='Prepare';
-$string['step_prepareinstructions'] = 'Check the speaking topic, target words and target speaking time from the options below. When you are ready, move to the next page and begin speaking';
-$string['step_prepareinstructions_norecording'] = 'Check the topic and goals from the options below. When you are ready, move to the next page and begin.';
+$string['step_prepareinstructions'] = 'Check the speaking topic and speaking targets from the options below. When you are ready, move to the next page and begin speaking';
+$string['step_prepareinstructions_norecording'] = 'Check the topic and targets below. When you are ready, move to the next page and begin.';
 // $string['step_mediarecordtitle']='Record';
-$string['step_mediarecordinstructions'] = 'Use the recorder below to record yourself. Try to use the target words. Good luck.';
+$string['step_mediarecordinstructions'] = 'Use the recorder below to record yourself. Good luck.';
 $string['step_posttranscriberecordinstructions'] = 'Use the recorder below to record yourself speaking.';
 // $string['step_typetitle']='Enter Text';
 // $string['step_typeinstructions']='Use the recorder below to record yourself. Try to use the target words. Good luck.';
