@@ -544,7 +544,8 @@ break;
             $instructions->maxmarks = $maxmarks;
             $instructions->questiontext = strip_tags($moduleinstance->speakingtopic);
             $instructions->modeltext = '';
-            $aigraderesults = self::fetch_ai_grade($token, $moduleinstance->region, $moduleinstance->ttslanguage, $studentresponse, $instructions);
+            $isspeech = !self::is_textonlysubmission($moduleinstance);
+            $aigraderesults = self::fetch_ai_grade($token, $moduleinstance->region, $moduleinstance->ttslanguage, $isspeech, $studentresponse, $instructions);
             if($aigraderesults && isset($aigraderesults->marks) && isset($aigraderesults->feedback)){
                 if($aigraderesults->feedback !== null){
                     $aigraderesults->feedback = json_encode($aigraderesults->feedback);
@@ -3468,17 +3469,20 @@ break;
 
 
       // fetch the AI Grade
-    public static function fetch_ai_grade($token, $region, $ttslanguage, $studentresponse, $instructions) {
+    public static function fetch_ai_grade($token, $region, $ttslanguage, $isspeech, $studentresponse, $instructions) {
         global $USER;
         $instructionsjson = json_encode($instructions);
         // The REST API we are calling
         $functionname = 'local_cpapi_call_ai';
 
+        // The processing is slightly different for speech and text.
+        $action = $isspeech ? 'autograde_speech' : 'autograde_text';
+
         $params = [];
         $params['wstoken'] = $token;
         $params['wsfunction'] = $functionname;
         $params['moodlewsrestformat'] = 'json';
-        $params['action'] = 'autograde_text';
+        $params['action'] = $action;
         $params['appid'] = 'mod_solo';
         $params['prompt'] = $instructionsjson;
         $params['language'] = $ttslanguage;

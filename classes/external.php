@@ -469,7 +469,10 @@ class mod_solo_external extends external_api {
             $instructions->questiontext=$questiontext;
             $instructions->modeltext='';
 
-            $llmresponse = utils::fetch_ai_grade($token,$region,$targetlanguage,$studentresponse,$instructions);
+            // At this point we do not have a module instance to help us establish if its text only, assume its speech
+            $isspeech = true;
+            //$isspeech = !utils::is_textonlysubmission($moduleinstance);
+            $llmresponse = utils::fetch_ai_grade($token, $region, $targetlanguage, $isspeech, $studentresponse, $instructions);
         //   error_log(print_r($llmresponse, true));
            if(!$llmresponse){
                 $contentobject = ["correctedtext"=>"An error occurred","feedback" => ["Invalid response received from server. Could be a network issue, or possibly a Poodll auth issue."], "marks" => 0];
