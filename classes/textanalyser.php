@@ -37,11 +37,6 @@ use mod_solo\constants;
  */
 class textanalyser {
 
-    const CLOUDPOODLL = 'https://cloud.poodll.com';
-    //const CLOUDPOODLL = 'https://vbox.poodll.com/cphost';
-
-
-
     /** @var string $token The cloudpoodll token. */
     protected $token;
 
@@ -77,8 +72,18 @@ class textanalyser {
         $this->targettopic = $targettopic;
     }
 
+    // The cloudpoodll server URL
+    public static function get_cloud_poodll_server() {
+        $conf = get_config(constants::M_COMPONENT);
+        if (isset($conf->cloudpoodllserver) && !empty($conf->cloudpoodllserver)) {
+            return 'https://' . $conf->cloudpoodllserver;
+        } else {
+            return 'https://' . constants::M_DEFAULT_CLOUDPOODLL;
+        }
+    }
+
     //fetch lang server url, services incl. 'transcribe' , 'lm', 'lt', 'spellcheck'
-    public function fetch_lang_server_url($service='transcribe'){
+    public function fetch_lang_server_url($service='transcribe') {
         switch($this->region) {
             case 'useast1':
                 $ret = 'https://useast.ls.poodll.com/';
@@ -675,7 +680,7 @@ class textanalyser {
 
         //log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;
@@ -734,7 +739,7 @@ class textanalyser {
 
         //log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params,'post');
         if (!self::is_json($response)) {
             return false;
@@ -789,7 +794,7 @@ class textanalyser {
 
         //log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params,'post');
         if (!self::is_json($response)) {
             return false;
@@ -838,7 +843,7 @@ class textanalyser {
 
         //log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;
@@ -887,7 +892,7 @@ class textanalyser {
 
         //log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;
@@ -942,7 +947,7 @@ class textanalyser {
 
         //log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;

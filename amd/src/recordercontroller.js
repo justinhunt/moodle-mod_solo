@@ -1,6 +1,6 @@
 
-define(['jquery', 'core/log','mod_solo/definitions','mod_solo/cloudpoodllloader','mod_solo/recorderhelper'],
-    function($, log, def, cloudpoodllloader,recorderhelper) {
+define(['jquery', 'core/log','mod_solo/definitions', 'mod_solo/recorderhelper'],
+    function($, log, def, recorderhelper) {
 
     "use strict"; // jshint ;_;
 

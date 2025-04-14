@@ -38,9 +38,15 @@ require_once($CFG->dirroot . '/mod/solo/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class utils {
-
-    const CLOUDPOODLL = 'https://cloud.poodll.com';
-    // const CLOUDPOODLL = 'https://vbox.poodll.com/cphost';
+    // Get the Cloud Poodll Server URL
+    public static function get_cloud_poodll_server() {
+        $conf = get_config(constants::M_COMPONENT);
+        if (isset($conf->cloudpoodllserver) && !empty($conf->cloudpoodllserver)) {
+            return 'https://' . $conf->cloudpoodllserver;
+        } else {
+            return 'https://' . constants::M_DEFAULT_CLOUDPOODLL;
+        }
+    }
 
     // are we willing and able to transcribe submissions?
     public static function can_transcribe($instance) {
@@ -1408,8 +1414,6 @@ break;
 
     // we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
     // this is our helper
-    // we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
-    // this is our helper
     public static function curl_fetch($url, $postdata=false, $method='get') {
         global $CFG;
 
@@ -1504,7 +1508,7 @@ break;
 
         // Send the request & save response to $resp
 
-        $tokenurl = self::CLOUDPOODLL . "/local/cpapi/poodlltoken.php";
+        $tokenurl = self::get_cloud_poodll_server() . "/local/cpapi/poodlltoken.php";
         $postdata = [
             'username' => $apiuser,
             'password' => $apisecret,
@@ -2324,6 +2328,7 @@ break;
         $rec = new \stdClass();
 
         $rec->timelimit = $moduleinstance->maxconvlength * 60;
+        $rec->cloudpoodllurl = self::get_cloud_poodll_server();
         $rec->recorderskin = $moduleinstance->recorderskin;
         $rec->recordertype = $moduleinstance->recordertype;
 
@@ -2399,13 +2404,13 @@ break;
         $rec->id = constants::M_RECORDERID;
         $rec->parent = $CFG->wwwroot;
         $rec->owner = hash('md5', $USER->username);
-        if($config->enablelocalpost){
+        if ($config->enablelocalpost) {
             $rec->localloading = 'always';
             $rec->localposturl = $CFG->wwwroot . '/' . constants::M_URL . '/poodlllocalpost.php';
-        }else {
+        } else {
             $rec->localloading = 'auto';
         }
-        $rec->localloader = constants::M_URL . '/poodllloader.html';
+        $rec->localloader = constants::M_URL . '/poodlllocalloader.php';
         $rec->media = $media;
         $rec->appid = constants::M_COMPONENT;
         $rec->updatecontrol = constants::M_WIDGETID . constants::RECORDINGURLFIELD;
@@ -2455,7 +2460,7 @@ break;
 
         // log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;
@@ -2513,7 +2518,7 @@ break;
 
         // log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params, 'post');
         if (!self::is_json($response)) {
             return false;
@@ -2561,7 +2566,7 @@ break;
 
         // log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;
@@ -2609,7 +2614,7 @@ break;
 
         // log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;
@@ -2660,7 +2665,7 @@ break;
 
         // log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;
@@ -2733,7 +2738,7 @@ break;
         $params['owner'] = hash('md5', $USER->username);
         $params['region'] = $region;
         $params['engine'] = self::can_speak_neural($voice, $region) ? 'neural' : 'standard';
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;
@@ -3492,7 +3497,7 @@ break;
 
         // log.debug(params);
 
-        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;

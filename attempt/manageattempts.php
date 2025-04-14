@@ -164,6 +164,7 @@ $stepcontent->attemptid = $attemptid;
 $stepcontent->type = $type;
 $stepcontent->stepno = $stepno;
 $stepcontent->cmid = $cm->id;
+$stepcontent->cloudpoodllurl = utils::get_cloud_poodll_server();
 $stepcontent->nexturl = $redirecturl->out(false);
 if(!empty($moduleinstance->targetwords)) {
     $stepcontent->targetwords = utils::fetch_targetwords($moduleinstance->targetwords);

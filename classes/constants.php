@@ -14,6 +14,7 @@ class constants
 {
 //component name, db tables, things that define app
 const M_COMPONENT='mod_solo';
+const M_DEFAULT_CLOUDPOODLL = 'cloud.poodll.com';
 const M_TABLE='solo';
 const M_ATTEMPTSTABLE='solo_attempts';
 const M_STATSTABLE='solo_attemptstats';

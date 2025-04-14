@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -27,8 +26,8 @@
 defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot.'/mod/solo/lib.php');
 
-use \mod_solo\constants;
-use \mod_solo\utils;
+use mod_solo\constants;
+use mod_solo\utils;
 
 if ($ADMIN->fulltree) {
 
@@ -36,57 +35,63 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/apiuser',
         get_string('apiuser', constants::M_COMPONENT), get_string('apiuser_details', constants::M_COMPONENT), '', PARAM_TEXT));
 
-    $cloudpoodll_apiuser=get_config(constants::M_COMPONENT,'apiuser');
-    $cloudpoodll_apisecret=get_config(constants::M_COMPONENT,'apisecret');
-    $show_below_apisecret='';
-//if we have an API user and secret we fetch token
-    if(!empty($cloudpoodll_apiuser) && !empty($cloudpoodll_apisecret)) {
-        $tokeninfo = utils::fetch_token_for_display($cloudpoodll_apiuser,$cloudpoodll_apisecret);
-        $show_below_apisecret=$tokeninfo;
-//if we have no API user and secret we show a "fetch from elsewhere on site" or "take a free trial" link
+    $cloudpoodllapiuser = get_config(constants::M_COMPONENT, 'apiuser');
+    $cloudpoodllapisecret = get_config(constants::M_COMPONENT, 'apisecret');
+    $showbelowapisecret = '';
+    // if we have an API user and secret we fetch token
+    if(!empty($cloudpoodllapiuser) && !empty($cloudpoodllapisecret)) {
+        $tokeninfo = utils::fetch_token_for_display($cloudpoodllapiuser, $cloudpoodllapisecret);
+        $showbelowapisecret = $tokeninfo;
+        // if we have no API user and secret we show a "fetch from elsewhere on site" or "take a free trial" link
     }else{
-        $amddata=['apppath'=>$CFG->wwwroot . '/' .constants::M_URL];
-        $cp_components=['filter_poodll','qtype_cloudpoodll','mod_readaloud','mod_wordcards','mod_minilesson','mod_englishcentral','mod_pchat',
-            'atto_cloudpoodll','tinymce_cloudpoodll', 'assignsubmission_cloudpoodll','assignfeedback_cloudpoodll'];
-        foreach($cp_components as $cp_component){
-            switch($cp_component){
+        $amddata = ['apppath' => $CFG->wwwroot . '/' .constants::M_URL];
+        $cpcomponents = ['filter_poodll', 'qtype_cloudpoodll', 'mod_readaloud', 'mod_wordcards', 'mod_minilesson', 'mod_englishcentral', 'mod_pchat',
+            'atto_cloudpoodll', 'tinymce_cloudpoodll', 'assignsubmission_cloudpoodll', 'assignfeedback_cloudpoodll'];
+        foreach($cpcomponents as $cpcomponent){
+            switch($cpcomponent){
                 case 'filter_poodll':
-                    $apiusersetting='cpapiuser';
-                    $apisecretsetting='cpapisecret';
+                    $apiusersetting = 'cpapiuser';
+                    $apisecretsetting = 'cpapisecret';
                     break;
                 case 'mod_englishcentral':
-                    $apiusersetting='poodllapiuser';
-                    $apisecretsetting='poodllapisecret';
+                    $apiusersetting = 'poodllapiuser';
+                    $apisecretsetting = 'poodllapisecret';
                     break;
                 default:
-                    $apiusersetting='apiuser';
-                    $apisecretsetting='apisecret';
+                    $apiusersetting = 'apiuser';
+                    $apisecretsetting = 'apisecret';
             }
-            $cloudpoodll_apiuser=get_config($cp_component,$apiusersetting);
-            if(!empty($cloudpoodll_apiuser)){
-                $cloudpoodll_apisecret=get_config($cp_component,$apisecretsetting);
-                if(!empty($cloudpoodll_apisecret)){
-                    $amddata['apiuser']=$cloudpoodll_apiuser;
-                    $amddata['apisecret']=$cloudpoodll_apisecret;
+            $cloudpoodllapiuser = get_config($cpcomponent, $apiusersetting);
+            if(!empty($cloudpoodllapiuser)){
+                $cloudpoodllapisecret = get_config($cpcomponent, $apisecretsetting);
+                if(!empty($cloudpoodllapisecret)){
+                    $amddata['apiuser'] = $cloudpoodllapiuser;
+                    $amddata['apisecret'] = $cloudpoodllapisecret;
                     break;
                 }
             }
         }
-        $show_below_apisecret=$OUTPUT->render_from_template( constants::M_COMPONENT . '/managecreds',$amddata);
+        $showbelowapisecret = $OUTPUT->render_from_template( constants::M_COMPONENT . '/managecreds', $amddata);
     }
 
 
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/apisecret',
-        get_string('apisecret', constants::M_COMPONENT),$show_below_apisecret , '', PARAM_TEXT));
+        get_string('apisecret', constants::M_COMPONENT), $showbelowapisecret , '', PARAM_TEXT));
 
+    // Cloud Poodll Server.
+    $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/cloudpoodllserver',
+    get_string('cloudpoodllserver', constants::M_COMPONENT),
+        get_string('cloudpoodllserver_details', constants::M_COMPONENT),
+        constants::M_DEFAULT_CLOUDPOODLL, PARAM_URL));
+   
 
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/multipleattempts',
-            get_string('multiattempts', constants::M_COMPONENT), get_string('multiattempts_details',constants::M_COMPONENT), 0));
+            get_string('multiattempts', constants::M_COMPONENT), get_string('multiattempts_details', constants::M_COMPONENT), 0));
 
-  /*
+    /*
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enablegallery',
         get_string('enablegallery', constants::M_COMPONENT), get_string('enablegallery_details',constants::M_COMPONENT), 0));
-*/
+    */
     $regions = \mod_solo\utils::get_region_options();
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/awsregion',
             get_string('awsregion', constants::M_COMPONENT), '', 'useast1', $regions));
@@ -95,8 +100,8 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/expiredays',
             get_string('expiredays', constants::M_COMPONENT), '', '365', $expiredays));
 
-	 $langoptions = \mod_solo\utils::get_lang_options();
-	 $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/ttslanguage',
+    $langoptions = \mod_solo\utils::get_lang_options();
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/ttslanguage',
              get_string('ttslanguage', constants::M_COMPONENT), '',
              constants::M_LANG_ENUS, $langoptions));
 
@@ -123,37 +128,37 @@ if ($ADMIN->fulltree) {
         get_string('layout', constants::M_COMPONENT), '',
         constants::M_LAYOUT_NARROW, $layoutoptions));
 
-    $settings->add(new admin_setting_confightmleditor(constants::M_COMPONENT . '/speakingtips',get_string('speakingtips', constants::M_COMPONENT),
-            get_string('speakingtips_details', constants::M_COMPONENT),get_string('speakingtips_default', constants::M_COMPONENT)));
+    $settings->add(new admin_setting_confightmleditor(constants::M_COMPONENT . '/speakingtips', get_string('speakingtips', constants::M_COMPONENT),
+            get_string('speakingtips_details', constants::M_COMPONENT), get_string('speakingtips_default', constants::M_COMPONENT)));
 
-	$settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/attemptsperpage',
+    $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/attemptsperpage',
         get_string('attemptsperpage', constants::M_COMPONENT), get_string('attemptsperpage_details', constants::M_COMPONENT), 10, PARAM_INT));
 
-    $gradingsperpage_options = [1=>'1',2=>'2',3=>'3',4=>'4',5=>'5',6=>'6'];
+    $gradingsperpageoptions = [1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5', 6 => '6'];
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/gradingsperpage',
         get_string('gradingsperpage', constants::M_COMPONENT), get_string('gradingsperpage_details', constants::M_COMPONENT),
-        3, $gradingsperpage_options));
+        3, $gradingsperpageoptions));
 
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enablelocalpost',
-        get_string('enablelocalpost', constants::M_COMPONENT), get_string('enablelocalpost_details',constants::M_COMPONENT), 0));
+        get_string('enablelocalpost', constants::M_COMPONENT), get_string('enablelocalpost_details', constants::M_COMPONENT), 0));
 
 
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enablesetuptab',
-            get_string('enablesetuptab', constants::M_COMPONENT), get_string('enablesetuptab_details',constants::M_COMPONENT), 0));
+            get_string('enablesetuptab', constants::M_COMPONENT), get_string('enablesetuptab_details', constants::M_COMPONENT), 0));
 
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/markscheme',
-        get_string('markscheme', constants::M_COMPONENT), get_string('markscheme_help', constants::M_COMPONENT), 'Deduct two marks for each grammar mistake.', PARAM_TEXT,100));
+        get_string('markscheme', constants::M_COMPONENT), get_string('markscheme_help', constants::M_COMPONENT), 'Deduct two marks for each grammar mistake.', PARAM_TEXT, 100));
 
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/feedbackscheme',
-        get_string('feedbackscheme', constants::M_COMPONENT), get_string('feedbackscheme_help', constants::M_COMPONENT), 'Explain each grammar mistake simply.', PARAM_TEXT,100));
+        get_string('feedbackscheme', constants::M_COMPONENT), get_string('feedbackscheme_help', constants::M_COMPONENT), 'Explain each grammar mistake simply.', PARAM_TEXT, 100));
 
        // $langoptions = \mod_solo\utils::get_lang_options(); // already set above
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/feedbacklanguage',
                 get_string('feedbacklanguage', constants::M_COMPONENT), '',
                 constants::M_LANG_ENUS, $langoptions));
 
-    //Native Language Setting
+    // Native Language Setting
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/setnativelanguage',
-        get_string('enablenativelanguage', constants::M_COMPONENT), get_string('enablenativelanguage_details',constants::M_COMPONENT), 1));
+        get_string('enablenativelanguage', constants::M_COMPONENT), get_string('enablenativelanguage_details', constants::M_COMPONENT), 1));
 
 }

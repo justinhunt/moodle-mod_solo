@@ -36,12 +36,13 @@ define(['jquery','core/log','core/str','core/templates','mod_solo/definitions','
         init_polly: function(){
             var token = this.controls.ttspassagecont.attr('data-token');
             var region = this.controls.ttspassagecont.attr('data-region');
+            var cloudpoodllurl = this.controls.ttspassagecont.attr('data-cloudpoodllurl');
             var owner = 'poodll';
             var lang = this.controls.ttspassagecont.attr('data-ttslanguage');
             var voices = def.voices[lang];
             var randomIndex = Math.floor(Math.random() * voices.length);
             this.voice = voices[randomIndex];
-            polly.init(token, region,owner);
+            polly.init(token, region, owner, cloudpoodllurl);
         },
 
         //load all the controls so we do not have to do it later
