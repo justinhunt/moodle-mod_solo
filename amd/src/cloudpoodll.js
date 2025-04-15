@@ -20,27 +20,8 @@
  * @copyright  2025 Justin Hunt <justin@poodll.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-/**
- * root is our root object context, ie. window if we are in a browser
- * factory is a method that builds and returns our module
- */
-(function(root, factory) {
-    // If AMD is available, use the define() method to load our dependencies
-    //and declare our module
-    if (typeof define === 'function' && define.amd) {
-        define([], function() {
-            return factory(root);
-        });
-    }
-    // Otherwise we will attach our module to root, and pass references to our
-    // dependencies into the factory. We're assuming that our dependencies are
-    // also attached to root here, but they could come from anywhere
-    else
-    {
-        root.CloudPoodll = factory(root);
-    }
-})(this, function(root) {
-    // This is our factory method. Return our module object here...
+define(['jquery', 'core/log'], function ($, log) {
+
     return {
         version: '1.3.4',
         baseURL: 'https://cloud.poodll.com/local/cpapi/fastpoodllloader.php',
