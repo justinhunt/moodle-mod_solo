@@ -194,7 +194,7 @@ function solo_get_editornames() {
  * @param mod_solo_mod_form $mform
  * @return int The id of the newly inserted module record
  */
-function solo_add_instance(stdClass $moduleinstance, mod_solo_mod_form $mform = null) {
+function solo_add_instance(stdClass $moduleinstance,?mod_solo_mod_form $mform = null) {
     global $DB;
 
     $moduleinstance->timecreated = time();
@@ -282,7 +282,7 @@ function solo_process_filemanagers(stdClass $moduleinstance, $mform = null) {
  * @param mod_solo_mod_form $mform
  * @return boolean Success/Fail
  */
-function solo_update_instance(stdClass $moduleinstance, mod_solo_mod_form $mform = null) {
+function solo_update_instance(stdClass $moduleinstance,?mod_solo_mod_form $mform = null) {
     global $DB;
 
     $params = ['id' => $moduleinstance->instance];
@@ -552,7 +552,7 @@ function solo_extend_navigation(navigation_node $navref, stdclass $course, stdcl
  * @param settings_navigation $settingsnav {@link settings_navigation}
  * @param navigation_node $moduleinstancenode {@link navigation_node}
  */
-function solo_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $moduleinstancenode=null) {
+function solo_extend_settings_navigation(settings_navigation $settingsnav, ?navigation_node $moduleinstancenode = null) {
 }
 
 //////////////////////////////////////////////////////////////////////////////

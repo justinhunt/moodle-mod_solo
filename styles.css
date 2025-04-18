@@ -2865,6 +2865,7 @@ span.mod_solo_grading_original_preword,span.mod_solo_grading_original_postword {
 .mod_solo_result_squaretiles {
 	margin: 15px;
 	padding: 5px;
+	display: flex;
 }
 .mod_solo_result_squaretile {
 	margin: 8px;

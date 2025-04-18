@@ -1,3 +1,7 @@
+1.0.69 (Build 2025100714)
+ - Support for Moodle 5.0 and PHP 8.4
+ - Support for custom Cloud Poodll server
+
 1.0.68 (Build 2025100713)
 - Added the option to record video
 - Better handling when activity has no target words
