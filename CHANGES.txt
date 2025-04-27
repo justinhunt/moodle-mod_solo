@@ -1,3 +1,5 @@
+- support for lang server in Ningxia
+
 1.0.70 (Build 2025100715)
     - Added Ningxia region (requires Poodll China subscription)
 

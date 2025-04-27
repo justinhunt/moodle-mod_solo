@@ -231,6 +231,9 @@ class utils {
             case 'useast1':
                 $ret = 'https://useast.ls.poodll.com/';
                 break;
+            case 'ningxia':
+                $ret = 'https://ningxia.ls.poodll.cn/';
+                break;
             default:
                 $ret = 'https://' . $region . '.ls.poodll.com/';
         }
