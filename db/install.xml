@@ -164,6 +164,9 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="mlstats_attemptid" UNIQUE="true" FIELDS="attemptid"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="solo_ai_result" COMMENT="ai transcript data">
       <FIELDS>
