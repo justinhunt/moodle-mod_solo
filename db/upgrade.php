@@ -662,12 +662,30 @@ function xmldb_solo_upgrade($oldversion)
         upgrade_mod_savepoint(true, $newversion, 'solo');
     }
 
-    $newversion = 2025100721;
+    $newversion = 2025100722;
     if ($oldversion < $newversion) {
+
+        //Search for duplicate stats rows and remove them if necessary
+        //Search
+        $sql = "SELECT DISTINCT t1.id
+                  FROM {".constants::M_STATSTABLE."} t1
+                  JOIN {".constants::M_STATSTABLE."} t2
+                    ON t1.attemptid = t2.attemptid
+                   AND t1.id < t2.id";
+        $duplicates = $DB->get_records_sql($sql);
+
+        //Remove
+        if ($duplicates && !empty($duplicates)) {
+            $ids = array_keys($duplicates);
+            list($insql, $params) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+            $DB->delete_records_select(constants::M_STATSTABLE, "id $insql", $params);
+        }
+
         $table = new xmldb_table(constants::M_STATSTABLE);
         $indexname = "mlstats_attemptid";
         $index = new xmldb_index($indexname, XMLDB_INDEX_UNIQUE, ['attemptid']);
         if (!$dbman->index_exists($table, $index)) {
+            // Add the index
             $dbman->add_index($table, $index);
         }
         upgrade_mod_savepoint(true, $newversion, 'solo');
