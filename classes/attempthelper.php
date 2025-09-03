@@ -127,12 +127,8 @@ class attempthelper
     public function delete_attempt($attemptid) {
         global $DB;
 
-        //delete stats for this attempt (why check it exists?)
-        $oldstats =$DB->get_record(constants::M_STATSTABLE,
-            array('solo'=>   $this->mod->id,'attemptid'=>$attemptid));
-        if($oldstats) {
-            $DB->delete_records(constants::M_STATSTABLE, array('id'=>$oldstats->id));
-        }
+        //delete stats for this attempt
+        $DB->delete_records(constants::M_STATSTABLE, array('attemptid'=>$attemptid));
         //delete AI data for this attempt
         $DB->delete_records(constants::M_AITABLE, array('attemptid'=>$attemptid));
         //delete Attempt
