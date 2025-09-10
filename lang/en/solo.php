@@ -585,6 +585,7 @@ $string['possiblespellingerrors'] = 'Possible spelling mistakes:';
 $string['nospellingerrors'] = 'No spelling mistakes.';
 $string['completedsteps'] = 'Steps Complete';
 $string['completionallsteps'] = 'Complete when all steps completed';
+$string['completiondetail:allsteps'] = 'Complete all steps in the activity';
 $string['completionallsteps_help'] = 'Complete when all steps completed';
 $string['yes'] = 'Yes';
 $string['no'] = 'No';

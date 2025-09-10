@@ -105,16 +105,15 @@ class mod_solo_mod_form extends moodleform_mod {
      * @return array List of added element names, or names of wrapping group elements.
      */
     public function add_completion_rules() {
-
         $mform = $this->_form;
-        //time limits
-        $yesno_options = array(0 => get_string("no", constants::M_COMPONENT),
-                1 => get_string("yes", constants::M_COMPONENT));
-        //the size attribute doesn't work because the attributes are applied on the div container holding the select
-        $mform->addElement('select','completionallsteps',get_string('completionallsteps', constants::M_COMPONENT), $yesno_options,array("size"=>"5"));
-        $mform->setDefault('convlength',constants::DEF_CONVLENGTH);
-        $mform->addHelpButton('completionallsteps', 'completionallsteps', constants::M_MODNAME);
-        return ['completionallsteps'];
+        $suffixedfields=[];
+        //Field options
+        $allstepsfield = $this->get_suffixed_name(constants::COMPLETION_ALLSTEPS);
+        $mform->addElement('advcheckbox', $allstepsfield, '', get_string('completionallsteps', constants::M_COMPONENT));
+        $mform->addHelpButton($allstepsfield, constants::COMPLETION_ALLSTEPS, constants::M_COMPONENT);
+        $suffixedfields[] = $allstepsfield;
+
+        return $suffixedfields;
     }
 
     /**
@@ -124,7 +123,11 @@ class mod_solo_mod_form extends moodleform_mod {
      * @return bool True if one or more rules is enabled, false if none are.
      */
     public function completion_rule_enabled($data) {
-        return (!empty($data['completionallsteps']) && $data['completionallsteps'] != 0);
+        $completionfields=[constants::COMPLETION_ALLSTEPS];
+        foreach($completionfields as $field){
+            if(!empty($data[$this->get_suffixed_name($field)])){return true;}
+        }
+        return false;
     }
 
   public function validation($data, $files) {
@@ -135,9 +138,13 @@ class mod_solo_mod_form extends moodleform_mod {
                 $errors['viewend'] = "End date should be after Start Date";
             }
         }
-
-
-
         return $errors;
+    }
+
+    private function get_suffixed_name($completionfieldname){
+        global $CFG;
+        $m43 = $CFG->version >= 2023100900;
+        $suffix = $m43 ? $this->get_suffix() : '';
+        return $suffix . $completionfieldname;
     }
 }

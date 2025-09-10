@@ -3528,6 +3528,22 @@ break;
             return false;
         }
     }
+
+    public static function is_complete($rule, $moduleinstance, $cm, $userid) {
+        $attempthelper = new \mod_solo\attempthelper($cm);
+        switch($rule){
+            case constants::COMPLETION_ALLSTEPS:
+                $latestcompleteattempt = $attempthelper->fetch_latest_complete_attempt($userid);
+                if ($latestcompleteattempt){
+                    return true;
+                }else{
+                    return false;
+                }
+            default:
+                return false;
+        }
+    }
+
     /**
      * Creates an array that represents all the current grades that
      * can be chosen using the given grading type.

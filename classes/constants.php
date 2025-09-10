@@ -31,6 +31,7 @@ const M_CLASS_TOPICSCONTAINER ='topicscontainer';
 const M_CLASS_TOPICSCHECKBOX = 'topicscheckbox';
 const M_PLUGINSETTINGS ='/admin/settings.php?section=modsettingsolo';
 
+const COMPLETION_ALLSTEPS = 'completionallsteps';
 const M_USE_DATATABLES=true;
 const M_STEP_NONE=0;
 const M_STEP_PREPARE=1;

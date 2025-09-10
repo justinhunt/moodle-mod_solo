@@ -886,16 +886,11 @@ function solo_get_completion_state($course, $cm, $userid, $type) {
 
     // Get  module details
     $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
-    $attempthelper = new \mod_solo\attempthelper($cm);
 
     // If completion option is enabled, evaluate it and return true/false
     if($moduleinstance->completionallsteps) {
-        $latestattempt = $attempthelper->fetch_latest_attempt();
-        if ($latestattempt && $latestattempt->completedsteps == constants::STEP_SELFTRANSCRIBE){
-            return true;
-        }else{
-            return false;
-        }
+        $is_complete = utils::is_complete(constants::COMPLETION_ALLSTEPS,$moduleinstance, $cm, $userid);
+        return $is_complete;
     } else {
         // Completion option is not enabled so just return $type
         return $type;
@@ -934,6 +929,12 @@ function solo_get_coursemodule_info($coursemodule) {
             $result->content = format_module_intro('solo', $moduleinstance, $coursemodule->id, false);
         }
     }
+
+    // Populate the custom completion rules as key => value pairs, but only if the completion mode is 'automatic'.
+    if ($coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
+        $result->customdata['customcompletionrules'][constants::COMPLETION_ALLSTEPS] = $moduleinstance->{constants::COMPLETION_ALLSTEPS};
+    }
+
     $result->name = 'solo';
     $result->name = $moduleinstance->name;
     $result->customdata['duedate'] = $moduleinstance->viewend;

@@ -1,3 +1,6 @@
+1.0.73 (Build 2025100723)
+- bug fix for completion conditions
+
 1.0.72 (Build 2025100722)
 - bug fix for duplicate attempt stats records
 
