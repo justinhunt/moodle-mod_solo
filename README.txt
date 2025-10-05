@@ -1,8 +1,11 @@
-solo Module for Moodle
+Poodll Solo Module for Moodle
 =============
 
-solo as a formative assessment tool for Moodle. It is developed for Sojo University.
-The nice app icon is from: http://www.onlinewebfonts.com
+Poodll Solo is an open speaking (or writing) assignment. Students record themselves speaking about a topic, and Poodll Solo will evaluate their submission and give grammar corrections and  other feedback automatically. 
+
+Poodll Solo requires a paid subscription from https://poodll.com
+
+
 
 Justin Hunt
 poodllsupport@gmail.com

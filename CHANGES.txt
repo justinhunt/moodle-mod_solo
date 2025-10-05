@@ -1,3 +1,6 @@
+1.0.74 (Build 2025100800)
+- Improvements for new activity chooser (Moodle 5.1)
+
 1.0.73 (Build 2025100723)
 - bug fix for completion conditions
 

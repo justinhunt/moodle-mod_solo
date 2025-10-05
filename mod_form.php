@@ -28,23 +28,25 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
-use \mod_solo\constants;
-use \mod_solo\utils;
+use mod_solo\constants;
+use mod_solo\utils;
 
 /**
  * Module instance settings form
  */
-class mod_solo_mod_form extends moodleform_mod {
+class mod_solo_mod_form extends moodleform_mod
+{
 
-    public function __construct($current, $section, $cm, $course, $ajaxformdata=null, $customdata=null) {
+    public function __construct($current, $section, $cm, $course, $ajaxformdata = null, $customdata = null)
+    {
         global $CFG;
-        $this->current   = $current;
+        $this->current = $current;
         $this->_instance = $current->instance;
-        $this->_section  = $section;
-        $this->_cm       = $cm;
-        $this->_course   = $course;
+        $this->_section = $section;
+        $this->_cm = $cm;
+        $this->_course = $course;
         if ($this->_cm) {
             $this->context = context_module::instance($this->_cm->id);
         } else {
@@ -64,39 +66,41 @@ class mod_solo_mod_form extends moodleform_mod {
         }
         $this->init_features();
         $action = 'modedit.php';
-        moodleform::__construct(  $action, $customdata, 'post', '', null, true, $ajaxformdata);
+        moodleform::__construct($action, $customdata, 'post', '', null, true, $ajaxformdata);
     }
 
     /**
      * Defines forms elements
      */
-    public function definition() {
-    	global $CFG, $COURSE;
+    public function definition()
+    {
+        global $CFG, $COURSE;
 
         $mform = $this->_form;
 
         //Add this activity specific form fields
         //We want to do this procedurally because in setup tabs we want to show a subset of this form
         // with just the activity specific fields,and we use a custom form and the same elements
-         utils::add_mform_elements($mform,$this->context);
+        utils::add_mform_elements($mform, $this->context);
 
-          // Grade.
-            $this->standard_grading_coursemodule_elements();
+        // Grade.
+        $this->standard_grading_coursemodule_elements();
 
-            // add standard elements, common to all modules
-            $this->standard_coursemodule_elements();
-            // add standard buttons, common to all modules
-            $this->add_action_buttons();
+        // add standard elements, common to all modules
+        $this->standard_coursemodule_elements();
+        // add standard buttons, common to all modules
+        $this->add_action_buttons();
 
 
     }
 
-	public function data_preprocessing(&$form_data) {
+    public function data_preprocessing(&$form_data)
+    {
         if ($this->current->instance) {
             $form_data = (array) utils::prepare_file_and_json_stuff((object) $form_data, $this->context);
-            $form_data = (array) utils::steps_to_sequence((object)$form_data);
+            $form_data = (array) utils::steps_to_sequence((object) $form_data);
         }
-	}
+    }
 
     /**
      * Add elements for setting the custom completion rules.
@@ -104,10 +108,11 @@ class mod_solo_mod_form extends moodleform_mod {
      * @category completion
      * @return array List of added element names, or names of wrapping group elements.
      */
-    public function add_completion_rules() {
+    public function add_completion_rules()
+    {
         $mform = $this->_form;
-        $suffixedfields=[];
-        //Field options
+        $suffixedfields = [];
+        // Field options.
         $allstepsfield = $this->get_suffixed_name(constants::COMPLETION_ALLSTEPS);
         $mform->addElement('advcheckbox', $allstepsfield, '', get_string('completionallsteps', constants::M_COMPONENT));
         $mform->addHelpButton($allstepsfield, constants::COMPLETION_ALLSTEPS, constants::M_COMPONENT);
@@ -122,18 +127,22 @@ class mod_solo_mod_form extends moodleform_mod {
      * @param array $data Input data not yet validated.
      * @return bool True if one or more rules is enabled, false if none are.
      */
-    public function completion_rule_enabled($data) {
-        $completionfields=[constants::COMPLETION_ALLSTEPS];
-        foreach($completionfields as $field){
-            if(!empty($data[$this->get_suffixed_name($field)])){return true;}
+    public function completion_rule_enabled($data)
+    {
+        $completionfields = [constants::COMPLETION_ALLSTEPS];
+        foreach ($completionfields as $field) {
+            if (!empty($data[$this->get_suffixed_name($field)])) {
+                return true;
+            }
         }
         return false;
     }
 
-  public function validation($data, $files) {
+    public function validation($data, $files)
+    {
         $errors = parent::validation($data, $files);
-       
-          if (!empty($data['viewend'])) {
+
+        if (!empty($data['viewend'])) {
             if ($data['viewend'] < $data['viewstart']) {
                 $errors['viewend'] = "End date should be after Start Date";
             }
@@ -141,7 +150,8 @@ class mod_solo_mod_form extends moodleform_mod {
         return $errors;
     }
 
-    private function get_suffixed_name($completionfieldname){
+    private function get_suffixed_name($completionfieldname)
+    {
         global $CFG;
         $m43 = $CFG->version >= 2023100900;
         $suffix = $m43 ? $this->get_suffix() : '';

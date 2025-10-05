@@ -29,8 +29,15 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'Poodll Solo';
 $string['modulenameplural'] = 'Poodll Solo';
-$string['modulename_help'] = 'Poodll Solo is an activity designed to give students speaking practice. Students record themselves speaking about a topic, transcribe their own speech and receive feedback on their work.';
-// $string['solofieldset'] = 'Custom example fieldset';
+$string['modulename_help'] = 'Poodll Solo is an open speaking (or writing) assignment. Students record themselves speaking about a topic, and Poodll Solo will evaluate their submission and give grammar corrections and  other feedback automatically. It can be used for:
+
+* To help students prepare for oral examinations
+    
+* To give students speaking practice with automated feedback
+    
+* For low/medium stakes speaking assessments (e.g placement tests)
+    
+* For short essay writing tasks with instant feedback and corrections';
 $string['soloname'] = 'Poodll Solo';
 $string['soloname_help'] = 'This is the content of the help tooltip associated with the soloname field. Markdown syntax is supported.';
 $string['solo'] = 'solo';
@@ -39,10 +46,6 @@ $string['activitylink_help'] = 'To provide a link after the attempt to another a
 $string['activitylinkname'] = 'Continue to next activity: {$a}';
 $string['pluginadministration'] = 'Poodll Solo Administration';
 $string['pluginname'] = 'Poodll Solo';
-// $string['someadminsetting'] = 'Some Admin Setting';
-// $string['someadminsetting_details'] = 'More info about Some Admin Setting';
-// $string['someinstancesetting'] = 'Some Instance Setting';
-// $string['someinstancesetting_details'] = 'More infor about Some Instance Setting';
 $string['solosettings'] = 'Solo settings';
 $string['solo:addinstance'] = 'Add a new Poodll Solo';
 $string['solo:view'] = 'View Poodll Solo';
