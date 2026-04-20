@@ -8,8 +8,8 @@
  * @copyright  Based on: 2017 Damyon Wiese <damyon@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_events', 'core/fragment', 'core/ajax', 'core/yui'],
-    function($, log ,Str, ModalFactory, ModalEvents, Fragment, Ajax, Y) {
+define(['jquery', 'core/log','core/str', 'core/modal_save_cancel', 'core/modal_events', 'core/fragment', 'core/ajax', 'core/yui'],
+    function($, log ,Str, ModalSaveCancel, ModalEvents, Fragment, Ajax, Y) {
 
         /**
          * Constructor
@@ -66,8 +66,7 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
                 that.cmid = $(this).attr('data-cm-id');
 
                 // Create the modal.
-                ModalFactory.create({
-                    type: ModalFactory.types.SAVE_CANCEL,
+                ModalSaveCancel.create({
                     title: that.formtitle + $(this).attr('data-student-name'),
                     body: that.getBody()
                 }).then(function(modal) {
@@ -115,8 +114,7 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
             // Fetch the title string.
             return Str.get_string('creategroup', 'core_group').then(function(title) {
                 // Create the modal.
-                return ModalFactory.create({
-                    type: ModalFactory.types.SAVE_CANCEL,
+                return ModalSaveCancel.create({
                     title: title,
                     body: this.getBody()
                 }, triggers);
