@@ -63,8 +63,8 @@
         recopts.expiretime='{{rec.expiretime}}';
         recopts.cmid='{{rec.cmid}}';
 
-        require(['jquery', 'core/modal_factory', 'core/ajax','core/templates', 'mod_solo/recordercontroller'],
-        function($, ModalFactory, ajax, templates, recordercontroller) {
+        require(['jquery', 'core/ajax','core/templates', 'mod_solo/recordercontroller'],
+        function($, ajax, templates, recordercontroller) {
         recordercontroller.init(recopts);
         });
    {{/js}}

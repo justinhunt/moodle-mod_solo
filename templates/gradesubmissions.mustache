@@ -106,8 +106,8 @@
 {{#js}}
     $('[data-action=creategrademodal]').attr('disabled', 'disabled');
 
-    require(['jquery', 'core/modal_factory', 'core/ajax','core/templates', 'mod_solo/gradeform'],
-    function($, ModalFactory, ajax, templates, GradeForm) {
+    require(['jquery', 'core/ajax','core/templates', 'mod_solo/gradeform'],
+    function($, ajax, templates, GradeForm) {
         var currentpage = {{currentpage}};
         const pages = JSON.parse('{{{pages}}}');
         var backbutton=$(".solo_grading_back_btn");

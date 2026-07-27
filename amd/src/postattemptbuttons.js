@@ -1,4 +1,4 @@
-define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'], function($, log,ModalFactory, str, ModalEvents) {
+define(['jquery', 'core/log','core/modal_save_cancel','core/str','core/modal_events'], function($, log,ModalSaveCancel, str, ModalEvents) {
   "use strict"; // jshint ;_;
 
   /*
@@ -36,8 +36,7 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
             }
 
             //if it's a reattempt, confirm and proceed
-            ModalFactory.create({
-                type: ModalFactory.types.SAVE_CANCEL,
+            ModalSaveCancel.create({
                 title: that.strings.reattempttitle,
                 body: that.strings.reattemptbody
             })

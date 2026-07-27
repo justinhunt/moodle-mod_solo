@@ -1,3 +1,7 @@
+1.0.75 (Build 2026042000)
+- Updates for Moodle 5.2 (now requires Moodle 4.3)
+- Removed Modal_factory
+
 1.0.74 (Build 2025100800)
 - Improvements for new activity chooser (Moodle 5.1)
 
