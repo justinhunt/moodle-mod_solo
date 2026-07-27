@@ -155,13 +155,13 @@ class utils
 
     public static function transcripts_are_ready_on_s3($attempt)
     {
-        // if the audio filename is empty or wrong, its hopeless ...just return false
+        // If the audio filename is empty or wrong, its hopeless ...just return false.
         if (!$attempt->filename || empty($attempt->filename)) {
             return false;
         }
         $transcripturl = $attempt->filename . '.txt';
         $postdata = [];
-        // fetch transcripts, and bail out of they are not ready or wrong
+        // Fetch transcripts, and bail out of they are not ready or wrong.
         $transcript = self::curl_fetch($transcripturl, $postdata);
         return self::is_valid_transcript($transcript);
     }
@@ -485,28 +485,28 @@ class utils
             }
         }
 
-        // if we do not have automatic transcripts, try to fetch them
+        // If we do not have automatic transcripts, try to fetch them.
         $recordstep = self::fetch_step_no($moduleinstance, constants::M_STEP_RECORD);
         $hastranscripts = !empty($attempt->jsontranscript);
-        // if we have no record step, this is a written assignment
+        // If we have no record step, this is a written assignment.
         if (!$hastranscripts && $recordstep === false) {
-            // fake some ai data so we dont need to rewrite the whole world
+            // Fake some ai data so we dont need to rewrite the whole world.
             $DB->update_record(
                 constants::M_ATTEMPTSTABLE,
                 ['id' => $attempt->id, 'transcript' => $attempt->selftranscript, 'jsontranscript' => '{}']
             );
-            // if we have a record step but no transcripts th
+            // If we have a record step but no transcripts.
         } else if (!$hastranscripts) {
             $attemptwithtranscripts = self::retrieve_transcripts_from_s3($attempt);
             $hastranscripts = $attemptwithtranscripts !== false;
 
-            // if we are calling from cron, just return here
+            // If we are calling from cron, just return here.
             if (!$hastranscripts && $trace) {
                 $trace->output("Transcript not ready yet");
                 return false;
             }
 
-            // if we fetched the transcript, and this activity has no manual self transcript, use the auto transcript as manual
+            // If we fetched the transcript, and this activity has no manual self transcript, use the auto transcript as manual.
             if ($transcribestep === false && $hastranscripts) {
                 $attempt->selftranscript = $attemptwithtranscripts->transcript;
                 $DB->update_record(constants::M_ATTEMPTSTABLE, ['id' => $attempt->id, 'selftranscript' => $attempt->selftranscript]);
@@ -514,8 +514,8 @@ class utils
             $attempt = $DB->get_record(constants::M_ATTEMPTSTABLE, ['id' => $attempt->id]);
         }
 
-        // this should run down the aitranscript constructor and do the diffs if the passage arrives late or on time, but not redo
-        // this line caused an error if the user entered a blank transcript. Do we need to check for empty?
+        // This should run down the aitranscript constructor and do the diffs if the passage arrives late or on time, but not redo.
+        // This line caused an error if the user entered a blank transcript. Do we need to check for empty?
         // if($hastranscripts && !empty($attempt->selftranscript)){
         if ($hastranscripts) {
             $autotranscript = $attempt->transcript;
