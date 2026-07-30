@@ -2404,7 +2404,40 @@ span.mod_solo_grading_original_preword,span.mod_solo_grading_original_postword {
 	margin-right: 2px;
 }
 
+/* Report - Teacher Evaluation Comments */
+
+.mod_solo_report_card.mod_solo_teacher_evaluation {
+	margin-top: -12px;
+}
+
+.mod_solo_report_card.mod_solo_teacher_evaluation .mod_solo_report_card_content {
+	padding: 20px 24px;
+}
+
+@media screen and (min-width: 768px) {
+	.mod_solo_report_card.mod_solo_teacher_evaluation .mod_solo_report_card_content {
+		padding: 24px 36px;
+	}
+}
+
+.mod_solo_teacherevalcomments_label h5 {
+	font-weight: 700;
+	font-size: 14px;
+	color: #333333;
+	margin-top: 0;
+	margin-bottom: 8px;
+}
+
+.mod_solo_teacherevalcomments {
+	font-size: 14px;
+	line-height: 1.5;
+	color: #495057;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
 /* Report - Transcript Evaluation */
+
 
 @media screen and (min-width: 768px) {
 	.mod_solo_report_card.mod_solo_transcript_evaluation .mod_solo_report_card_header {

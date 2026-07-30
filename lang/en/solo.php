@@ -881,3 +881,4 @@ $string['enablenativelanguage_details'] = 'If set, the student can choose their 
 $string['teacherfeedback'] = 'Teacher Feedback';
 $string['cloudpoodllserver'] = 'Cloud Poodll Server';
 $string['cloudpoodllserver_details'] = 'The server to use for Cloud Poodll. Only change this if Poodll has provided a different one.';
+$string['teachercomments'] = 'Teacher Comments';

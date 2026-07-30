@@ -1,3 +1,6 @@
+1.0.76 (Build 2026073000)
+- Added separate teacher evaluation comments section to finished results
+
 1.0.75 (Build 2026042000)
 - Updates for Moodle 5.2 (now requires Moodle 4.3)
 - Removed Modal_factory

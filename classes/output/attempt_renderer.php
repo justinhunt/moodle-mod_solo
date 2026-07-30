@@ -31,14 +31,13 @@ use mod_solo\textanalyser;
  * @copyright COPYRIGHTNOTICE
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class attempt_renderer extends \plugin_renderer_base
-{
+class attempt_renderer extends \plugin_renderer_base {
+
 
     /**
      * Show the introduction text is as set in the activity description
      */
-    public function show_intro($readaloud, $cm)
-    {
+    public function show_intro($readaloud, $cm) {
         $ret = "";
         if (utils::super_trim(strip_tags($readaloud->intro))) {
             $ret .= $this->output->box_start(constants::M_INTRO_CONTAINER . ' ' . constants::M_CLASS . '_center ');
@@ -53,8 +52,7 @@ class attempt_renderer extends \plugin_renderer_base
      * @param lesson $lesson
      * @return string
      */
-    public function add_edit_page_links($solo, $latestattempt, $thisstep, $cm, $context)
-    {
+    public function add_edit_page_links($solo, $latestattempt, $thisstep, $cm, $context) {
         global $CFG;
 
         // instructions /intro if less then Moodle 4.0 show
@@ -111,21 +109,18 @@ class attempt_renderer extends \plugin_renderer_base
         return $this->output->render_from_template(constants::M_COMPONENT . '/activityintrobuttons', ['introcontent' => $introcontent, 'stepdata' => $stepdata, 'buttons' => $buttons]);
     }
 
-    function show_userattemptsummary($moduleinstance, $attempt)
-    {
+    function show_userattemptsummary($moduleinstance, $attempt) {
         $userheader = true;
         return $this->show_summary($moduleinstance, $attempt, $userheader);
     }
 
-    public function show_placeholdereval($attemptid)
-    {
+    public function show_placeholdereval($attemptid) {
         $data = new \stdClass();
         $data->attemptid = $attemptid;
         return $this->output->render_from_template(constants::M_COMPONENT . '/summaryplaceholdereval', $data);
     }
 
-    function show_teachereval($graderesults, $feedback, $evaluator)
-    {
+    function show_teachereval($graderesults, $feedback, $evaluator) {
         $data = new \stdClass();
         $data->graderesults = $graderesults;
         $data->feedback = $feedback;
@@ -152,8 +147,7 @@ class attempt_renderer extends \plugin_renderer_base
 
     }
 
-    function show_spellingerrors($spellingerrors)
-    {
+    function show_spellingerrors($spellingerrors) {
         $data = new \stdClass();
         if (count($spellingerrors)) {
             $data->spellingerrors = $spellingerrors;
@@ -163,8 +157,7 @@ class attempt_renderer extends \plugin_renderer_base
         }
         return $this->output->render_from_template(constants::M_COMPONENT . '/summaryspellingeval', $data);
     }
-    function show_grammarerrors($grammarerrors)
-    {
+    function show_grammarerrors($grammarerrors) {
         $data = new \stdClass();
         if (count($grammarerrors)) {
             $data->grammarerrors = $grammarerrors;
@@ -175,8 +168,7 @@ class attempt_renderer extends \plugin_renderer_base
         return $this->output->render_from_template(constants::M_COMPONENT . '/summarygrammareval', $data);
     }
 
-    function show_summary($moduleinstance, $attempt, $userheader = false)
-    {
+    function show_summary($moduleinstance, $attempt, $userheader = false) {
         $attempt->targetwords = utils::fetch_targetwords($attempt->topictargetwords);
         $attempt->hastargetwords = !empty($attempt->targetwords);
         $attempt->convlength = $moduleinstance->convlength;
@@ -195,13 +187,11 @@ class attempt_renderer extends \plugin_renderer_base
         return $ret;
     }
 
-    function show_waitingforteacher()
-    {
+    function show_waitingforteacher() {
         return $this->output->render_from_template(constants::M_COMPONENT . '/waitingforteacher', []);
     }
 
-    function show_summarypassageandstats($moduleinstance, $attempt, $aidata, $stats, $autotranscriptready, $selftranscribe)
-    {
+    function show_summarypassageandstats($moduleinstance, $attempt, $aidata, $stats, $autotranscriptready, $selftranscribe) {
         // Mark up our passage for review.
         // If we have ai we need all the js and markup, otherwise we just need the formated transcript.
         $ret = '';
@@ -298,8 +288,7 @@ class attempt_renderer extends \plugin_renderer_base
         return $ret;
     }
 
-    function show_autogradelog($autogradelog)
-    {
+    function show_autogradelog($autogradelog) {
         if (empty($autogradelog)) {
             return '';
         }
@@ -313,8 +302,7 @@ class attempt_renderer extends \plugin_renderer_base
     }
 
 
-    function show_myreports($moduleinstance, $cm)
-    {
+    function show_myreports($moduleinstance, $cm) {
 
         $myprogress = new \single_button(
             new \moodle_url(
@@ -344,8 +332,7 @@ class attempt_renderer extends \plugin_renderer_base
 
 
 
-    function setup_datatables($tableid)
-    {
+    function setup_datatables($tableid) {
         global $USER;
 
         $tableprops = [];
@@ -371,8 +358,7 @@ class attempt_renderer extends \plugin_renderer_base
         $this->page->requires->css(new \moodle_url('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css'));
     }
 
-    function fetch_recorder_amd($cm)
-    {
+    function fetch_recorder_amd($cm) {
         global $USER;
 
         $widgetid = constants::M_WIDGETID;
