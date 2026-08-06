@@ -33,6 +33,7 @@ $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $n = optional_param('n', 0, PARAM_INT);  // solo instance ID
 $reattempt = optional_param('reattempt', 0, PARAM_INT);
 $embed = optional_param('embed', 0, PARAM_INT); // embed or not
+$userid = optional_param('userid', 0, PARAM_INT);
 
 if ($id) {
     $cm = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, MUST_EXIST);
@@ -54,7 +55,7 @@ $config = get_config(constants::M_COMPONENT);
 $mode = 'attempts';
 
 // Set page url before require login, so post login will return here
-$PAGE->set_url(constants::M_URL . '/view.php', ['id' => $cm->id, 'mode' => $mode, 'embed' => $embed]);
+$PAGE->set_url(constants::M_URL . '/view.php', ['id' => $cm->id, 'mode' => $mode, 'embed' => $embed, 'userid' => $userid]);
 $PAGE->force_settings_menu(true);
 
 
