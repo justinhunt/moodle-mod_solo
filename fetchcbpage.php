@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -24,23 +23,38 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-
-use \mod_solo\constants;
+use mod_solo\constants;
 
 require_login(0, false);
 $systemcontext = context_system::instance();
 $PAGE->set_context($systemcontext);
-$PAGE->set_url('/' . CONSTANTS::M_URL . '/fetchcbpage.php');
+$PAGE->set_url(constants::M_URL . '/fetchcbpage.php');
+$PAGE->set_pagelayout('standard');
+$PAGE->set_title(get_string('freetrial', constants::M_COMPONENT));
+$PAGE->set_heading(get_string('freetrial', constants::M_COMPONENT));
 
-if(has_capability('moodle/site:config',$systemcontext)){
+require_capability('moodle/site:config', $systemcontext);
 
-    $amddata=['poodllcbsite'=>'poodllcom','wwwroot'=>$CFG->wwwroot,
-        'first_name'=>$USER->firstname,'last_name'=>$USER->lastname,'email'=>$USER->email,'country'=>$USER->country];
-    echo $OUTPUT->header();
-    echo $OUTPUT->render_from_template( constants::M_COMPONENT . '/fetchcbpage',$amddata);
-    echo $OUTPUT->footer();
-}else{
-    echo "no permission to do that action";
-}
+// The checkout details. These go to JS as JSON, never interpolated into a script by the template,
+// because names and emails can contain quotes.
+$cbdata = [
+    'site' => constants::M_CB_SITE,
+    'priceid' => constants::M_CB_TRIAL_PRICEID,
+    'wwwroot' => $CFG->wwwroot,
+    'firstname' => $USER->firstname,
+    'lastname' => $USER->lastname,
+    'email' => $USER->email,
+    'country' => $USER->country,
+];
+$PAGE->requires->js_call_amd(constants::M_COMPONENT . '/cbfreetrial', 'init', [$cbdata]);
+
+$templatedata = [
+    'wwwroot' => $CFG->wwwroot,
+    'settingsurl' => $CFG->wwwroot . constants::M_PLUGINSETTINGS,
+];
+
+echo $OUTPUT->header();
+echo $OUTPUT->render_from_template(constants::M_COMPONENT . '/fetchcbpage', $templatedata);
+echo $OUTPUT->footer();

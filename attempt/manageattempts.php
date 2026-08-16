@@ -125,6 +125,17 @@ if($action == 'confirmdelete'){
     redirect($deleteredirect);
 }
 
+// Without working Poodll API credentials this activity cannot run. Administrators get an in page
+// setup panel, everybody else gets an explanation. This is checked before we ask for a token,
+// because the site config has no API user to ask with.
+$credentialserror = $embed == 0 ? \mod_solo\cbcredentials::credentials_error() : '';
+if (!empty($credentialserror)) {
+    echo $renderer->header($moduleinstance, $cm, 'attempts', null, get_string('edit', constants::M_COMPONENT));
+    echo $renderer->show_cbcredentials_setup($PAGE->url, $credentialserror);
+    echo $renderer->footer();
+    return;
+}
+
 $siteconfig = get_config(constants::M_COMPONENT);
 $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
 

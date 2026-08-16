@@ -31,6 +31,10 @@ const M_CLASS_TOPICSCONTAINER ='topicscontainer';
 const M_CLASS_TOPICSCHECKBOX = 'topicscheckbox';
 const M_PLUGINSETTINGS ='/admin/settings.php?section=modsettingsolo';
 
+//Chargebee details for the in-app free trial (see fetchcbpage.php)
+const M_CB_SITE = 'poodllcom';
+const M_CB_TRIAL_PRICEID = 'Poodll-Free-Trial-USD-Daily';
+
 const COMPLETION_ALLSTEPS = 'completionallsteps';
 const M_USE_DATATABLES=true;
 const M_STEP_NONE=0;

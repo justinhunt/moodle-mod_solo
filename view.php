@@ -87,6 +87,16 @@ if ($config->layout == constants::M_LAYOUT_NARROW) {
     $PAGE->add_body_class('mod-solo-layout-standard');
 }
 
+// Without working Poodll API credentials this activity cannot run. Administrators get an in page
+// setup panel, everybody else gets an explanation. This happens before any attempt is started.
+$credentialserror = $embed == 0 ? \mod_solo\cbcredentials::credentials_error() : '';
+if (!empty($credentialserror)) {
+    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
+    echo $renderer->show_cbcredentials_setup($PAGE->url, $credentialserror);
+    echo $renderer->footer();
+    return;
+}
+
 // this is a special case where the activity has been made with just a title and no speaking topic (placeholder)
 if ($config->enablesetuptab && empty($moduleinstance->speakingtopic)) {
     echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('attempts', constants::M_COMPONENT));
