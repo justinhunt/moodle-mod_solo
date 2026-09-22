@@ -83,10 +83,20 @@ if( $config->layout == constants::M_LAYOUT_NARROW) {
 $renderer = $PAGE->get_renderer('mod_solo');
 $attemptrenderer = $PAGE->get_renderer('mod_solo', 'attempt');
 
+// Deleting is a teacher action on any attempt in this activity. Everything else is a student working on their own.
+$deleting = ($action == 'confirmdelete' || $action == 'delete');
+if ($deleting) {
+    require_capability('mod/solo:manageattempts', $context);
+}
+
 // are we in new or edit mode?
 $attempt = false;
 if ($attemptid) {
-    $attempt = $DB->get_record(constants::M_ATTEMPTSTABLE, ['id' => $attemptid, constants::M_MODNAME => $cm->instance], '*', MUST_EXIST);
+    $attemptconditions = ['id' => $attemptid, constants::M_MODNAME => $cm->instance];
+    if (!$deleting) {
+        $attemptconditions['userid'] = $USER->id;
+    }
+    $attempt = $DB->get_record(constants::M_ATTEMPTSTABLE, $attemptconditions, '*', MUST_EXIST);
     if(!$attempt){
         print_error('could not find attempt of id:' . $attemptid);
     }

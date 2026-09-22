@@ -127,13 +127,50 @@ class attempthelper
     public function delete_attempt($attemptid) {
         global $DB;
 
+        // Only ever delete attempts that belong to this activity.
+        if (!$DB->record_exists(constants::M_ATTEMPTSTABLE, ['id' => $attemptid, constants::M_MODNAME => $this->mod->id])) {
+            return false;
+        }
+
         //delete stats for this attempt
         $DB->delete_records(constants::M_STATSTABLE, array('attemptid'=>$attemptid));
         //delete AI data for this attempt
         $DB->delete_records(constants::M_AITABLE, array('attemptid'=>$attemptid));
         //delete Attempt
         $DB->delete_records(constants::M_ATTEMPTSTABLE, array('id'=>$attemptid));
+        return true;
+    }
 
+    /**
+     * The type of a step (prepare, record, transcribe, model) as configured on this activity.
+     *
+     * @param int $step The step number, 1 based.
+     * @return int|false The step type, or false if the activity has no such step.
+     */
+    public function fetch_step_type($step) {
+        if ($step < 1 || $step > 5) {
+            return false;
+        }
+        $steptype = (int) $this->mod->{'step' . $step};
+        return $steptype === constants::M_STEP_NONE ? false : $steptype;
+    }
+
+    /**
+     * Clean the media url a recorder hands back. The server later fetches transcripts from next to it, so it must
+     * be a plain https url and nothing else.
+     *
+     * @param mixed $url The url from the browser.
+     * @return string The url, or an empty string if it is not acceptable.
+     */
+    public static function clean_media_url($url) {
+        if (!is_string($url)) {
+            return '';
+        }
+        $url = trim($url);
+        if ($url === '' || clean_param($url, PARAM_URL) !== $url || strpos($url, 'https://') !== 0) {
+            return '';
+        }
+        return $url;
     }
 
 
@@ -149,17 +186,47 @@ class attempthelper
         $ret = new \stdClass();
 
         if ($data ) {
-            $newattempt = $data;
+            // The step type comes from the activity settings, never from the browser.
+            $steptype = $this->fetch_step_type($step);
+            if ($steptype === false) {
+                $ret->message = 'invalid step:' . $step;
+                $ret->success = false;
+                return $ret;
+            }
+
+            // Only the fields a step form legitimately sends are copied onto the attempt. Everything else on the
+            // attempt (grades, transcripts, ownership) is set server side.
+            $newattempt = new \stdClass();
             $newattempt->solo = $this->mod->id;
             $newattempt->userid = $USER->id;
             $newattempt->modifiedby=$USER->id;
             $newattempt->timemodified=time();
+            switch ($steptype) {
+                case constants::STEP_MEDIARECORDING:
+                    $filename = isset($data->filename) ? self::clean_media_url($data->filename) : '';
+                    if ($filename === '') {
+                        $ret->message = 'invalid recording url';
+                        $ret->success = false;
+                        return $ret;
+                    }
+                    $newattempt->filename = $filename;
+                    break;
+                case constants::STEP_SELFTRANSCRIBE:
+                    if (isset($data->selftranscript) && is_string($data->selftranscript)) {
+                        $newattempt->selftranscript = $data->selftranscript;
+                    }
+                    break;
+            }
 
             //are we in edit or new mode
-            if ($data->attemptid) {
-                $attempt = $DB->get_record(constants::M_ATTEMPTSTABLE, array('id'=>$data->attemptid,constants::M_MODNAME => $this->mod->id), '*', MUST_EXIST);
+            $attempt = false;
+            $attemptid = isset($data->attemptid) ? clean_param($data->attemptid, PARAM_INT) : 0;
+            if ($attemptid) {
+                // Students may only ever work on their own attempts.
+                $attempt = $DB->get_record(constants::M_ATTEMPTSTABLE,
+                    ['id' => $attemptid, constants::M_MODNAME => $this->mod->id, 'userid' => $USER->id]);
                 if(!$attempt){
-                    $ret->message = 'could not find attempt of id:' . $data->attemptid;
+                    $ret->message = 'could not find attempt of id:' . $attemptid;
                     $ret->success = false;
                     return $ret;
                 }
@@ -171,10 +238,17 @@ class attempthelper
                 $edit = false;
             }
 
+            // Steps are done in order. Going back to an earlier step is fine, skipping ahead is not.
+            if ($step > $lateststep + 1) {
+                $ret->message = 'step ' . $step . ' can not be submitted before step ' . ($lateststep + 1);
+                $ret->success = false;
+                return $ret;
+            }
+
             //first insert a new attempt if we need to
             //that will give us a attemptid, we need that for saving files
             if($edit) {
-                $newattempt->id = $data->attemptid;
+                $newattempt->id = $attempt->id;
             }else{
                 $newattempt->timecreated=time();
                 $newattempt->createdby=$USER->id;
@@ -189,7 +263,7 @@ class attempthelper
             }
 
             //type specific settings
-            switch($data->activitytype) {
+            switch($steptype) {
                 case constants::STEP_PREPARE:
                     break;
 

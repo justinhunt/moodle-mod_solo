@@ -93,6 +93,7 @@ log.debug('updateid', dd.updatecontrolid);
                 log.debug(dd.activitydata.localposturl);
                 var xhr = new XMLHttpRequest();
                 var params = "datatype=register";
+                params += "&sesskey=" + M.cfg.sesskey;
                 params += "&id=" + eventdata.id;
                 params += "&posturl=" + encodeURIComponent(eventdata.uploaddetails.postURL);
                 xhr.open("POST", dd.activitydata.localposturl, true);

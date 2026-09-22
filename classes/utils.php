@@ -3471,6 +3471,7 @@ class utils
         $props['regionid'] = '#id_region';
         $props['targetlanguageid'] = '#id_ttslanguage';
         $props['feedbacklanguageid'] = '#id_feedbacklanguage';
+        $props['contextid'] = $context->id;
         $PAGE->requires->js_call_amd(constants::M_COMPONENT . '/aigradepreview', 'init', [$props]);
     } //end of add_mform_elements
 

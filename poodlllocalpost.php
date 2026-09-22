@@ -38,8 +38,15 @@ $recorderid = optional_param('id', "", PARAM_TEXT);
 $posturl = optional_param('posturl', "", PARAM_TEXT);
 
 
+// This relays uploads through the Moodle server, so it only runs when a site admin has switched it on.
+if (!get_config(constants::M_COMPONENT, 'enablelocalpost')) {
+    throw new moodle_exception('nopermissions', 'error', '', 'local post');
+}
+
 switch ($datatype) {
     case "register":
+        // Registering sets where the server will send data, so it must come from our own page.
+        require_sesskey();
         register_upload_details($recorderid,$posturl);
         break;
 
@@ -59,6 +66,10 @@ function register_upload_details($recorderid,$posturl) {
     global $CFG, $USER;
 
     //Fetch from cache and process the results and display
+    // Only ever relay to an https url (the cloud storage upload url).
+    if (clean_param($posturl, PARAM_URL) !== $posturl || strpos($posturl, 'https://') !== 0) {
+        return;
+    }
     $cache = \cache::make_from_params(\cache_store::MODE_SESSION, constants::M_COMPONENT, 'upload_details');
     //$cache->set($recorderid . '_posturl', $posturl);
     $cache->set('posturl', $posturl);

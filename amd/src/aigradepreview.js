@@ -101,6 +101,7 @@ export const init = (props) => {
                 maxmarks: 100,
                 feedbackscheme: feedbackscheme.value,
                 feedbacklanguage: feedbacklanguage.value,
+                contextid: props.contextid,
             },
             async: false
         }])[0].then(function(airesponse) {
