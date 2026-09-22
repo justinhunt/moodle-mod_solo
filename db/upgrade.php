@@ -692,5 +692,16 @@ function xmldb_solo_upgrade($oldversion)
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
+    // Per activity switch for the in page streaming recorder. Off for existing activities.
+    $newversion = 2026092202;
+    if ($oldversion < $newversion) {
+        $table = new xmldb_table(constants::M_TABLE);
+        $field = new xmldb_field('streamingrecord', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0, 'recordertype');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, $newversion, 'solo');
+    }
+
     return true;
 }

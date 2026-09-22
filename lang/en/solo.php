@@ -913,3 +913,7 @@ $string['allowmicaccess'] = 'Please allow access to your microphone.';
 $string['nomicdetected'] = 'No microphone detected.';
 $string['speechnotrecognized'] = 'We could not recognize your speech.';
 $string['streamrecord'] = 'Record';
+$string['streamingrecord'] = 'Streaming recorder';
+$string['streamingrecord_help'] = 'Record with the in page recorder, which transcribes speech while the student speaks, so results are ready as soon as they finish. It is used for audio recordings in the supported languages, with the Prepare, Record, Model sequences (and Record, Model, and Prepare, Type, Record, Model). Everything else, including video and the Upload recorder style, keeps the recorder chosen above.';
+$string['streamingrecord_default'] = 'Streaming recorder by default';
+$string['streamingrecord_default_details'] = 'Whether new activities use the in page streaming recorder. Each activity can change this in its settings.';

@@ -1791,6 +1791,10 @@ class utils
         if (!$tokenobject) {
             return false;
         }
+        // If a site's Azure key failed, the token is an AssemblyAI one, which covers fewer languages.
+        if (!self::streaming_supports_language($tokenobject->tokentype, $moduleinstance->ttslanguage)) {
+            return false;
+        }
         // Minutes in the settings, 0 means no limit, and the timer treats 0 the same way.
         $maxtime = $moduleinstance->maxconvlength > 0 ? $moduleinstance->maxconvlength * 60 : 0;
 
@@ -1820,6 +1824,64 @@ class utils
             'mediatype' => 'audio',
             'cloudpoodllurl' => self::get_cloud_poodll_server(),
         ];
+    }
+
+    /**
+     * The streaming speech provider this site uses: its own Azure key if one is set, otherwise AssemblyAI.
+     *
+     * @return string 'azure' or 'assemblyai'
+     */
+    public static function streaming_token_type()
+    {
+        $conf = get_config(constants::M_COMPONENT);
+        return (!empty($conf->azureapikey) && !empty($conf->azureapiregion)) ? 'azure' : 'assemblyai';
+    }
+
+    /**
+     * Whether this activity records with the in page streaming recorder rather than the Cloud Poodll iframe.
+     *
+     * The single decision point, for the record step and for the submit path. It looks at settings only and makes
+     * no network calls, so the record step still falls back to the iframe if no streaming token can be fetched
+     * (see fetch_streaming_recorder_data).
+     *
+     * @param \stdClass $moduleinstance The solo instance.
+     * @return bool
+     */
+    public static function can_stream_record($moduleinstance)
+    {
+        // Switched on for this activity.
+        if (empty($moduleinstance->streamingrecord)) {
+            return false;
+        }
+        // The streaming recorder is audio only, and cannot take an uploaded file.
+        if ($moduleinstance->recordertype != constants::REC_AUDIO || $moduleinstance->recorderskin == constants::SKIN_UPLOAD) {
+            return false;
+        }
+        if (!self::can_transcribe($moduleinstance)) {
+            return false;
+        }
+        // Only the sequences a teacher can choose today that have a record step. The legacy PRTM and PRMT preload
+        // an automatic transcript into the transcribe step from S3, which streaming does not provide. Compare the
+        // steps exactly: steps_to_sequence() reports PRM for any layout it does not recognise.
+        $streamable = false;
+        foreach ([constants::M_SEQ_PRM, constants::M_SEQ_RM, constants::M_SEQ_PTRM] as $sequence) {
+            $steps = self::sequence_to_steps((object) ['activitysteps' => $sequence]);
+            $same = true;
+            for ($i = 1; $i <= 5; $i++) {
+                if ((int) $steps->{'step' . $i} !== (int) ($moduleinstance->{'step' . $i} ?? constants::M_STEP_NONE)) {
+                    $same = false;
+                    break;
+                }
+            }
+            if ($same) {
+                $streamable = true;
+                break;
+            }
+        }
+        if (!$streamable) {
+            return false;
+        }
+        return self::streaming_supports_language(self::streaming_token_type(), $moduleinstance->ttslanguage);
     }
 
     /**
@@ -3545,6 +3607,15 @@ class utils
         $options = self::get_skin_options();
         $mform->addElement('select', 'recorderskin', get_string('recorderskin', constants::M_COMPONENT), $options, []);
         $mform->setDefault('recorderskin', constants::SKIN_SOLO);
+
+        // In page streaming recorder. Where the activity cannot stream (see can_stream_record) it keeps the recorder
+        // above, so the recorder style still matters and is left enabled.
+        $mform->addElement('selectyesno', 'streamingrecord', get_string('streamingrecord', constants::M_COMPONENT));
+        $mform->setType('streamingrecord', PARAM_INT);
+        $mform->setDefault('streamingrecord', empty($config->streamingrecord_default) ? 0 : 1);
+        $mform->addHelpButton('streamingrecord', 'streamingrecord', constants::M_COMPONENT);
+        $mform->disabledIf('streamingrecord', 'recordertype', 'eq', constants::REC_VIDEO);
+        $mform->disabledIf('streamingrecord', 'activitysteps', 'eq', constants::M_SEQ_PTM);
 
         // Enable Manual Transcription [lets force this ]
         $mform->addElement('hidden', 'enabletranscription', 1);

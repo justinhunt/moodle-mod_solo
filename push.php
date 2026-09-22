@@ -30,7 +30,7 @@ require_once($CFG->libdir . '/formslib.php');
 
 use \mod_solo\constants;
 use \mod_solo\utils;
-const PUSHABLES=['none'=>'None','recorderskin'=>'Recorder Skin','ttslanguage'=>'TTS Language','ttsvoice'=>'TTS Voice','activitysteps'=>'Activity Steps'];
+const PUSHABLES=['none'=>'None','recorderskin'=>'Recorder Skin','ttslanguage'=>'TTS Language','ttsvoice'=>'TTS Voice','activitysteps'=>'Activity Steps','streamingrecord'=>'Streaming Recorder'];
 const PUSH_NONE='none';
 
 

@@ -17,6 +17,7 @@
         <FIELD NAME="ttslanguage" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="none" SEQUENCE="false" COMMENT="the target language"/>
         <FIELD NAME="recorderskin" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="once" SEQUENCE="false" COMMENT="the recorder skin"/>
         <FIELD NAME="recordertype" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="audio" SEQUENCE="false" COMMENT="the recorder type"/>
+        <FIELD NAME="streamingrecord" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="use the in page streaming recorder where the activity allows it"/>
         <FIELD NAME="enableai" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to use AI on this activity"/>
         <FIELD NAME="expiredays" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="100" SEQUENCE="false"/>
         <FIELD NAME="region" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="useast1" SEQUENCE="false" COMMENT="aws region"/>

@@ -53,7 +53,7 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
             'course','name','intro','introformat','grade','gradeoptions','manualgraded','mingrade',
                 'convlength','maxconvlength','speakingtopic','topictext','topictextformat','topictts','topicttsvoice','topicttsspeed','topiciframe','targetwords','tips','tipsformat',
             'topicytid','topicytstart','topicytend','modeltext','modeltextformat','modeltts','modelttsvoice','modelttsspeed','modeliframe','modelytid','modelytstart','modelytend',
-            'ttslanguage','recorderskin','recordertype','enableai','enabletranscribe','expiredays','region','transcriber','multiattempts',
+            'ttslanguage','recorderskin','recordertype','streamingrecord','enableai','enabletranscribe','expiredays','region','transcriber','multiattempts',
                 'enabletranscription','enablesharing','enableautograde','gradewordgoal','autogradeoptions','completionallsteps',
                 'postattemptedit','step1','step2','step3','step4','step5','foriframe','timecreated','timemodified','viewstart','viewend',
             'enablesuggestions','enabletts','nopasting','modelttsembedding','modelttsideacount','preloadtranscript',
