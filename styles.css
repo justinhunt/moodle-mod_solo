@@ -2953,3 +2953,205 @@ span.mod_solo_grading_original_preword,span.mod_solo_grading_original_postword {
 .mod_solo_hiddenaudioplayer_cont video {
 	width: 100%;
 }
+/* In page streaming recorder (templates/streamrecorder.mustache), styled like the Cloud Poodll minimal skin.
+   amd/src/streamrecord.js sets data-mode on the card: start, recording, uploading, playback. */
+
+.mod_solo_streamrec {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 280px;
+    max-width: 100%;
+    margin: 48px auto;
+    padding: 12px 0 48px 0;
+    background-color: #f5f3ff;
+    border-radius: 14px;
+}
+
+.mod_solo_streamrec_counter {
+    font-family: RobotoMono, monospace;
+    font-size: 15px;
+    letter-spacing: 0.4px;
+    border: 1px solid #6F58DE;
+    border-radius: 8px;
+    padding: 10px 22px;
+    margin-bottom: 36px;
+    background-color: #fff;
+}
+
+.mod_solo_streamrec_buttonwrap {
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
+
+.mod_solo_streamrec_button {
+    position: relative;
+    z-index: 2;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 0;
+    border-radius: 100%;
+    background-color: #6F58DE;
+    box-shadow: 0 3px 14px rgba(133, 108, 255, .28);
+    color: #fff;
+    cursor: pointer;
+}
+
+.mod_solo_streamrec_button:hover,
+.mod_solo_streamrec_button:active {
+    background-color: #5943c6;
+}
+
+.mod_solo_streamrec_button:focus-visible {
+    outline: 3px solid #2D225D;
+    outline-offset: 3px;
+}
+
+.mod_solo_streamrec_icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    line-height: 64px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.mod_solo_streamrec_icon_mic {
+    background-image: url([[pix:mod_solo|poodll-solo-microphone-icon]]);
+}
+
+.mod_solo_streamrec_icon_stop {
+    background-image: url([[pix:mod_solo|poodll-solo-stop-recording-icon]]);
+}
+
+.mod_solo_streamrec_percent {
+    display: none;
+    font-size: 11px;
+    line-height: 64px;
+}
+
+/* The ring that pulses out from behind the button while recording. */
+.mod_solo_streamrec_pulse {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 100%;
+    background-color: #DCD4FF;
+    opacity: 0;
+}
+
+.mod_solo_streamrec[data-mode="recording"] .mod_solo_streamrec_pulse {
+    animation: mod_solo_streamrec_waves 2s infinite;
+}
+
+@keyframes mod_solo_streamrec_waves {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.6);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2.3);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mod_solo_streamrec[data-mode="recording"] .mod_solo_streamrec_pulse {
+        animation: none;
+        opacity: 1;
+        transform: scale(1.4);
+    }
+}
+
+/* While uploading the button shows the percentage and nothing else. */
+.mod_solo_streamrec[data-mode="uploading"] .mod_solo_streamrec_button {
+    cursor: default;
+}
+
+.mod_solo_streamrec[data-mode="uploading"] .mod_solo_streamrec_icon {
+    display: none !important;
+}
+
+.mod_solo_streamrec[data-mode="uploading"] .mod_solo_streamrec_percent {
+    display: block;
+}
+
+/* Status messages are for screen readers, as the minimal skin shows none. A failed upload is shown to everyone. */
+.mod_solo_streamrec_status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+.mod_solo_streamrec_status.mod_solo_streamrec_error {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    margin-top: 24px;
+    padding: 0 16px;
+    font-size: 0.875rem;
+    text-align: center;
+    color: #b3261e;
+}
+
+/* After a recording the counter and button make way for the player and the record again link. */
+.mod_solo_streamrec_playback {
+    display: none;
+    width: 100%;
+}
+
+.mod_solo_streamrec[data-mode="playback"] .mod_solo_streamrec_playback {
+    display: block;
+}
+
+.mod_solo_streamrec[data-mode="playback"] .mod_solo_streamrec_counter,
+.mod_solo_streamrec[data-mode="playback"] .mod_solo_streamrec_buttonwrap {
+    display: none;
+}
+
+.mod_solo_streamrec .mod_solo_audioplayer {
+    background-color: transparent;
+    margin-bottom: 0;
+    padding: 0 12px;
+}
+
+.mod_solo_streamrec_restartwrap {
+    text-align: center;
+    margin-top: 12px;
+}
+
+.mod_solo_streamrec .mod_solo_streamrec_restart {
+    color: #6F58DE;
+}
+
+.mod_solo_streamrec_settings {
+    position: absolute;
+    right: 6px;
+    bottom: 4px;
+    padding: 4px;
+    border: 0;
+    background: transparent;
+    color: #333;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.mod_solo_streamrec_settings:focus-visible {
+    outline: 2px solid #6F58DE;
+}

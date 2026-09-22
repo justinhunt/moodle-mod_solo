@@ -1,0 +1,49 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_solo/steprecorder
+
+    The record step's recorder: the in page streaming recorder when the activity streams (streamrec is set, see
+    utils::can_stream_record), otherwise the Cloud Poodll iframe recorder. Either way the recording's url ends up in
+    the hidden {{rec.widgetid}}_filename field that the step's Next button submits.
+
+    Example context (json):
+    {
+        "rec": {"widgetid": "solo_audio_recorder_9999", "cmid": 12},
+        "uniqid": "step1",
+        "streamrec": false
+    }
+}}
+{{#streamrec}}
+    <input type="hidden" id="{{rec.widgetid}}_filename"/>
+    <input type="hidden" id="{{rec.widgetid}}_streamingtranscript"/>
+    <input type="hidden" id="{{rec.widgetid}}_streamingtext"/>
+    <input type="hidden" id="{{rec.widgetid}}_streamingstatus"/>
+    {{>mod_solo/streamrecorder}}
+    {{#js}}
+        require(['mod_solo/streamrecord'], function(streamrecord) {
+            streamrecord.init({
+                uniqueid: '{{uniqueid}}',
+                widgetid: '{{rec.widgetid}}',
+                nextbuttonid: '{{uniqid}}_button'
+            });
+        });
+    {{/js}}
+{{/streamrec}}
+{{^streamrec}}
+    {{>mod_solo/mediarecorder}}
+{{/streamrec}}

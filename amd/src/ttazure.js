@@ -331,7 +331,8 @@ define(['jquery', 'core/log'], function ($, log) {
             setTimeout(function () {
                 var finalwords = that.buildwords();
                 log.debug('TT Azure Streamer final capture with ' + finalwords.length + ' timed words');
-                that.audiohelper.onfinalspeechcapture(that.finaltext, finalwords);
+                //Azure gives no end of stream confirmation here, so report the transcript as unconfirmed.
+                that.audiohelper.onfinalspeechcapture(that.finaltext, finalwords, 'unconfirmed');
                 that.cleanup();
             }, 1000);
         },

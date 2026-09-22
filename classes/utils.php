@@ -1798,8 +1798,9 @@ class utils
         // Minutes in the settings, 0 means no limit, and the timer treats 0 the same way.
         $maxtime = $moduleinstance->maxconvlength > 0 ? $moduleinstance->maxconvlength * 60 : 0;
 
+        $uniqueid = \html_writer::random_id('solo_ttrec');
         return [
-            'uniqueid' => \html_writer::random_id('solo_ttrec'),
+            'uniqueid' => $uniqueid,
             'cmid' => $cm->id,
             'language' => $moduleinstance->ttslanguage,
             'region' => $moduleinstance->region,
@@ -1823,6 +1824,12 @@ class utils
             'expiredays' => $moduleinstance->expiredays,
             'mediatype' => 'audio',
             'cloudpoodllurl' => self::get_cloud_poodll_server(),
+            // The counter before recording starts, in the same hh:mm:ss form timer.js uses.
+            'initialtime' => sprintf('%02d:%02d:%02d', intdiv($maxtime, 3600), intdiv($maxtime % 3600, 60), $maxtime % 60),
+            // For the playback player partial (mediasubmissionplayer), pointed at the recording once there is one.
+            'UNIQID' => $uniqueid . '_player',
+            'isaudiosubmission' => true,
+            'audiofilename' => '',
         ];
     }
 

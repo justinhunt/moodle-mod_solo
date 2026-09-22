@@ -89,6 +89,17 @@ define(['jquery', 'core/log', 'core/notification','core/ajax', 'mod_solo/ttaudio
                     uconfig.language = that.lang;
                     uconfig.transcribevocab = "none";
                     uconfig.notificationurl = "none";
+                    // Tell the page how the upload is going. mediasaved (below) fires when the upload starts;
+                    // mediauploaded only once the file is really there, which is what a submission must wait for.
+                    uconfig.onprogress = function (loaded, total) {
+                        that.callback({type: 'mediauploadprogress', percent: Math.floor((loaded / total) * 100)});
+                    };
+                    uconfig.onfailure = function () {
+                        that.callback({type: 'mediauploadfailed'});
+                    };
+                    uconfig.callbackjs = function (callbackobject) {
+                        that.callback({type: 'mediauploaded', mediaurl: callbackobject[2]});
+                    };
                     that.uploader.init(uconfig);
                 }
 
@@ -101,7 +112,9 @@ define(['jquery', 'core/log', 'core/notification','core/ajax', 'mod_solo/ttaudio
 
                 // Callback: Timer updates.
                 var handle_timer_update = function () {
-                    var displaytime = that.timer.fetch_display_time();
+                    // The timer can tick once past zero before the recording has finished stopping, and
+                    // fetch_display_time() cannot be asked for 0 (it treats 0 as "no argument"), so clamp it here.
+                    var displaytime = that.timer.seconds > 0 ? that.timer.fetch_display_time() : '00:00:00';
                     that.controls.timerstatus.html(displaytime);
                     that.update_timer_display();
                     log.debug('timer_seconds: ' + that.timer.seconds);
@@ -245,8 +258,8 @@ define(['jquery', 'core/log', 'core/notification','core/ajax', 'mod_solo/ttaudio
                     that.audiohelper.onError = on_error;
                     that.audiohelper.onStop = on_stopped;
                     that.audiohelper.onStream = on_gotstream;
-                    that.audiohelper.onfinalspeechcapture = function (speechtext, wordresults) {
-                        that.gotRecognition(speechtext, wordresults);
+                    that.audiohelper.onfinalspeechcapture = function (speechtext, wordresults, endreason) {
+                        that.gotRecognition(speechtext, wordresults, endreason);
                         that.update_audio('isRecording', false);
                         that.update_audio('isRecognizing', false);
                     };
@@ -473,7 +486,9 @@ define(['jquery', 'core/log', 'core/notification','core/ajax', 'mod_solo/ttaudio
 
             register_events: function () {
                 var that = this;
-                this.controls.recordercontainer.click(function () {
+                // The button, not the whole container: Solo's recorder card also holds a player, a re-record link and a
+                // settings button, and a click on any of those must not start or stop a recording.
+                this.controls.recorderbutton.click(function () {
                     that.toggleRecording();
                 });
 
@@ -531,13 +546,11 @@ define(['jquery', 'core/log', 'core/notification','core/ajax', 'mod_solo/ttaudio
 
             },
 
+            // Called with the pointer-events value, 'none' while processing and 'auto' otherwise. It used to test
+            // the argument for truthiness, which both strings pass, so the button was left unclickable for good.
+            // Readaloud never noticed because clicks there land on the container; Solo listens on the button.
             show_recorder_pointer: function (show) {
-                if (show) {
-                    this.controls.recorderbutton.css('pointer-events', 'none');
-                } else {
-                    this.controls.recorderbutton.css('pointer-events', 'auto');
-                }
-
+                this.controls.recorderbutton.css('pointer-events', show === 'none' ? 'none' : 'auto');
             },
 
             gotMSResults: function (results) {
@@ -548,12 +561,16 @@ define(['jquery', 'core/log', 'core/notification','core/ajax', 'mod_solo/ttaudio
                 this.callback(message);
             },
 
-            gotRecognition: function (transcript, wordresults) {
+            gotRecognition: function (transcript, wordresults, endreason) {
                 log.debug('transcript:' + transcript);
-                if (transcript.trim() == '') { return; }
+                // A streaming recogniser says how the stream ended (endreason), and then an empty transcript is a real
+                // result: the student said nothing, which grades as zero. Solo needs to tell that apart from a stream
+                // that failed. Browser speech recognition gives no endreason and keeps the old behaviour.
+                if (!endreason && transcript.trim() == '') { return; }
                 var message = {};
                 message.type = 'speech';
                 message.capturedspeech = transcript;
+                message.streamstatus = endreason || false;
                 //word level timings, when the recogniser gave us any. Browser rec and the upload
                 //transcriber do not, so consumers must treat this as optional.
                 message.speechresults = wordresults ? wordresults : false;

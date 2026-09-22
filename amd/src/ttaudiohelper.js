@@ -63,6 +63,7 @@ define(['jquery', 'core/log', 'mod_solo/ttwavencoder', 'mod_solo/ttstreamer', 'm
             onStream: function () { },
             onSocketReady: function () { },
             onError: function () { },
+            //ttrecorder replaces this. The streamers call it with (speechtext, wordresults, endreason).
             onfinalspeechcapture: function (speechtext, wordresults) { },
             oninterimspeechcapture: function (speechtext) { },
 
@@ -173,8 +174,10 @@ define(['jquery', 'core/log', 'mod_solo/ttwavencoder', 'mod_solo/ttstreamer', 'm
                 }
 
                 // Mic permission
+                // A microphone the student chose, if any (see streamrecord.js). Otherwise the browser default.
+                var audioconstraint = this.therecorder.deviceid ? {deviceId: {exact: this.therecorder.deviceid}} : true;
                 navigator.mediaDevices.getUserMedia({
-                    audio: true,
+                    audio: audioconstraint,
                     video: false
                 }).then(gotStreamMethod).catch(this.onError);
             },

@@ -315,6 +315,14 @@ switch($type) {
             }
         }
         $stepcontent->rec = utils::fetch_recorder_data($cm, $moduleinstance, $moduleinstance->recordertype, $token);
+        // The in page streaming recorder, where the activity allows it and a streaming token can be had.
+        // Otherwise the step keeps the Cloud Poodll recorder above.
+        if (utils::can_stream_record($moduleinstance)) {
+            $streamrec = utils::fetch_streaming_recorder_data($cm, $moduleinstance, $token);
+            if ($streamrec) {
+                $stepcontent->streamrec = $streamrec;
+            }
+        }
         echo $renderer->render_from_template(constants::M_COMPONENT . '/stepmediarecord', $stepcontent);
         break;
 

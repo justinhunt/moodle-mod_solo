@@ -152,7 +152,7 @@ define(['jquery', 'core/log'], function ($, log) {
                         case 'Termination':
                             //the server has sent everything it is going to send, see finish()
                             if (that.socket === thissocket && that.onterminated) {
-                                that.onterminated();
+                                that.onterminated('terminated');
                             }
                             break;
             
@@ -179,7 +179,7 @@ define(['jquery', 'core/log'], function ($, log) {
                 if (that.socket === thissocket) {
                     that.doclosesocket();
                     if (that.onterminated) {
-                        that.onterminated();
+                        that.onterminated('error');
                     }
                 }
             };
@@ -189,7 +189,7 @@ define(['jquery', 'core/log'], function ($, log) {
                 if (that.socket === thissocket) {
                     that.socket = null;
                     if (that.onterminated) {
-                        that.onterminated();
+                        that.onterminated('closed');
                     }
                 }
             };
@@ -299,7 +299,9 @@ define(['jquery', 'core/log'], function ($, log) {
             //stopped right after speaking lost their last words. So we wait for Termination, the socket closing, or a
             //timeout, whichever comes first, and only then build the transcript.
             var timer = null;
-            var complete = function () {
+            //endreason says how the stream ended: 'terminated' means the server confirmed it had sent everything,
+            //anything else ('timeout', 'closed', 'error', 'notopen') means the transcript may be incomplete.
+            var complete = function (endreason) {
                 if (that.onterminated !== complete) {
                     return;
                 }
@@ -308,7 +310,7 @@ define(['jquery', 'core/log'], function ($, log) {
                 var finaltranscript = that.buildtranscript();
                 var finalwords = that.buildwords();
                 log.debug('sending final speech capture event with ' + finalwords.length + ' timed words');
-                that.audiohelper.onfinalspeechcapture(finaltranscript, finalwords);
+                that.audiohelper.onfinalspeechcapture(finaltranscript, finalwords, endreason);
                 that.cleanup();
             };
             this.onterminated = complete;
@@ -316,9 +318,11 @@ define(['jquery', 'core/log'], function ($, log) {
             if (this.socket && this.socket.readyState === WebSocket.OPEN) {
                 log.debug('sending Terminate and waiting for the last turn');
                 this.socket.send(JSON.stringify({type: 'Terminate'}));
-                timer = setTimeout(complete, this.terminatetimeout);
+                timer = setTimeout(function () {
+                    complete('timeout');
+                }, this.terminatetimeout);
             } else {
-                complete();
+                complete('notopen');
             }
         },
 

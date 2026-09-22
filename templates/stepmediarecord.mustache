@@ -40,7 +40,7 @@
         </div>
 
         {{! Media recorder }}
-        {{>mod_solo/mediarecorder}}
+        {{>mod_solo/steprecorder}}
 
     {{/posttranscribing}}
 
@@ -62,7 +62,7 @@
         {{/selftranscript}}
 
         {{! Media recorder }}
-        {{>mod_solo/mediarecorder}}
+        {{>mod_solo/steprecorder}}
     {{/posttranscribing}}
 
 
@@ -88,6 +88,14 @@
                     if(data.filename.trim()===''){
                         Notification.alert('{{#str}}important, mod_solo{{/str}}',"{{#str}}noemptyrecording, mod_solo{{/str}}");
                         return false;
+                    }
+
+                    //the streaming recorder also hands over its transcript (see mod_solo/streamrecord)
+                    var streamingstatus = $('#' + '{{rec.widgetid}}_streamingstatus');
+                    if (streamingstatus.length) {
+                        data.streamingtranscript = $('#' + '{{rec.widgetid}}_streamingtranscript').val();
+                        data.streamingtext = $('#' + '{{rec.widgetid}}_streamingtext').val();
+                        data.streamingstatus = streamingstatus.val();
                     }
 
                     data.attemptid ={{attemptid}};

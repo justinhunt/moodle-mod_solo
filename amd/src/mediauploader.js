@@ -216,6 +216,13 @@ define(['jquery', 'core/log'], function ($, log) {
 
         },
 
+        //tell any listener the upload did not make it, so it is not left waiting for a completion that never comes
+        doUploadFailedCallback: function (uploader) {
+            if (typeof uploader.config.onfailure === 'function') {
+                uploader.config.onfailure();
+            }
+        },
+
         //after an upload handle the filename poke and callback call
         postProcessUpload: function (e, uploader) {
             var xhr = e.currentTarget;
@@ -228,6 +235,7 @@ define(['jquery', 'core/log'], function ($, log) {
                     if (!filename) {
                         log.debug('upload failed #1');
                         log.debug(xhr);
+                        uploader.doUploadFailedCallback(uploader);
                         return;
                     }
                     //Alert any listeners about the upload complete
@@ -239,6 +247,7 @@ define(['jquery', 'core/log'], function ($, log) {
                 } else {
                     log.debug('upload failed #3');
                     log.debug(xhr);
+                    uploader.doUploadFailedCallback(uploader);
                 } //end of if status 200
             }//end of if ready state 4
         },
@@ -269,6 +278,15 @@ define(['jquery', 'core/log'], function ($, log) {
                 uploader.postProcessUpload(e, uploader);
 
             };
+
+            //optional progress reporting, the recording is uncompressed wav so it can take a while
+            if (typeof config.onprogress === 'function' && xhr.upload) {
+                xhr.upload.addEventListener('progress', function (e) {
+                    if (e.lengthComputable) {
+                        config.onprogress(e.loaded, e.total);
+                    }
+                });
+            }
 
             xhr.open("put", config.posturl, true);
             xhr.setRequestHeader("Content-Type", 'application/octet-stream');
