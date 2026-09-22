@@ -198,6 +198,12 @@ final class security_test extends \advanced_testcase {
         mod_solo_external::check_grammar('some text', $this->cm->instance);
     }
 
+    public function test_refresh_token_requires_access_to_the_activity(): void {
+        $this->setUser($this->getDataGenerator()->create_user());
+        $this->expectException(\require_login_exception::class);
+        mod_solo_external::refresh_token($this->cm->id, 'assemblyai', 'useast1');
+    }
+
     public function test_delete_attempt_is_scoped_to_the_activity(): void {
         global $DB;
         $this->setUser($this->student1);

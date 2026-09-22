@@ -39,6 +39,9 @@ require_once($CFG->dirroot . '/mod/solo/lib.php');
  */
 class utils
 {
+    /** @var int A cached streaming token is only handed out if it has at least this many seconds left. */
+    const STREAMING_TOKEN_MINLIFE = 2 * MINSECS;
+
     // Get the Cloud Poodll Server URL
     public static function get_cloud_poodll_server()
     {
@@ -1585,6 +1588,264 @@ class utils
 
         return $refresh . $message;
 
+    }
+
+    /**
+     * Fetch a token for streaming speech recognition in the browser.
+     *
+     * A site's own Azure key is used when one is configured, otherwise an AssemblyAI token is fetched through
+     * Cloud Poodll. Tokens are cached for the whole site, which is safe: one token can open many sessions.
+     *
+     * @param string $poodllregion The Poodll region of the activity.
+     * @return \stdClass|false The token object (token, tokentype, region, validuntil, validseconds), or false.
+     */
+    public static function fetch_streaming_token($poodllregion)
+    {
+        $token = self::fetch_azure_token();
+        if ($token) {
+            return $token;
+        }
+        $tokentype = 'assemblyai';
+
+        // If we already have a token with a useful life left, just use that. A token about to expire would make the
+        // page refresh it almost at once, and again when the refresh hands back the same cached token, and every
+        // refresh costs the recording the end of the sentence being spoken.
+        $now = time();
+        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
+        $tokenobject = $cache->get($tokentype . 'token' . '_' . $poodllregion);
+        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now + self::STREAMING_TOKEN_MINLIFE) {
+            // For js we set the valid number of seconds.
+            $tokenobject->validseconds = $tokenobject->validuntil - $now;
+            return $tokenobject;
+        }
+
+        $conf = get_config(constants::M_COMPONENT);
+        if (empty($conf->apiuser) || empty($conf->apisecret)) {
+            return false;
+        }
+        $cloudpoodlltoken = self::fetch_token($conf->apiuser, $conf->apisecret);
+        if (empty($cloudpoodlltoken)) {
+            return false;
+        }
+
+        $params = [
+            'wstoken' => $cloudpoodlltoken,
+            'wsfunction' => 'local_cpapi_fetch_some_token',
+            'moodlewsrestformat' => 'json',
+            'region' => $poodllregion,
+            'tokentype' => $tokentype,
+        ];
+        $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode != 0 || !isset($payloadobject->returnMessage)) {
+            return false;
+        }
+
+        $tokenobject = new \stdClass();
+        $tokenobject->tokentype = $tokentype;
+        $tokenobject->token = $payloadobject->returnMessage;
+        $tokenobject->region = $poodllregion;
+        $tokenobject->validuntil = $now + (10 * MINSECS);
+        $cache->set($tokentype . 'token' . '_' . $poodllregion, $tokenobject);
+        // For js we set the valid number of seconds.
+        $tokenobject->validseconds = $tokenobject->validuntil - $now;
+        return $tokenobject;
+    }
+
+    /**
+     * Fetch an Azure speech token, using the site's own Azure key if one is configured.
+     *
+     * @return \stdClass|false The token object, or false if there is no key or the request failed.
+     */
+    public static function fetch_azure_token()
+    {
+        global $CFG;
+        $conf = get_config(constants::M_COMPONENT);
+        $apikey = isset($conf->azureapikey) ? $conf->azureapikey : '';
+        $apiregion = isset($conf->azureapiregion) ? $conf->azureapiregion : '';
+        if (empty($apikey) || empty($apiregion)) {
+            return false;
+        }
+
+        // If we already have a token with a useful life left, just use that. See fetch_streaming_token().
+        $now = time();
+        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
+        $tokenobject = $cache->get('azuretoken' . '_' . $apiregion);
+        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now + self::STREAMING_TOKEN_MINLIFE) {
+            // For js we set the valid number of seconds.
+            $tokenobject->validseconds = $tokenobject->validuntil - $now;
+            return $tokenobject;
+        }
+
+        $apidomain = 'microsoft.com';
+        if (strpos($apiregion, 'china') === 0) {
+            $apidomain = 'azure.cn';
+        } else if (strpos($apiregion, 'usgov') === 0) {
+            $apidomain = 'azure.us';
+        }
+        $fetchurl = 'https://' . $apiregion . '.api.cognitive.' . $apidomain . '/sts/v1.0/issueToken';
+        require_once($CFG->libdir . '/filelib.php');
+        $c = new \curl();
+        $options = [
+            'CURLOPT_HTTPHEADER' => [
+                'Ocp-Apim-Subscription-Key: ' . $apikey,
+                'Content-Length: 0',
+            ],
+            'CURLOPT_POSTFIELDS' => '',
+            'CURLOPT_POST' => true,
+        ];
+        $response = $c->post($fetchurl, '', $options);
+        if (!$response) {
+            return false;
+        }
+
+        $tokenobject = new \stdClass();
+        $tokenobject->token = $response;
+        $tokenobject->tokentype = 'azure';
+        $tokenobject->region = $apiregion;
+        // Azure tokens are valid for 10 minutes, we refresh a minute early.
+        $tokenobject->validuntil = $now + (9 * MINSECS);
+        $cache->set('azuretoken' . '_' . $apiregion, $tokenobject);
+        // For js we set the valid number of seconds.
+        $tokenobject->validseconds = $tokenobject->validuntil - $now;
+        return $tokenobject;
+    }
+
+    /**
+     * The Azure speech regions, for the admin setting.
+     *
+     * @return array region code => name
+     */
+    public static function fetch_regions_azure()
+    {
+        return [
+            'australiacentral' => 'Australia Central',
+            'australiaeast' => 'Australia East',
+            'australiasoutheast' => 'Australia Southeast',
+            'brazilsouth' => 'Brazil South',
+            'brazilsoutheast' => 'Brazil Southeast',
+            'canadacentral' => 'Canada Central',
+            'canadaeast' => 'Canada East',
+            'centralindia' => 'Central India',
+            'centralus' => 'Central US',
+            'chinaeast' => 'China East',
+            'chinaeast2' => 'China East 2',
+            'chinaeast3' => 'China East 3',
+            'chinanorth' => 'China North',
+            'chinanorth2' => 'China North 2',
+            'chinanorth3' => 'China North 3',
+            'eastasia' => 'East Asia',
+            'eastus' => 'East US',
+            'eastus2' => 'East US 2',
+            'francecentral' => 'France Central',
+            'germanywestcentral' => 'Germany West Central',
+            'israelcentral' => 'Israel Central',
+            'italynorth' => 'Italy North',
+            'japaneast' => 'Japan East',
+            'japanwest' => 'Japan West',
+            'koreacentral' => 'Korea Central',
+            'mexicocentral' => 'Mexico Central',
+            'newzealandnorth' => 'New Zealand North',
+            'northcentralus' => 'North Central US',
+            'northeurope' => 'North Europe',
+            'polandcentral' => 'Poland Central',
+            'qatarcentral' => 'Qatar Central',
+            'southafricanorth' => 'South Africa North',
+            'southcentralus' => 'South Central US',
+            'southeastasia' => 'Southeast Asia',
+            'southindia' => 'South India',
+            'spaincentral' => 'Spain Central',
+            'swedencentral' => 'Sweden Central',
+            'switzerlandnorth' => 'Switzerland North',
+            'uaenorth' => 'UAE North',
+            'uksouth' => 'UK South',
+            'ukwest' => 'UK West',
+            'westcentralus' => 'West Central US',
+            'westeurope' => 'West Europe',
+            'westus2' => 'West US 2',
+            'westus3' => 'West US 3',
+        ];
+    }
+
+    /**
+     * Template data for the in page streaming recorder (templates/streamrecorder.mustache).
+     *
+     * It saves the media (teachers grade against it), forces streaming (browser speech recognition has no word
+     * timings and cannot record audio on Android), and has the cloud transcribe the saved audio as well, so an
+     * attempt whose streaming transcript failed can still be graded from the server side transcript.
+     *
+     * @param \stdClass $cm The course module.
+     * @param \stdClass $moduleinstance The solo instance.
+     * @param string $cloudpoodlltoken The Cloud Poodll token, used for the media upload.
+     * @return array|false The template data, or false if no streaming token can be had.
+     */
+    public static function fetch_streaming_recorder_data($cm, $moduleinstance, $cloudpoodlltoken)
+    {
+        global $CFG, $USER;
+
+        $tokenobject = self::fetch_streaming_token($moduleinstance->region);
+        if (!$tokenobject) {
+            return false;
+        }
+        // Minutes in the settings, 0 means no limit, and the timer treats 0 the same way.
+        $maxtime = $moduleinstance->maxconvlength > 0 ? $moduleinstance->maxconvlength * 60 : 0;
+
+        return [
+            'uniqueid' => \html_writer::random_id('solo_ttrec'),
+            'cmid' => $cm->id,
+            'language' => $moduleinstance->ttslanguage,
+            'region' => $moduleinstance->region,
+            'waveheight' => 75,
+            'maxtime' => $maxtime,
+            'hastimelimit' => $maxtime > 0,
+            'asrurl' => self::fetch_lang_server_url($moduleinstance->region, 'transcribe'),
+            'speechtoken' => $tokenobject->token,
+            'speechtokenregion' => $tokenobject->region,
+            'speechtokenvalidseconds' => $tokenobject->validseconds,
+            'speechtokentype' => $tokenobject->tokentype,
+            'forcestreaming' => 1,
+            'savemedia' => 1,
+            'savemediaregion' => $moduleinstance->region,
+            'cloudpoodlltoken' => $cloudpoodlltoken,
+            'wwwroot' => $CFG->wwwroot,
+            'appid' => constants::M_COMPONENT,
+            'owner' => hash('md5', $USER->username),
+            'transcode' => 1,
+            'transcribemedia' => 1,
+            'expiredays' => $moduleinstance->expiredays,
+            'mediatype' => 'audio',
+            'cloudpoodllurl' => self::get_cloud_poodll_server(),
+        ];
+    }
+
+    /**
+     * Whether a streaming speech provider can transcribe a Solo language.
+     *
+     * AssemblyAI (ttstreamer.js) picks its model from the first two letters: English, or the multilingual model,
+     * which covers Spanish, French, German, Italian and Portuguese. Azure (ttazure.js) is passed the locale as is,
+     * so the locale must be one Azure lists for speech to text. Checked against Microsoft's table dated 2026-08-18:
+     * every Solo locale is there except en-WL, en-AB, mi-NZ and no-NO (Azure uses nb-NO).
+     *
+     * @param string $tokentype 'assemblyai' or 'azure'
+     * @param string $language A Solo language code, eg 'en-US'
+     * @return bool
+     */
+    public static function streaming_supports_language($tokentype, $language)
+    {
+        switch ($tokentype) {
+            case 'assemblyai':
+                return in_array(substr($language, 0, 2), ['en', 'es', 'fr', 'de', 'it', 'pt']);
+            case 'azure':
+                $unsupported = [constants::M_LANG_ENWL, constants::M_LANG_ENAB, constants::M_LANG_MINZ,
+                    constants::M_LANG_NONO];
+                return array_key_exists($language, self::get_lang_options()) && !in_array($language, $unsupported);
+            default:
+                return false;
+        }
     }
 
     // We need a Poodll token to make all this recording and transcripts happen

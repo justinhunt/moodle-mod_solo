@@ -55,6 +55,14 @@ $functions = array(
             'type' => 'write',
             'capabilities' => 'mod/solo:view'
         ),
+        'mod_solo_refresh_token' => array(
+            'classname' => 'mod_solo_external',
+            'methodname' => 'refresh_token',
+            'description' => 'fetches a fresh streaming speech token for the in page recorder',
+            'ajax' => true,
+            'type' => 'read',
+            'capabilities' => 'mod/solo:view',
+        ),
         'mod_solo_fetch_ai_grade' => array(
             'classname' => 'mod_solo_external',
             'methodname' => 'fetch_ai_grade',

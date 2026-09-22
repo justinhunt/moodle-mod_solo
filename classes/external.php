@@ -465,6 +465,57 @@ class mod_solo_external extends external_api
     }
 
     /**
+     * Parameters for refresh_token.
+     *
+     * @return external_function_parameters
+     */
+    public static function refresh_token_parameters()
+    {
+        return new external_function_parameters([
+            'cmid' => new external_value(PARAM_INT, 'The course module the recorder is on'),
+            'type' => new external_value(PARAM_ALPHANUMEXT, 'The token type the recorder has (assemblyai or azure)'),
+            'region' => new external_value(PARAM_ALPHANUMEXT, 'Ignored, the activity region is used', VALUE_DEFAULT, ''),
+        ]);
+    }
+
+    /**
+     * Fetch a fresh streaming speech token for an in page recorder whose token is about to expire.
+     *
+     * @param int $cmid
+     * @param string $type
+     * @param string $region
+     * @return string JSON encoded token object, or false
+     */
+    public static function refresh_token($cmid, $type, $region = '')
+    {
+        global $DB;
+        $params = self::validate_parameters(
+            self::refresh_token_parameters(),
+            ['cmid' => $cmid, 'type' => $type, 'region' => $region]
+        );
+
+        // Tokens cost money and open the speech service, so only users who can do this activity get one.
+        $cm = get_coursemodule_from_id(constants::M_MODNAME, $params['cmid'], 0, false, MUST_EXIST);
+        $context = context_module::instance($cm->id);
+        self::validate_context($context);
+        require_capability('mod/solo:view', $context);
+
+        // The region comes from the activity, not from the browser.
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        return json_encode(utils::fetch_streaming_token($moduleinstance->region));
+    }
+
+    /**
+     * Returns for refresh_token.
+     *
+     * @return external_value
+     */
+    public static function refresh_token_returns()
+    {
+        return new external_value(PARAM_RAW);
+    }
+
+    /**
      * Get the parameters and types
      *
      * @return void

@@ -1,0 +1,86 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_solo/streamrecorder
+
+    The in page streaming recorder. amd/src/ttrecorder.js finds its parts by these ids and classes, and reads all
+    of its configuration from the data attributes on the record button, so keep them if the layout changes.
+    Styled to match the Cloud Poodll minimal skin in a later step.
+
+    Context variables required for this template: see utils::fetch_streaming_recorder_data().
+
+    Example context (json):
+    {
+        "uniqueid": "solo_ttrec1",
+        "cmid": 12,
+        "language": "en-US",
+        "region": "useast1",
+        "waveheight": 75,
+        "maxtime": 120,
+        "hastimelimit": true,
+        "speechtoken": "abc",
+        "speechtokentype": "assemblyai",
+        "speechtokenvalidseconds": 600,
+        "forcestreaming": 1,
+        "savemedia": 1,
+        "transcribemedia": 1
+    }
+}}
+<div id="ttrec_container_{{uniqueid}}" class="mod_solo_ttrec_container" tabindex="0">
+    <canvas id="{{uniqueid}}_waveform" class="mod_solo_ttrec_waveform"></canvas>
+    <button id="{{uniqueid}}_recorderbutton"
+         type="button"
+         class="mod_solo_ttrec_button ttrec_ready"
+         data-cmid="{{cmid}}"
+         data-waveheight="{{waveheight}}"
+         data-region="{{region}}"
+         data-lang="{{language}}"
+         data-asrurl="{{{asrurl}}}"
+         data-speechtoken="{{speechtoken}}"
+         data-speechtokenregion="{{speechtokenregion}}"
+         data-speechtokentype="{{speechtokentype}}"
+         data-speechtokenvalidseconds="{{speechtokenvalidseconds}}"
+         data-forcestreaming="{{forcestreaming}}"
+         data-maxtime="{{maxtime}}"
+         data-savemedia="{{savemedia}}"
+         data-savemediaregion="{{savemediaregion}}"
+         data-wstoken="{{cloudpoodlltoken}}"
+         data-wwwroot="{{wwwroot}}"
+         data-appid="{{appid}}"
+         data-owner="{{owner}}"
+         data-transcode="{{transcode}}"
+         data-transcribemedia="{{transcribemedia}}"
+         data-expiredays="{{expiredays}}"
+         data-mediatype="{{mediatype}}"
+         data-cloudpoodllurl="{{cloudpoodllurl}}"
+         aria-label="{{#str}}streamrecord, mod_solo{{/str}}"
+         aria-pressed="false">
+        <span class="solo_recbutton_mic"><i class="fa fa-microphone" aria-hidden="true"></i></span>
+        <span class="solo_recbutton_stop" style="display: none"><i class="fa fa-stop" aria-hidden="true"></i></span>
+        <span class="solo_recbutton_waiting" style="display: none"><i class="fa fa-cog fa-spin" aria-hidden="true"></i></span>
+        <span class="solo_recbutton_processing" style="display: none"><i class="fa fa-spinner fa-spin" aria-hidden="true"></i></span>
+    </button>
+    <div class="mod_solo_ttrec_timer">
+        {{#hastimelimit}}
+        <div class="timerprogress_{{uniqueid}} progress mod_solo_ttrec_timerprogress" role="progressbar"
+             aria-valuemin="0" aria-valuenow="0" aria-valuemax="{{maxtime}}">
+            <div class="progress-bar" style="width: 0%"></div>
+        </div>
+        {{/hastimelimit}}
+        <div class="timerdisplay_{{uniqueid}} mod_solo_ttrec_timerdisplay" aria-live="off"></div>
+    </div>
+</div>

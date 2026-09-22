@@ -227,4 +227,29 @@ if ($ADMIN->fulltree) {
         1
     ));
 
+    // Streaming speech recognition, used by the in page recorder.
+    $settings->add(new admin_setting_heading(
+        constants::M_COMPONENT . '/streamingheading',
+        get_string('streamingheading', constants::M_COMPONENT),
+        get_string('streamingheading_details', constants::M_COMPONENT)
+    ));
+
+    // Azure API key, optional. Without one, streaming uses AssemblyAI through Cloud Poodll.
+    $settings->add(new admin_setting_configtext(
+        constants::M_COMPONENT . '/azureapikey',
+        get_string('azureapikey', constants::M_COMPONENT),
+        get_string('azureapikey_details', constants::M_COMPONENT),
+        '',
+        PARAM_TEXT
+    ));
+
+    // Azure API region.
+    $settings->add(new admin_setting_configselect(
+        constants::M_COMPONENT . '/azureapiregion',
+        get_string('azureapiregion', constants::M_COMPONENT),
+        get_string('azureapiregion_details', constants::M_COMPONENT),
+        'eastus',
+        utils::fetch_regions_azure()
+    ));
+
 }
