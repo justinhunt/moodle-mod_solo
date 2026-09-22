@@ -247,20 +247,22 @@ class utils
             return false;
         }
 
-        $vtttranscript = self::curl_fetch($vtttranscripturl, $postdata);
-        if (!self::is_valid_transcript($vtttranscript)) {
-            return false;
-        }
-
         $transcript = self::curl_fetch($transcripturl, $postdata);
         if (!self::is_valid_transcript($transcript)) {
             return false;
         }
 
-        // If we got here, we have transcripts and we do not need to come back
-        // jsontranscript and vtttranscript will both be truthy even if empty, but transcript will not ... it will falsey
-        // So we allow emtpy transcript even though it sucks 15/01/2024 J
-        if ($jsontranscript && $vtttranscript && $transcript !== null && $transcript !== false) {
+        // The subtitles are optional. Nothing reads them, and the streaming recorder's uploader does not ask for
+        // them (subtitle=0), so its backup transcription never makes a .vtt. Requiring one left those attempts
+        // waiting for a file that would never come. Keep it when the cloud made one, as the iframe recorder asks it to.
+        $vtttranscript = self::curl_fetch($vtttranscripturl, $postdata);
+        if (!$vtttranscript || !self::is_valid_transcript($vtttranscript)) {
+            $vtttranscript = '';
+        }
+
+        // If we got here, we have transcripts and we do not need to come back.
+        // The json is truthy even if the speech was empty, the text may be empty. We allow an empty transcript.
+        if ($jsontranscript && $transcript !== null && $transcript !== false) {
             $updateattempt = new \stdClass();
             $updateattempt->id = $attempt->id;
             $updateattempt->jsontranscript = $jsontranscript;
