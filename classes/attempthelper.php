@@ -210,6 +210,16 @@ class attempthelper
                         return $ret;
                     }
                     $newattempt->filename = $filename;
+                    // The transcript the in page streaming recorder made while the student spoke. Only taken from
+                    // activities that stream, and only if the stream ended properly (see fetch_streamed_transcript).
+                    if (utils::can_stream_record($this->mod)) {
+                        $streamed = utils::fetch_streamed_transcript($data);
+                        if ($streamed) {
+                            $newattempt->transcript = $streamed->transcript;
+                            $newattempt->jsontranscript = $streamed->jsontranscript;
+                            $newattempt->vtttranscript = '';
+                        }
+                    }
                     break;
                 case constants::STEP_SELFTRANSCRIBE:
                     if (isset($data->selftranscript) && is_string($data->selftranscript)) {
@@ -277,13 +287,28 @@ class attempthelper
 
                     //if rerecording we want to clear old AI data out
                     //as well as self transcript and force us back to self transcript
+                    // Note this is also true for the first recording, when the old filename is empty.
                     if($rerecording) {
                         utils::clear_ai_data($this->mod->id, $newattempt->id);
+                        // Everything worked out from the old recording goes, or processing would keep it: it only
+                        // fills these in when they are empty. A teacher's grade stays.
+                        utils::remove_stats($newattempt);
+                        $newattempt->aigrade = null;
+                        $newattempt->aifeedback = null;
+                        $newattempt->grammarcorrection = null;
+                        if (empty($attempt->manualgraded)) {
+                            $newattempt->grade = 0;
+                        }
                         if($audio_before_transcription){
-                            utils::remove_stats($newattempt);
                             $newattempt->selftranscript = "";
                         }
                         $newattempt->completedsteps = $step;
+                    }
+
+                    // A streamed transcript is the text to grade when there is no step for the student to type it.
+                    // (With a server side transcript, process_attempt does this when it fetches it.)
+                    if (isset($newattempt->jsontranscript) && $transcribestep === false) {
+                        $newattempt->selftranscript = $newattempt->transcript;
                     }
                     //if rerecording, or we are in "new" mode (first recording) we register our AWS task
                     if($rerecording || !$edit){

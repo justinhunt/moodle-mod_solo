@@ -927,3 +927,4 @@ $string['streamuploading'] = 'Saving your recording: {$a}%';
 $string['streamuploaded'] = 'Your recording is saved.';
 $string['streamuploadfailed'] = 'Your recording could not be saved. Please record again.';
 $string['streamrecording'] = 'Recording';
+$string['stepsubmitfailed'] = 'Your recording could not be submitted. Please record again, or try again later.';

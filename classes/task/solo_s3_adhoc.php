@@ -66,11 +66,11 @@ class solo_s3_adhoc extends \core\task\adhoc_task
                 $this->do_retry('Audio file appears to not be ready yet', $trace, $cd);
                 return;
             }
-            if ($attempt->transcript) {
-                // Woa!! Its already been got. This can happen if user goes to selfreview page which will try and do the.
-                // Retrieve if transcripts are not back. It can also happen if streaming transcription is going.
-                $trace->output("Transcript has already been fetched. Nothing to do");
-                return;
+            if (!empty($attempt->jsontranscript)) {
+                // The transcript is already in: streamed with the recording, or fetched when the student looked at the
+                // results page. Carry on anyway, so the attempt is graded even if the student never opens that page.
+                // process_attempt only does what has not been done yet.
+                $trace->output("Transcript is already in, processing the attempt");
             }
 
             // Do all the processing (grades, diffs, etc) if needed and return the attempt.

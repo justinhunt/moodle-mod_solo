@@ -117,12 +117,25 @@
                             action: action,
                             data: JSON.stringify(data)
                         },
-                        done:  function(a){window.location='{{{nexturl}}}';},
+                        done: function(a){
+                            //the server can turn a step down (eg a recording it cannot accept), so check before moving on
+                            var result = null;
+                            try { result = JSON.parse(a); } catch (e) { result = null; }
+                            if (result && result.success === false) {
+                                log.debug('submit step refused: ' + result.message);
+                                Notification.alert('{{#str}}important, mod_solo{{/str}}', "{{#str}}stepsubmitfailed, mod_solo{{/str}}");
+                                var btn = $('#' + '{{uniqid}}_button');
+                                btn.html('{{#str}}next, mod_solo{{/str}}');
+                                btn.prop('disabled', false);
+                                return;
+                            }
+                            window.location='{{{nexturl}}}';
+                        },
                         fail: function(e){
                                     Notification.exception(e);
                                     var btn = $('#' + '{{uniqid}}_button');
                                     btn.html('{{#str}}next, mod_solo{{/str}}');
-                                    btn.prop('disabled',true);
+                                    btn.prop('disabled',false);
                         }
                    }]);
 

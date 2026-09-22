@@ -41,6 +41,10 @@ class utils
 {
     /** @var int A cached streaming token is only handed out if it has at least this many seconds left. */
     const STREAMING_TOKEN_MINLIFE = 2 * MINSECS;
+    /** @var int Longest streamed transcript text accepted with a recording, in characters. */
+    const STREAMING_TEXT_MAXLENGTH = 100000;
+    /** @var int Longest streamed word list (JSON) accepted with a recording, in bytes. */
+    const STREAMING_WORDS_MAXLENGTH = 2000000;
 
     // Get the Cloud Poodll Server URL
     public static function get_cloud_poodll_server()
@@ -113,37 +117,92 @@ class utils
         return $ret;
     }
 
-    // streaming results are not the same format as non streaming, we massage the streaming to look like a non streaming
-    // to our code that will go on to process it.
+    /**
+     * Turn the word list from the in page streaming recorder into the transcript json the rest of Solo reads,
+     * which is the AWS transcribe shape (results.items with start_time and end_time), the same as the server side
+     * transcript. See aitranscriptutils::fetch_audio_points_json() and textanalyser::fetch_duration_from_transcript().
+     *
+     * @param string $streamingresults JSON array of {content, start_time, end_time, confidence}
+     * @return string|false The transcript json, or false if the input is not a JSON array. An empty array is valid.
+     */
     public static function parse_streaming_results($streamingresults)
     {
-        $results = json_decode($streamingresults);
-        $alltranscript = '';
-        $allitems = [];
-        foreach ($results as $result) {
-            foreach ($result as $completion) {
-                foreach ($completion->Alternatives as $alternative) {
-                    $alltranscript .= $alternative->Transcript . ' ';
-                    foreach ($alternative->Items as $item) {
-                        $processeditem = new \stdClass();
-                        $processeditem->alternatives = [['content' => $item->Content, 'confidence' => "1.0000"]];
-                        $processeditem->end_time = "" . round($item->EndTime, 3);
-                        $processeditem->start_time = "" . round($item->StartTime, 3);
-                        $processeditem->type = $item->Type;
-                        $allitems[] = $processeditem;
-                    }
-                }
-            }
+        if (!self::is_json($streamingresults)) {
+            return false;
         }
+        $words = json_decode($streamingresults);
+        if (!is_array($words)) {
+            return false;
+        }
+
+        $transcriptbits = [];
+        $allitems = [];
+        foreach ($words as $word) {
+            if (!is_object($word) || !isset($word->content) || !is_string($word->content)) {
+                continue;
+            }
+            $content = trim($word->content);
+            if ($content === '') {
+                continue;
+            }
+            $transcriptbits[] = $content;
+
+            $processeditem = new \stdClass();
+            // Confidence is a string in the server side transcript, so match that.
+            $confidence = isset($word->confidence) ? (float) $word->confidence : 1;
+            $processeditem->alternatives = [['content' => $content, 'confidence' => sprintf('%.4f', $confidence)]];
+            $processeditem->start_time = '' . round(isset($word->start_time) ? (float) $word->start_time : 0, 3);
+            $processeditem->end_time = '' . round(isset($word->end_time) ? (float) $word->end_time : 0, 3);
+            // The streaming recogniser only hands back spoken words, never punctuation items.
+            $processeditem->type = 'pronunciation';
+            $allitems[] = $processeditem;
+        }
+
         $ret = new \stdClass();
         $ret->jobName = "streaming";
         $ret->accountId = "streaming";
         $ret->results = [];
         $ret->status = 'COMPLETED';
-        $ret->results['transcripts'] = [['transcript' => $alltranscript]];
+        $ret->results['transcripts'] = [['transcript' => implode(' ', $transcriptbits)]];
         $ret->results['items'] = $allitems;
-
         return json_encode($ret);
+    }
+
+    /**
+     * The transcript the in page streaming recorder sent with a recording, ready to store on the attempt.
+     *
+     * Only a stream that ended properly is used: 'complete' (the service confirmed it had sent everything) or
+     * 'unconfirmed' (Azure, which has no such confirmation). An empty transcript from such a stream is a real result,
+     * the student said nothing, and it grades as zero. Anything else means the stream failed, and nothing is returned,
+     * so the attempt waits for the server side transcript of the uploaded audio instead.
+     *
+     * @param \stdClass $data The record step's submitted data (streamingtext, streamingtranscript, streamingstatus).
+     * @return \stdClass|false transcript and jsontranscript, or false if there is no usable streamed transcript.
+     */
+    public static function fetch_streamed_transcript($data)
+    {
+        $status = isset($data->streamingstatus) && is_string($data->streamingstatus) ? $data->streamingstatus : '';
+        if (!in_array($status, ['complete', 'unconfirmed'])) {
+            return false;
+        }
+        $text = isset($data->streamingtext) && is_string($data->streamingtext) ? $data->streamingtext : '';
+        $words = isset($data->streamingtranscript) && is_string($data->streamingtranscript) ? $data->streamingtranscript : '[]';
+        // A ten minute recording is well under these.
+        if (\core_text::strlen($text) > self::STREAMING_TEXT_MAXLENGTH || strlen($words) > self::STREAMING_WORDS_MAXLENGTH) {
+            return false;
+        }
+
+        $jsontranscript = self::parse_streaming_results($words);
+        if ($jsontranscript === false) {
+            // The words are malformed but the text is not: keep the text, without word timings.
+            $jsontranscript = self::parse_streaming_results('[]');
+        }
+
+        $ret = new \stdClass();
+        // Plain text only, on one line. Azure's text starts with a space.
+        $ret->transcript = trim(preg_replace('/\s+/u', ' ', clean_param($text, PARAM_TEXT)));
+        $ret->jsontranscript = $jsontranscript;
+        return $ret;
     }
 
 
