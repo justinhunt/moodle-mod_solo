@@ -79,44 +79,6 @@ class utils
         return $ret;
     }
 
-    public static function can_streaming_transcribe($instance)
-    {
-
-        $ret = false;
-
-        // The instance languages
-        switch ($instance->ttslanguage) {
-            case constants::M_LANG_ENAU:
-            case constants::M_LANG_ENGB:
-            case constants::M_LANG_ENUS:
-            case constants::M_LANG_ESUS:
-            case constants::M_LANG_FRFR:
-            case constants::M_LANG_FRCA:
-                $ret = true;
-                break;
-            default:
-                $ret = false;
-        }
-
-        // The supported regions
-        if ($ret) {
-            switch ($instance->region) {
-                case "useast1":
-                case "useast2":
-                case "uswest2":
-                case "sydney":
-                case "dublin":
-                case "ottawa":
-                    $ret = true;
-                    break;
-                default:
-                    $ret = false;
-            }
-        }
-
-        return $ret;
-    }
-
     /**
      * Turn the word list from the in page streaming recorder into the transcript json the rest of Solo reads,
      * which is the AWS transcribe shape (results.items with start_time and end_time), the same as the server side

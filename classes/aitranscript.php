@@ -159,40 +159,6 @@ class aitranscript {
     }
 
 
-    // transcripts become ready in their own time, if they're ready update data and DB,
-    // if not just report that back
-    public function fetch_transcripts() {
-        global $DB;
-        $success = false;
-        $transcript = false;
-        $jsontranscript = false;
-        if($this->attemptdata->filename && strpos($this->attemptdata->filename, 'https') === 0){
-            $transcript = utils::curl_fetch($this->attemptdata->filename . '.txt');
-            if(strpos($transcript, "<Error><Code>AccessDenied</Code>") > 0){
-                return false;
-            }
-            // we should actually just determine if its fast or normal transcoding here
-            $jsontranscript = utils::curl_fetch($this->attemptdata->filename . '.json');
-            if(!utils::is_json($jsontranscript)){
-                $jsontranscript = utils::curl_fetch($this->attemptdata->filename . '.gjson');
-            }
-        }
-        if(!utils::is_json($jsontranscript)){
-            $jsontranscript = '';
-        }
-        if($jsontranscript ) {
-            $record = new \stdClass();
-            $record->id = $this->recordid;
-            $record->transcript = diff::cleanText($transcript);
-            $record->jsontranscript = $jsontranscript;
-            $success = $DB->update_record(constants::M_AITABLE, $record);
-
-            $this->aidata->transcript = $transcript;
-            $this->aidata->jsontranscript = $jsontranscript;
-        }
-        return $success;
-    }
-
     // this is the serious stuff, this is the high level function that manages the comparison of transcript and passage
     public function do_diff($debug=false) {
         global $DB;

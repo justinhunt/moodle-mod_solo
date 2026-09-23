@@ -139,7 +139,6 @@ CONST C_FILENAMETEXT = 'vs_filenametext';
 CONST C_TARGETWORDSDISPLAY = 'mod_solo_targetwordsdisplay';
 
 const RECORDINGURLFIELD='filename';
-const STREAMINGTRANSCRIPTFIELD='streamingtranscript';
 const RECORDERORPLAYERFIELD='recorderorplayer';
 
 const TRANSCRIBER_NONE = 0;

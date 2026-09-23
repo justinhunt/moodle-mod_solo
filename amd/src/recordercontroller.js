@@ -39,7 +39,6 @@ define(['jquery', 'core/log','mod_solo/definitions', 'mod_solo/recorderhelper'],
             dd.cmid = props.cmid;
             dd.recorderid = dd.activitydata.recorderid;
             dd.updatecontrolid = dd.activitydata.widgetid + '_' + def.C_UPDATECONTROL;
-            dd.streamingresultsid = dd.activitydata.widgetid + def.C_STREAMINGCONTROL;
 log.debug( dd.activitydata);
 log.debug('updateid', dd.updatecontrolid);
 
@@ -71,19 +70,11 @@ log.debug('updateid', dd.updatecontrolid);
             //contains no meaningful data
             //See https://api.poodll.com
             var on_recording_start= function(eventdata){
-                //init streaming transcriber results
-                if(dd.activitydata.transcriber == def.transcriber_amazonstreaming) {
-                    dd.streamingresults = [];
-                }//end of if amazonstreaming
             };
 
+            //the iframe recorder only sends speech events for transcribers that recognise while recording,
+            //which this recorder does not use. The in page recorder (mod_solo/streamrecord) is the one that does.
             var on_speech = function (eventdata) {
-                var speech = eventdata.capturedspeech;
-                var speechresults = eventdata.speechresults;
-                if(dd.activitydata.transcriber == def.transcriber_amazonstreaming) {
-                    dd.streamingresults.push(speechresults);
-                    log.debug(dd.streamingresults);
-                }
             };
 
             var on_upload_details = function (eventdata) {
@@ -118,13 +109,6 @@ log.debug('updateid', dd.updatecontrolid);
                 uploadwarning.show();
                 var updatecontrol = $('#' + dd.updatecontrolid);
                 updatecontrol.val(eventdata.mediaurl);
-
-                if(dd.activitydata.transcriber == def.transcriber_amazonstreaming &&
-                    dd.streamingresults &&
-                    dd.streamingresults.length > 0){
-                    var streamingresults = $('#' + dd.streamingresultsid);
-                    streamingresults.val(JSON.stringify(dd.streamingresults));
-                }
                // recordingcontainer.hide();
             };
 
