@@ -29,17 +29,26 @@
     }
 }}
 {{#streamrec}}
-    <input type="hidden" id="{{rec.widgetid}}_filename"/>
     <input type="hidden" id="{{rec.widgetid}}_streamingtranscript"/>
     <input type="hidden" id="{{rec.widgetid}}_streamingtext"/>
     <input type="hidden" id="{{rec.widgetid}}_streamingstatus"/>
-    {{>mod_solo/streamrecorder}}
+    <input type="hidden" id="{{rec.widgetid}}_streamingrectime"/>
+    <div class="mod_solo_streamrec_inpage">
+        {{>mod_solo/streamrecorder}}
+    </div>
+    {{! The iframe recorder, ready but not started: mod_solo/streamrecord uses it when this browser can neither
+        recognise speech itself nor stream to the cloud. It also carries the shared filename field. }}
+    <div class="mod_solo_streamrec_iframe d-none">
+        {{>mod_solo/mediarecorder}}
+    </div>
     {{#js}}
         require(['mod_solo/streamrecord'], function(streamrecord) {
             streamrecord.init({
                 uniqueid: '{{uniqueid}}',
                 widgetid: '{{rec.widgetid}}',
-                nextbuttonid: '{{uniqid}}_button'
+                nextbuttonid: '{{uniqid}}_button',
+                hastoken: {{#hastoken}}true{{/hastoken}}{{^hastoken}}false{{/hastoken}},
+                cloudonly: {{#forcestreaming}}true{{/forcestreaming}}{{^forcestreaming}}false{{/forcestreaming}}
             });
         });
     {{/js}}

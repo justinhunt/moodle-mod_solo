@@ -27,10 +27,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2026092302;
+$plugin->version = 2026092303;
 $plugin->requires = 2023100900; // Requires Moodle 4.3
 $plugin->component = 'mod_solo';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.0.85 (Build 2026092302)';
+$plugin->release = '1.0.86 (Build 2026092303)';
 
 

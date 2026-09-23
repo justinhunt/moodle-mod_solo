@@ -703,5 +703,16 @@ function xmldb_solo_upgrade($oldversion)
         upgrade_mod_savepoint(true, $newversion, 'solo');
     }
 
+    // How long a recording was, for words per minute when the transcript has no word timings.
+    $newversion = 2026092303;
+    if ($oldversion < $newversion) {
+        $table = new xmldb_table(constants::M_ATTEMPTSTABLE);
+        $field = new xmldb_field('rectime', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0, 'vtttranscript');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, $newversion, 'solo');
+    }
+
     return true;
 }

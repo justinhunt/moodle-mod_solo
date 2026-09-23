@@ -64,7 +64,12 @@
 
         require(['jquery', 'core/ajax','core/templates', 'mod_solo/recordercontroller'],
         function($, ajax, templates, recordercontroller) {
-            recordercontroller.init(recopts);
+            //the in page recorder decides between the two recorders once it knows what this browser can do,
+            //so where it is on the page this one waits to be asked (mod_solo/streamrecord).
+            $('#' + recopts.widgetid).data('recopts', recopts);
+            if (!{{#rec.deferinit}}true{{/rec.deferinit}}{{^rec.deferinit}}false{{/rec.deferinit}}) {
+                recordercontroller.init(recopts);
+            }
         });
     {{/js}}
 {{/element.frozen}}

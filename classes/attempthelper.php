@@ -218,6 +218,7 @@ class attempthelper
                             $newattempt->transcript = $streamed->transcript;
                             $newattempt->jsontranscript = $streamed->jsontranscript;
                             $newattempt->vtttranscript = '';
+                            $newattempt->rectime = $streamed->rectime;
                         }
                     }
                     break;

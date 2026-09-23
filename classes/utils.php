@@ -144,10 +144,17 @@ class utils
     public static function fetch_streamed_transcript($data)
     {
         $status = isset($data->streamingstatus) && is_string($data->streamingstatus) ? $data->streamingstatus : '';
-        if (!in_array($status, ['complete', 'unconfirmed'])) {
+        if (!in_array($status, ['complete', 'unconfirmed', 'browser'])) {
             return false;
         }
         $text = isset($data->streamingtext) && is_string($data->streamingtext) ? $data->streamingtext : '';
+        // The browser's own speech recognition cannot say why it heard nothing: the student may have said nothing,
+        // or it may not handle this language. Storing nothing leaves the recording to the cloud transcript, which
+        // takes a couple of minutes but cannot hand out a wrong zero. A cloud stream that ends properly is
+        // different: an empty transcript there really is silence, and grades as zero.
+        if ($status === 'browser' && trim($text) === '') {
+            return false;
+        }
         $words = isset($data->streamingtranscript) && is_string($data->streamingtranscript) ? $data->streamingtranscript : '[]';
         // A ten minute recording is well under these.
         if (\core_text::strlen($text) > self::STREAMING_TEXT_MAXLENGTH || strlen($words) > self::STREAMING_WORDS_MAXLENGTH) {
@@ -164,6 +171,10 @@ class utils
         // Plain text only, on one line. Azure's text starts with a space.
         $ret->transcript = trim(preg_replace('/\s+/u', ' ', clean_param($text, PARAM_TEXT)));
         $ret->jsontranscript = $jsontranscript;
+        // How long the recording was. Browser speech recognition reports no word timings, so this is where words
+        // per minute comes from for those attempts.
+        $rectime = isset($data->streamingrectime) ? (int) $data->streamingrectime : 0;
+        $ret->rectime = ($rectime > 0 && $rectime < DAYSECS) ? $rectime : 0;
         return $ret;
     }
 
@@ -605,6 +616,10 @@ class utils
                     unset($stats->wordslong);
                     // also calculate WPM
                     $duration = textanalyser::fetch_duration_from_transcript($attempt->jsontranscript);
+                    // Browser speech recognition gives no word timings, so fall back to how long the recording was.
+                    if (!$duration && !empty($attempt->rectime)) {
+                        $duration = $attempt->rectime;
+                    }
                     if ($stats->words && $duration) {
                         $stats->wpm = round(($stats->words / $duration) * 60, 0);
                     } else {
@@ -1835,12 +1850,16 @@ class utils
     {
         global $CFG, $USER;
 
+        // A token is only issued for a language the cloud recogniser can read. Without one the page falls back to
+        // the browser's own speech recognition, or to the iframe recorder if the browser has none: the cloud
+        // recogniser does not fail on a language it cannot read, it just returns nothing.
         $tokenobject = self::fetch_streaming_token($moduleinstance->region);
-        if (!$tokenobject) {
-            return false;
+        if ($tokenobject && !self::streaming_supports_language($tokenobject->tokentype, $moduleinstance->ttslanguage)) {
+            $tokenobject = false;
         }
-        // If a site's Azure key failed, the token is an AssemblyAI one, which covers fewer languages.
-        if (!self::streaming_supports_language($tokenobject->tokentype, $moduleinstance->ttslanguage)) {
+        $cloudonly = (int) $moduleinstance->streamingrecord === constants::STREAMINGRECORD_CLOUDONLY;
+        // Cloud only with no usable token means there is nothing for the in page recorder to do.
+        if ($cloudonly && !$tokenobject) {
             return false;
         }
         // Minutes in the settings, 0 means no limit, and the timer treats 0 the same way.
@@ -1856,11 +1875,13 @@ class utils
             'maxtime' => $maxtime,
             'hastimelimit' => $maxtime > 0,
             'asrurl' => self::fetch_lang_server_url($moduleinstance->region, 'transcribe'),
-            'speechtoken' => $tokenobject->token,
-            'speechtokenregion' => $tokenobject->region,
-            'speechtokenvalidseconds' => $tokenobject->validseconds,
-            'speechtokentype' => $tokenobject->tokentype,
-            'forcestreaming' => 1,
+            'speechtoken' => $tokenobject ? $tokenobject->token : '',
+            'speechtokenregion' => $tokenobject ? $tokenobject->region : '',
+            'speechtokenvalidseconds' => $tokenobject ? $tokenobject->validseconds : 0,
+            'speechtokentype' => $tokenobject ? $tokenobject->tokentype : '',
+            // Only "cloud recogniser only" stops ttrecorder choosing the browser's own speech recognition.
+            'forcestreaming' => $cloudonly ? 1 : 0,
+            'hastoken' => $tokenobject ? 1 : 0,
             'savemedia' => 1,
             'savemediaregion' => $moduleinstance->region,
             'cloudpoodlltoken' => $cloudpoodlltoken,
@@ -1878,6 +1899,20 @@ class utils
             'UNIQID' => $uniqueid . '_player',
             'isaudiosubmission' => true,
             'audiofilename' => '',
+        ];
+    }
+
+    /**
+     * The options for the record step's recorder setting.
+     *
+     * @return array
+     */
+    public static function fetch_options_streamingrecord()
+    {
+        return [
+            constants::STREAMINGRECORD_OFF => get_string('streamingrecord_off', constants::M_COMPONENT),
+            constants::STREAMINGRECORD_PREFERBROWSER => get_string('streamingrecord_preferbrowser', constants::M_COMPONENT),
+            constants::STREAMINGRECORD_CLOUDONLY => get_string('streamingrecord_cloudonly', constants::M_COMPONENT),
         ];
     }
 
@@ -1933,10 +1968,10 @@ class utils
                 break;
             }
         }
-        if (!$streamable) {
-            return false;
-        }
-        return self::streaming_supports_language(self::streaming_token_type(), $moduleinstance->ttslanguage);
+        // The language is not checked here. It decides whether a streaming token is issued
+        // (fetch_streaming_recorder_data), not which recorder the step uses: the browser's own speech recognition
+        // covers many more languages, and the page falls back to the iframe when it has neither.
+        return $streamable;
     }
 
     /**
@@ -3665,9 +3700,12 @@ class utils
 
         // In page streaming recorder. Where the activity cannot stream (see can_stream_record) it keeps the recorder
         // above, so the recorder style still matters and is left enabled.
-        $mform->addElement('selectyesno', 'streamingrecord', get_string('streamingrecord', constants::M_COMPONENT));
+        $streamingrecordoptions = self::fetch_options_streamingrecord();
+        $streamingrecordlabel = get_string('streamingrecord', constants::M_COMPONENT);
+        $mform->addElement('select', 'streamingrecord', $streamingrecordlabel, $streamingrecordoptions);
         $mform->setType('streamingrecord', PARAM_INT);
-        $mform->setDefault('streamingrecord', empty($config->streamingrecord_default) ? 0 : 1);
+        $mform->setDefault('streamingrecord', isset($config->streamingrecord_default)
+            ? $config->streamingrecord_default : constants::STREAMINGRECORD_OFF);
         $mform->addHelpButton('streamingrecord', 'streamingrecord', constants::M_COMPONENT);
         $mform->disabledIf('streamingrecord', 'recordertype', 'eq', constants::REC_VIDEO);
         $mform->disabledIf('streamingrecord', 'activitysteps', 'eq', constants::M_SEQ_PTM);

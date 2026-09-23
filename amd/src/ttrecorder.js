@@ -238,7 +238,7 @@ define(['jquery', 'core/log', 'core/notification','core/ajax', 'mod_solo/ttaudio
                         //do something here
                     };
                     that.browserrec.onfinalspeechcapture = function (speechtext) {
-                        that.gotRecognition(speechtext);
+                        that.gotRecognition(speechtext, false, 'browser');
                         that.update_audio('isRecording', false);
                         that.update_audio('isRecognizing', false);
                     };

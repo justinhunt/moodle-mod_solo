@@ -103,6 +103,7 @@
         <FIELD NAME="transcript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The plain text AI transcript."/>
         <FIELD NAME="jsontranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The full AI transcript (JSON)"/>
         <FIELD NAME="vtttranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The AI subtitles"/>
+        <FIELD NAME="rectime" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="how long the recording was, in seconds, as reported by the in page recorder"/>
         <FIELD NAME="selftranscript" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The users self transcript"/>
         <FIELD NAME="stembedding" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The users self transcript embedding"/>
         <FIELD NAME="grammarcorrection" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The Grammar Correction"/>

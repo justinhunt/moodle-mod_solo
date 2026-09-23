@@ -139,6 +139,24 @@ final class streaming_submit_test extends \advanced_testcase {
         }
     }
 
+    public function test_browser_recognition_results(): void {
+        $this->resetAfterTest();
+        // The browser recognised something: store it, with how long the recording was, since there are no timings.
+        [$cm, $attemptid, $step] = $this->at_record_step(constants::M_SEQ_PRM);
+        $attempt = $this->record($cm, $attemptid, $step, ['streamingtext' => 'Hello there.', 'streamingtranscript' => '[]',
+            'streamingstatus' => 'browser', 'streamingrectime' => 12]);
+        $this->assertSame('Hello there.', $attempt->transcript);
+        $this->assertEquals(12, $attempt->rectime);
+
+        // It heard nothing, and cannot say whether that was silence or a language it does not handle. Storing
+        // nothing leaves the recording to the cloud transcript rather than risking a wrong zero.
+        [$cm, $attemptid, $step] = $this->at_record_step(constants::M_SEQ_PRM);
+        $attempt = $this->record($cm, $attemptid, $step, ['streamingtext' => '', 'streamingtranscript' => '[]',
+            'streamingstatus' => 'browser', 'streamingrectime' => 9]);
+        $this->assertEmpty($attempt->jsontranscript);
+        $this->assertEmpty($attempt->transcript);
+    }
+
     public function test_input_is_cleaned(): void {
         $this->resetAfterTest();
         [$cm, $attemptid, $step] = $this->at_record_step(constants::M_SEQ_RM);

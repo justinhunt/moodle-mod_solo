@@ -321,6 +321,8 @@ switch($type) {
             $streamrec = utils::fetch_streaming_recorder_data($cm, $moduleinstance, $token);
             if ($streamrec) {
                 $stepcontent->streamrec = $streamrec;
+                // Both recorders are on the page; mod_solo/streamrecord starts whichever this browser can use.
+                $stepcontent->rec->deferinit = true;
             }
         }
         echo $renderer->render_from_template(constants::M_COMPONENT . '/stepmediarecord', $stepcontent);

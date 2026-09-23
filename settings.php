@@ -235,11 +235,12 @@ if ($ADMIN->fulltree) {
     ));
 
     // Default for the per activity streaming recorder setting, for new activities.
-    $settings->add(new admin_setting_configcheckbox(
+    $settings->add(new admin_setting_configselect(
         constants::M_COMPONENT . '/streamingrecord_default',
         get_string('streamingrecord_default', constants::M_COMPONENT),
         get_string('streamingrecord_default_details', constants::M_COMPONENT),
-        0
+        constants::STREAMINGRECORD_OFF,
+        utils::fetch_options_streamingrecord()
     ));
 
     // Azure API key, optional. Without one, streaming uses AssemblyAI through Cloud Poodll.

@@ -64,7 +64,7 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
         // attempt
         $attempts = new backup_nested_element('attempts');
         $attempt = new backup_nested_element('attempt', array('id'),array(
-            constants::M_MODNAME, 'userid', 'type','visible','filename', 'transcript','jsontranscript','vtttranscript','grammarcorrection',
+            constants::M_MODNAME, 'userid', 'type','visible','filename', 'transcript','jsontranscript','vtttranscript','rectime','grammarcorrection',
             'selftranscript','stembedding','topictargetwords','mywords','convlength',
             'customtext1', 'customtext1format','completedsteps',
             'currentint1','currentint2','currentint3','currentint4',

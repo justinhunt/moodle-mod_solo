@@ -24,8 +24,8 @@
  * @copyright  2026 Justin Hunt (poodllsupport@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery', 'core/log', 'core/str', 'core/modal', 'mod_solo/ttrecorder'],
-    function($, log, str, Modal, ttrecorder) {
+define(['jquery', 'core/log', 'core/str', 'core/modal', 'mod_solo/ttrecorder', 'mod_solo/ttbrowserrec'],
+    function($, log, str, Modal, ttrecorder, browserrec) {
     "use strict";
 
     // How long to wait for the transcript once the upload has finished. The streamer itself gives up 3s after stop,
@@ -56,11 +56,20 @@ define(['jquery', 'core/log', 'core/str', 'core/modal', 'mod_solo/ttrecorder'],
             }
             dd.container.data('streamrecinit', true);
 
+            // Which recorder this browser can use. The in page one recognises speech either in the browser or by
+            // streaming to the cloud; with neither, it would fall through to ttrecorder's upload transcriber, which
+            // is limited to about 30 seconds and would truncate a Solo recording. So that case gets the iframe.
+            if (!dd.can_record_in_page(opts)) {
+                dd.use_iframe(opts);
+                return;
+            }
+
             dd.fields = {
                 filename: $('#' + opts.widgetid + '_filename'),
                 transcript: $('#' + opts.widgetid + '_streamingtranscript'),
                 text: $('#' + opts.widgetid + '_streamingtext'),
-                status: $('#' + opts.widgetid + '_streamingstatus')
+                status: $('#' + opts.widgetid + '_streamingstatus'),
+                rectime: $('#' + opts.widgetid + '_streamingrectime')
             };
             dd.nextbutton = $('#' + opts.nextbuttonid);
             dd.button = $('#' + dd.uniqueid + '_recorderbutton');
@@ -84,6 +93,34 @@ define(['jquery', 'core/log', 'core/str', 'core/modal', 'mod_solo/ttrecorder'],
             });
             dd.ttr.deviceid = dd.load_device();
             dd.register_events();
+        },
+
+        /*
+        * Can the in page recorder recognise this student's speech? Either the browser does it itself, or there is a
+        * streaming token for the cloud recogniser. Android is left out of browser recognition because the recording
+        * is saved and the platform recogniser holds the microphone, which is what ttrecorder does too.
+         */
+        can_record_in_page: function(opts) {
+            var isandroid = navigator.userAgent.indexOf('Android') > -1;
+            var canbrowser = !opts.cloudonly && !isandroid && browserrec.will_work_ok();
+            log.debug('Solo streamrecord: browser recognition ' + (canbrowser ? 'available' : 'not available')
+                + ', streaming token ' + (opts.hastoken ? 'issued' : 'not issued'));
+            return canbrowser || opts.hastoken;
+        },
+
+        // Nothing in the page can recognise the speech, so hand over to the Cloud Poodll iframe recorder.
+        use_iframe: function(opts) {
+            log.debug('Solo streamrecord: using the iframe recorder');
+            $('.mod_solo_streamrec_inpage').remove();
+            $('.mod_solo_streamrec_iframe').removeClass('d-none');
+            var recopts = $('#' + opts.widgetid).data('recopts');
+            if (!recopts) {
+                log.debug('Solo streamrecord: no iframe recorder options on the page');
+                return;
+            }
+            require(['mod_solo/recordercontroller'], function(recordercontroller) {
+                recordercontroller.init(recopts);
+            });
         },
 
         load_strings: function() {
@@ -128,6 +165,13 @@ define(['jquery', 'core/log', 'core/str', 'core/modal', 'mod_solo/ttrecorder'],
                     break;
 
                 case 'recordingstopped':
+                    // How long the recording was, from the timer: it counts down from the limit, or up when there
+                    // is none. Browser speech recognition reports no word timings, so this is what words per minute
+                    // is worked out from for those attempts. Refined from the audio itself in mediasaved.
+                    if (dd.ttr && dd.ttr.timer) {
+                        dd.rectime = dd.ttr.timer.initseconds > 0
+                            ? dd.ttr.timer.initseconds - dd.ttr.timer.seconds : dd.ttr.timer.seconds;
+                    }
                     dd.button.attr('aria-label', dd.strings.streamrecord || '');
                     dd.percent.text('0%');
                     dd.set_mode('uploading');
@@ -135,6 +179,10 @@ define(['jquery', 'core/log', 'core/str', 'core/modal', 'mod_solo/ttrecorder'],
                     break;
 
                 case 'mediasaved':
+                    // The recorder knows the real length now the audio is encoded.
+                    if (dd.ttr && dd.ttr.audio && dd.ttr.audio.length > 0) {
+                        dd.rectime = dd.ttr.audio.length;
+                    }
                     // The upload has only started, but the local copy can be played straight away.
                     dd.bloburl = message.bloburl;
                     if (dd.player.length) {
@@ -175,6 +223,8 @@ define(['jquery', 'core/log', 'core/str', 'core/modal', 'mod_solo/ttrecorder'],
                         text: message.capturedspeech || '',
                         words: message.speechresults || [],
                         // 'terminated' means the service confirmed it had sent everything.
+                        // 'terminated' means the cloud service confirmed it had sent everything, 'browser' that the
+                        // browser recognised the speech itself (and cannot say why it heard nothing).
                         status: message.streamstatus === 'terminated' ? 'complete' : (message.streamstatus || 'unknown')
                     };
                     dd.maybe_ready();
@@ -192,6 +242,7 @@ define(['jquery', 'core/log', 'core/str', 'core/modal', 'mod_solo/ttrecorder'],
             dd.fields.transcript.val(JSON.stringify(dd.speech.words));
             dd.fields.text.val(dd.speech.text);
             dd.fields.status.val(dd.speech.status);
+            dd.fields.rectime.val(dd.rectime || 0);
             // Last, because the Next button treats a filename as "there is a recording".
             dd.fields.filename.val(dd.mediaurl);
             dd.nextbutton.prop('disabled', false);

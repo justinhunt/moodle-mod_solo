@@ -141,6 +141,12 @@ CONST C_TARGETWORDSDISPLAY = 'mod_solo_targetwordsdisplay';
 const RECORDINGURLFIELD='filename';
 const RECORDERORPLAYERFIELD='recorderorplayer';
 
+// How the record step records: the iframe recorder, or the in page recorder preferring the browser's own speech
+// recognition, or the in page recorder using only the cloud recogniser (which is the one with word timings).
+const STREAMINGRECORD_OFF = 0;
+const STREAMINGRECORD_PREFERBROWSER = 1;
+const STREAMINGRECORD_CLOUDONLY = 2;
+
 const TRANSCRIBER_NONE = 0;
 const TRANSCRIBER_OPEN = 1;
 

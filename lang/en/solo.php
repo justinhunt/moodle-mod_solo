@@ -913,9 +913,18 @@ $string['nomicdetected'] = 'No microphone detected.';
 $string['speechnotrecognized'] = 'We could not recognize your speech.';
 $string['streamrecord'] = 'Record';
 $string['streamingrecord'] = 'Streaming recorder';
-$string['streamingrecord_help'] = 'Record with the in page recorder, which transcribes speech while the student speaks, so results are ready as soon as they finish. It is used for audio recordings in the supported languages, with the Prepare, Record, Model sequences (and Record, Model, and Prepare, Type, Record, Model). Everything else, including video and the Upload recorder style, keeps the recorder chosen above.';
+$string['streamingrecord_help'] = 'Record with the in page recorder, which transcribes speech while the student speaks, so results are ready as soon as they finish.
+
+"Prefer the browser" uses the browser\'s own speech recognition where it has it, which covers many more languages, and the cloud recogniser otherwise. The cloud recogniser is the one that reports word timings, which words per minute is worked out from.
+
+"Cloud recogniser only" always uses the cloud recogniser, and keeps the recorder chosen above for languages it does not cover.
+
+The in page recorder is used for audio recordings with the Prepare, Record, Model sequences (and Record, Model, and Prepare, Type, Record, Model). Everything else, including video and the Upload recorder style, keeps the recorder chosen above.';
+$string['streamingrecord_off'] = 'No, use the recorder above';
+$string['streamingrecord_preferbrowser'] = 'Yes, prefer the browser\'s speech recognition';
+$string['streamingrecord_cloudonly'] = 'Yes, cloud recogniser only';
 $string['streamingrecord_default'] = 'Streaming recorder by default';
-$string['streamingrecord_default_details'] = 'Whether new activities use the in page streaming recorder. Each activity can change this in its settings.';
+$string['streamingrecord_default_details'] = 'What new activities use for recording. Each activity can change this in its settings.';
 $string['streamstop'] = 'Stop';
 $string['streamrerecord'] = 'Record again';
 $string['streamsettings'] = 'Recorder settings';

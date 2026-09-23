@@ -55,6 +55,11 @@ final class streaming_test extends \advanced_testcase {
         $this->assertTrue(utils::can_stream_record($this->activity(['activitysteps' => constants::M_SEQ_RM])));
         $this->assertTrue(utils::can_stream_record($this->activity(['activitysteps' => constants::M_SEQ_PTRM])));
         $this->assertTrue(utils::can_stream_record($this->activity(['ttslanguage' => constants::M_LANG_FRFR])));
+        // Cloud recogniser only is still the in page recorder.
+        $this->assertTrue(utils::can_stream_record($this->activity(['streamingrecord' => constants::STREAMINGRECORD_CLOUDONLY])));
+        // The language decides whether a streaming token is issued, not which recorder the step uses: the browser's
+        // own speech recognition covers far more languages. See fetch_streaming_recorder_data().
+        $this->assertTrue(utils::can_stream_record($this->activity(['ttslanguage' => constants::M_LANG_JAJP])));
 
         $this->assertFalse(utils::can_stream_record($this->activity(['streamingrecord' => 0])));
         $this->assertFalse(utils::can_stream_record($this->activity(['recordertype' => constants::REC_VIDEO])));
@@ -69,8 +74,6 @@ final class streaming_test extends \advanced_testcase {
         $odd->step2 = constants::M_STEP_MODEL;
         $odd->step3 = constants::M_STEP_RECORD;
         $this->assertFalse(utils::can_stream_record($odd));
-        // AssemblyAI does not stream Japanese.
-        $this->assertFalse(utils::can_stream_record($this->activity(['ttslanguage' => constants::M_LANG_JAJP])));
     }
 
     public function test_can_stream_record_with_azure(): void {
@@ -79,8 +82,8 @@ final class streaming_test extends \advanced_testcase {
         set_config('azureapiregion', 'eastus', 'mod_solo');
 
         $this->assertSame('azure', utils::streaming_token_type());
-        $this->assertTrue(utils::can_stream_record($this->activity(['ttslanguage' => constants::M_LANG_JAJP])));
-        $this->assertFalse(utils::can_stream_record($this->activity(['ttslanguage' => constants::M_LANG_NONO])));
+        $this->assertTrue(utils::streaming_supports_language('azure', constants::M_LANG_JAJP));
+        $this->assertFalse(utils::streaming_supports_language('azure', constants::M_LANG_NONO));
     }
 
     public function test_streaming_supports_language(): void {
