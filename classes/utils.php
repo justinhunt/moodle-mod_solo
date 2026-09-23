@@ -641,19 +641,7 @@ class utils
             $instructions->modeltext = '';
             $isspeech = !self::is_textonlysubmission($moduleinstance);
             $aigraderesults = self::fetch_ai_grade($token, $moduleinstance->region, $moduleinstance->ttslanguage, $isspeech, $studentresponse, $instructions);
-            if ($aigraderesults && isset($aigraderesults->marks) && isset($aigraderesults->feedback)) {
-                if ($aigraderesults->feedback !== null) {
-                    $aigraderesults->feedback = json_encode($aigraderesults->feedback);
-                }
-                $DB->update_record(
-                    constants::M_ATTEMPTSTABLE,
-                    [
-                        'id' => $attempt->id,
-                        'aigrade' => $aigraderesults->marks,
-                        'aifeedback' => $aigraderesults->feedback
-                    ]
-                );
-            }
+            $attempt = self::store_ai_grade($attempt, $aigraderesults);
         }
 
         // Process grammar correction (it won't fetch again if it has it already)
@@ -673,6 +661,43 @@ class utils
         return $attempt;
     }
 
+
+    /**
+     * Store the AI grade and feedback on an attempt, whichever of them came back.
+     *
+     * They are stored independently: an AI reply with marks but no feedback used to be thrown away whole, so the
+     * mark never reached the attempt. The grade formula then treats the AI part as 100% (see autograde_attempt),
+     * which quietly drops the AI assessment out of the grade.
+     *
+     * @param \stdClass $attempt The attempt.
+     * @param \stdClass|false $aigraderesults What fetch_ai_grade() returned.
+     * @return \stdClass The attempt, with anything stored set on it too.
+     */
+    public static function store_ai_grade($attempt, $aigraderesults)
+    {
+        global $DB;
+
+        if (!$aigraderesults) {
+            return $attempt;
+        }
+        $update = ['id' => $attempt->id];
+        if (isset($aigraderesults->marks) && $aigraderesults->marks !== null && is_numeric($aigraderesults->marks)) {
+            $update['aigrade'] = $aigraderesults->marks;
+        }
+        if (isset($aigraderesults->feedback) && $aigraderesults->feedback !== null) {
+            // The feedback is stored as json, and the display side only shows it if it is valid json.
+            $update['aifeedback'] = is_string($aigraderesults->feedback) && self::is_json($aigraderesults->feedback)
+                ? $aigraderesults->feedback : json_encode($aigraderesults->feedback);
+        }
+        if (count($update) === 1) {
+            return $attempt;
+        }
+        $DB->update_record(constants::M_ATTEMPTSTABLE, $update);
+        foreach ($update as $field => $value) {
+            $attempt->{$field} = $value;
+        }
+        return $attempt;
+    }
 
     /*
      * Process grammar correction details as returned by text analyser
