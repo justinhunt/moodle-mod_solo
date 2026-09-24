@@ -41,6 +41,9 @@ class utils
 {
     /** @var int A cached streaming token is only handed out if it has at least this many seconds left. */
     const STREAMING_TOKEN_MINLIFE = 2 * MINSECS;
+    /** @var int Longest transcript we ask the Poodll API to punctuate; its answer is capped, and a longer one
+     * would come back cut short. */
+    const PUNCTUATION_MAXWORDS = 900;
     /** @var int Longest streamed transcript text accepted with a recording, in characters. */
     const STREAMING_TEXT_MAXLENGTH = 100000;
     /** @var int Longest streamed word list (JSON) accepted with a recording, in bytes. */
@@ -554,6 +557,12 @@ class utils
         // This should run down the aitranscript constructor and do the diffs if the passage arrives late or on time, but not redo.
         // This line caused an error if the user entered a blank transcript. Do we need to check for empty?
         // if($hastranscripts && !empty($attempt->selftranscript)){
+        // Speech recognised in the browser comes back with no punctuation at all, so add it before the statistics,
+        // the grammar check and the AI grade read the transcript.
+        if ($hastranscripts) {
+            $attempt = self::punctuate_attempt_transcript($attempt, $moduleinstance);
+        }
+
         if ($hastranscripts) {
             $autotranscript = $attempt->transcript;
             $aitranscript = new \mod_solo\aitranscript(
@@ -676,6 +685,134 @@ class utils
         return $attempt;
     }
 
+
+    /**
+     * Does this transcript need punctuation adding?
+     *
+     * The browser's own speech recognition returns none at all, which leaves the whole answer as one sentence,
+     * and makes the grammar check report every missing full stop as a mistake. The cloud recognisers punctuate as
+     * they go, so their transcripts are left alone. Same test as the Poodll API uses.
+     *
+     * @param string $text
+     * @return bool
+     */
+    public static function needs_punctuation($text)
+    {
+        if (trim((string) $text) === '') {
+            return false;
+        }
+        $punctuation = '/[.,!?;:()\[\]{}"«»„“”‹›¡¿،؛؟。、「」『』【】《》]/u';
+        if (preg_match($punctuation, $text)) {
+            return false;
+        }
+        // The service caps its answer, so a long answer would come back cut short. Its words would then not match
+        // and we would throw the result away, so do not ask in the first place.
+        return str_word_count($text) <= self::PUNCTUATION_MAXWORDS;
+    }
+
+    /**
+     * Are these the same words, ignoring punctuation and capitals?
+     *
+     * The service is told to add punctuation without changing any words. This checks that it did, so a wandering
+     * answer can never rewrite what a student said.
+     *
+     * @param string $before
+     * @param string $after
+     * @return bool
+     */
+    public static function same_words($before, $after)
+    {
+        $normalise = function ($text) {
+            $text = \core_text::strtolower($text);
+            // Drop everything that is not a letter, a number or an apostrophe, so "beer," matches "beer".
+            $text = preg_replace('/[^\p{L}\p{N}\']+/u', ' ', $text);
+            return array_values(array_filter(explode(' ', trim($text)), function ($word) {
+                return $word !== '';
+            }));
+        };
+        return $normalise($before) === $normalise($after);
+    }
+
+    /**
+     * Ask the Poodll API to punctuate a passage of speech.
+     *
+     * @param string $token The Cloud Poodll token.
+     * @param string $region
+     * @param string $language The activity language, eg en-US.
+     * @param string $text
+     * @return string|false The punctuated text, or false if the service could not do it.
+     */
+    public static function fetch_punctuated_text($token, $region, $language, $text)
+    {
+        $params = [
+            'wstoken' => $token,
+            'wsfunction' => 'local_cpapi_call_ai',
+            'moodlewsrestformat' => 'json',
+            'action' => 'add_punctuation',
+            'subject' => '',
+            'prompt' => $text,
+            'language' => $language,
+            'appid' => constants::M_COMPONENT,
+            'region' => $region,
+            'owner' => hash('md5', $token),
+        ];
+        $response = self::curl_fetch(self::get_cloud_poodll_server() . '/webservice/rest/server.php', $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payload = json_decode($response);
+        if (!isset($payload->returnCode) || $payload->returnCode != 0 || !isset($payload->returnMessage)) {
+            return false;
+        }
+        $punctuated = trim((string) $payload->returnMessage);
+        return $punctuated === '' ? false : $punctuated;
+    }
+
+    /**
+     * Add punctuation to an attempt's transcript, if it has none.
+     *
+     * Done before anything reads the transcript, so the statistics, the grammar check, the AI grade and the student
+     * all see the same text. Once punctuated it is left alone, so processing an attempt again costs nothing.
+     *
+     * @param \stdClass $attempt
+     * @param \stdClass $moduleinstance
+     * @return \stdClass The attempt, punctuated if it could be.
+     */
+    public static function punctuate_attempt_transcript($attempt, $moduleinstance)
+    {
+        global $DB;
+
+        if (!self::needs_punctuation($attempt->transcript)) {
+            return $attempt;
+        }
+        $siteconfig = get_config(constants::M_COMPONENT);
+        $token = self::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
+        if (empty($token)) {
+            return $attempt;
+        }
+        $language = $moduleinstance->ttslanguage;
+        $punctuated = self::fetch_punctuated_text($token, $moduleinstance->region, $language, $attempt->transcript);
+        if ($punctuated === false) {
+            return $attempt;
+        }
+        if (!self::same_words($attempt->transcript, $punctuated)) {
+            // It changed the words, so it is not a punctuated copy of what the student said. Keep theirs.
+            $message = 'mod_solo: punctuation changed the words of attempt ' . $attempt->id . ', keeping the original';
+            debugging($message, DEBUG_DEVELOPER);
+            return $attempt;
+        }
+
+        $update = ['id' => $attempt->id, 'transcript' => $punctuated];
+        // The graded text too, where it is the transcript rather than something the student typed.
+        if (trim((string) $attempt->selftranscript) === trim((string) $attempt->transcript)) {
+            $update['selftranscript'] = $punctuated;
+        }
+        $DB->update_record(constants::M_ATTEMPTSTABLE, $update);
+        foreach ($update as $field => $value) {
+            $attempt->{$field} = $value;
+        }
+        return $attempt;
+    }
 
     /**
      * Store the AI grade and feedback on an attempt, whichever of them came back.
