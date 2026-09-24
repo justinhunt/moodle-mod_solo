@@ -920,9 +920,9 @@ $string['streamingrecord_help'] = 'Record with the in page recorder, which trans
 "Cloud recogniser only" always uses the cloud recogniser, and keeps the recorder chosen above for languages it does not cover.
 
 The in page recorder is used for audio recordings with the Prepare, Record, Model sequences (and Record, Model, and Prepare, Type, Record, Model). Everything else, including video and the Upload recorder style, keeps the recorder chosen above.';
-$string['streamingrecord_off'] = 'No, use the recorder above';
-$string['streamingrecord_preferbrowser'] = 'Yes, prefer the browser\'s speech recognition';
-$string['streamingrecord_cloudonly'] = 'Yes, cloud recogniser only';
+$string['streamingrecord_off'] = 'No, use the standard recorder (above)';
+$string['streamingrecord_preferbrowser'] = 'Yes, use browser speech recognition';
+$string['streamingrecord_cloudonly'] = 'Yes, use cloud recognition';
 $string['streamingrecord_default'] = 'Streaming recorder by default';
 $string['streamingrecord_default_details'] = 'What new activities use for recording. Each activity can change this in its settings.';
 $string['streamstop'] = 'Stop';
