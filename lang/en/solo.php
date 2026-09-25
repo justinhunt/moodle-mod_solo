@@ -912,14 +912,14 @@ $string['allowmicaccess'] = 'Please allow access to your microphone.';
 $string['nomicdetected'] = 'No microphone detected.';
 $string['speechnotrecognized'] = 'We could not recognize your speech.';
 $string['streamrecord'] = 'Record';
-$string['streamingrecord'] = 'Streaming recorder';
-$string['streamingrecord_help'] = 'Record with the in page recorder, which transcribes speech while the student speaks, so results are ready as soon as they finish.
+$string['streamingrecord'] = 'Use streaming recording';
+$string['streamingrecord_help'] = 'Record with the streaming recorder which transcribes while the student speaks, so results are ready as soon as they finish.
 
-"Prefer the browser" uses the browser\'s own speech recognition where it has it, which covers many more languages, and the cloud recogniser otherwise. The cloud recogniser is the one that reports word timings, which words per minute is worked out from.
+"Prefer the browser" uses the browser\'s own speech recognition where it has it, which covers many more languages. Falls back to cloud streaming otherwise.
 
-"Cloud recogniser only" always uses the cloud recogniser, and keeps the recorder chosen above for languages it does not cover.
+"Cloud recogniser only" always uses the cloud recogniser, and keeps the non-streaming recorder chosen above for languages it does not cover.
 
-The in page recorder is used for audio recordings with the Prepare, Record, Model sequences (and Record, Model, and Prepare, Type, Record, Model). Everything else, including video and the Upload recorder style, keeps the recorder chosen above.';
+The video and the Upload recorder will not use streaming.';
 $string['streamingrecord_off'] = 'No, use the standard recorder (above)';
 $string['streamingrecord_preferbrowser'] = 'Yes, use browser speech recognition';
 $string['streamingrecord_cloudonly'] = 'Yes, use cloud recognition';
