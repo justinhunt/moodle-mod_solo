@@ -1,0 +1,28 @@
+# camp listing manifest — the descriptive content for this plugin's page on
+# camp-registry.org. Edit and commit as normal; camp ingests and hash-pins it
+# at each tagged release. Schema: https://camp-registry.org/schema/listing.schema.json
+name: Poodll Solo
+summary: Automatically graded speaking (or writing) assignments, scored by speech recognition and AI.
+description: |
+  The teacher sets a speaking topic: a prompt, a target speaking time, a target word count and
+  optional target keywords. The student responds by recording themselves speaking or, in writing
+  mode, by typing.
+
+  **Automatic grading:** word count, grammar accuracy, relevance to the topic and speaking clarity
+  all feed into the grade, and the student gets grammar correction suggestions as feedback.
+  Teachers can review and adjust each grade, and scores go to the Moodle gradebook.
+
+  Used for oral exam preparation, speaking practice with automated feedback, low and medium stakes
+  speaking assessments such as placement tests, and short essay writing with instant feedback.
+
+  **Requires a Cloud Poodll account.** Recording, transcription and AI grading run through the Cloud
+  Poodll service, so the plugin needs an API user and secret from https://poodll.com to function.
+labels:
+  - paid-service
+  - external-account
+  - commercial-support-available
+category: activity
+links:
+  docs: https://support.poodll.com
+  issues: https://github.com/justinhunt/moodle-mod_solo/issues
+  changelog: https://github.com/justinhunt/moodle-mod_solo/blob/main/CHANGES.txt
