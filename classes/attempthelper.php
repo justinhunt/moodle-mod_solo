@@ -337,8 +337,9 @@ class attempthelper
                 return $ret;
             }
 
-            //raise step submitted event
-            \mod_solo\event\step_submitted::create_from_attempt($newattempt, $this->context, $lateststep)->trigger();
+            //raise step submitted event. The snapshot must be the full attempt row, not just the fields we updated.
+            $attemptrecord = $DB->get_record(constants::M_ATTEMPTSTABLE, ['id' => $newattempt->id], '*', MUST_EXIST);
+            \mod_solo\event\step_submitted::create_from_attempt($attemptrecord, $this->context, $lateststep)->trigger();
 
             //if we just finished the last step then lets indicate this activity complete in the Moodle sense.
             $totalsteps= utils::fetch_total_step_count($this->mod,$this->context);
@@ -349,8 +350,8 @@ class attempthelper
                 if($completion->is_enabled($this->cm) && $this->mod->completionallsteps) {
                     $completion->update_state($this->cm,COMPLETION_COMPLETE);
                 }
-                //raise step submitted event
-                \mod_solo\event\attempt_submitted::create_from_attempt($newattempt, $this->context)->trigger();
+                //raise attempt submitted event
+                \mod_solo\event\attempt_submitted::create_from_attempt($attemptrecord, $this->context)->trigger();
             }
 
             //go back to top page
