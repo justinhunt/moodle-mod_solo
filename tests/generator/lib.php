@@ -35,6 +35,7 @@ class mod_solo_generator extends testing_module_generator {
         require_once($CFG->libdir . '/formslib.php');
         $record = (object) (array) $record;
         $defaults = [
+            'grade' => 100,
             'viewstart' => 0,
             'activitysteps' => \mod_solo\constants::M_SEQ_PRM,
             'graderatioitem' => 0,
