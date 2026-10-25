@@ -1562,7 +1562,9 @@ class utils
 
         // Update attempts table.
         $attempt->grade = round($autograde, 0);
-        $aglog[] = "Autograde = 100 * (Words[$wordratio] * Accuracy[$accuracyratio] * Relevance[$relevanceratio] * AI Grade[$aigraderatio])  + bonustotal[$bonustotal] => $attempt->grade%";
+        $aglog[] = "Autograde = Base score[$basescore] *"
+            . " (Words[$wordratio] * Accuracy[$accuracyratio] * Relevance[$relevanceratio] * AI Grade[$aigraderatio])"
+            . "  + bonustotal[$bonustotal] => $attempt->grade%";
         $attempt->autogradelog = json_encode($aglog);
         $DB->update_record(constants::M_ATTEMPTSTABLE, $attempt);
 
