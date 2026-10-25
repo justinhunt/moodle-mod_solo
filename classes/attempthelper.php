@@ -297,8 +297,11 @@ class attempthelper
                         $newattempt->aigrade = null;
                         $newattempt->aifeedback = null;
                         $newattempt->grammarcorrection = null;
+                        // Null, not 0: the results page shows an attempt as graded when the grade is not null,
+                        // and the database returns 0 as "0", which is not null. It then showed empty results
+                        // instead of waiting for the transcript.
                         if (empty($attempt->manualgraded)) {
-                            $newattempt->grade = 0;
+                            $newattempt->grade = null;
                         }
                         if($audio_before_transcription){
                             $newattempt->selftranscript = "";

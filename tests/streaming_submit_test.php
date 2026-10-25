@@ -180,6 +180,14 @@ final class streaming_submit_test extends \advanced_testcase {
         $this->assertEmpty($attempt->jsontranscript);
     }
 
+    public function test_first_recording_is_not_graded_yet(): void {
+        $this->resetAfterTest();
+        [$cm, $attemptid, $step] = $this->at_record_step(constants::M_SEQ_PRM, false);
+        $attempt = $this->record($cm, $attemptid, $step, []);
+        // A grade of 0 made the results page show an empty result instead of waiting for the transcript.
+        $this->assertNull($attempt->grade);
+    }
+
     public function test_rerecording_clears_the_old_grading(): void {
         global $DB;
         $this->resetAfterTest();
@@ -193,7 +201,7 @@ final class streaming_submit_test extends \advanced_testcase {
             'streamingtranscript' => $this->words(2), 'streamingstatus' => 'complete']);
         $after = $DB->get_record(constants::M_ATTEMPTSTABLE, ['id' => $attempt->id]);
         $this->assertSame('Second.', $after->selftranscript);
-        $this->assertEquals(0, $after->grade);
+        $this->assertNull($after->grade);
         $this->assertNull($after->aigrade);
         $this->assertNull($after->aifeedback);
         $this->assertNull($after->grammarcorrection);
