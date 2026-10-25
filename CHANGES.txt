@@ -1,5 +1,6 @@
 1.0.80 (Build 2026102500)
 - Fixed issue where grade calculation was not displayed correctly in autograding log
+- Fixed issue where an empty results page was displayed instead of a "waiting for results" page
 
 1.0.79 (Build 2026101800)
 - Pass the full attempt record to the step and attempt submitted events
