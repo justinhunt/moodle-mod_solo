@@ -94,7 +94,7 @@ if ($id) {
     $cm         = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
     $id = $cm->id;
 } else {
-    print_error('You must specify a course_module ID or an instance ID');
+    throw new \moodle_exception('You must specify a course_module ID or an instance ID');
 }
 
 
@@ -109,7 +109,7 @@ require_capability('mod/solo:manage', $modulecontext);
 $siteadmin = is_siteadmin();
 
 if($sitelevel && !$siteadmin){
-    print_error('You must be a site administrator to push sitewide settings');
+    throw new \moodle_exception('You must be a site administrator to push sitewide settings');
 }
 
 //Get an admin settings 
@@ -118,7 +118,7 @@ $config = get_config(constants::M_COMPONENT);
 
 
 if($action!==PUSH_NONE && !array_key_exists($action,PUSHABLES)){
-    print_error('Invalid push action');
+    throw new \moodle_exception('Invalid push action');
 }
 
 $pushform = new pushform();

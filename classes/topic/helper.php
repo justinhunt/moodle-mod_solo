@@ -42,7 +42,7 @@ class helper
 
         //remove records
         if (!$DB->delete_records(constants::M_TOPIC_TABLE, array('id' => $topicid))) {
-            print_error("Could not delete topic");
+            throw new \moodle_exception("Could not delete topic");
             return $ret;
         }
 

@@ -1,5 +1,6 @@
 1.0.81 (Build 2026102700)
 - Tested with Moodle 5.3
+- Replaced calls to print_error() and error(), which no longer exist in Moodle, so error pages show their message instead of a fatal error
 
 1.0.80 (Build 2026102500)
 - Fixed issue where grade calculation was not displayed correctly in autograding log

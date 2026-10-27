@@ -98,7 +98,7 @@ if ($attemptid) {
     }
     $attempt = $DB->get_record(constants::M_ATTEMPTSTABLE, $attemptconditions, '*', MUST_EXIST);
     if(!$attempt){
-        print_error('could not find attempt of id:' . $attemptid);
+        throw new \moodle_exception('could not find attempt of id:' . $attemptid);
     }
 
     //This would force a step, if we needed to
