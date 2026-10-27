@@ -1,3 +1,6 @@
+1.0.81 (Build 2026102700)
+- Tested with Moodle 5.3
+
 1.0.80 (Build 2026102500)
 - Fixed issue where grade calculation was not displayed correctly in autograding log
 - Fixed issue where an empty results page was displayed instead of a "waiting for results" page
