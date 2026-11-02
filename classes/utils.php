@@ -1636,17 +1636,13 @@ class utils
     public static function fetch_feedback_language($moduleinstance, $attempt)
     {
         $siteconfig = get_config(constants::M_COMPONENT);
-        //its awful but we hijack the wordcard's student native language setting
+        // The native language the student chose in Poodll WordCards or Poodll MiniLesson overrides the activity's.
         $feedbacklanguage = $moduleinstance->feedbacklanguage;
         if ($siteconfig->setnativelanguage) {
-            $userprefdeflanguage = get_user_preferences('wordcards_deflang', null, $attempt->userid);
-            if (!empty($userprefdeflanguage)) {
-                //the WC language is 2 char (eg 'en') but Poodll AI expects a locale code (eg 'en-US')
-                $wclanguage = self::lang_to_locale($userprefdeflanguage);
-                //if we did get a locale code back lets use that.
-                if ($wclanguage !== $userprefdeflanguage && $wclanguage !== $feedbacklanguage) {
-                    $feedbacklanguage = $wclanguage;
-                }
+            $nativelanguage = get_user_preferences(constants::NATIVELANG_PREF, null, $attempt->userid);
+            if (!empty($nativelanguage)) {
+                // The preference is a locale code. Poodll AI expects one too, and a locale code passes through unchanged.
+                $feedbacklanguage = self::lang_to_locale($nativelanguage);
             }
         }
         return $feedbacklanguage;

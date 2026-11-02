@@ -598,14 +598,10 @@ class mod_solo_external extends external_api
         if (!empty($studentresponse) && !empty($feedbackscheme) && $maxmarks > 0) {
             //Feedback language for AI instructions
             if ($siteconfig->setnativelanguage) {
-                $userprefdeflanguage = get_user_preferences('wordcards_deflang');
-                if (!empty($userprefdeflanguage)) {
-                    //the WC language is 2 char (eg 'en') but Poodll AI expects a locale code (eg 'en-US')
-                    $wc_language = utils::lang_to_locale($userprefdeflanguage);
-                    //if we did get a locale code back lets use that.
-                    if ($wc_language !== $userprefdeflanguage && $wc_language !== $feedbacklanguage) {
-                        $feedbacklanguage = $wc_language;
-                    }
+                $nativelanguage = get_user_preferences(constants::NATIVELANG_PREF);
+                if (!empty($nativelanguage)) {
+                    // The preference is a locale code. Poodll AI expects one too, and a locale code passes through unchanged.
+                    $feedbacklanguage = utils::lang_to_locale($nativelanguage);
                 }
             }//end of feedback language
 

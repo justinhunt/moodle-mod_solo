@@ -147,6 +147,9 @@ const STREAMINGRECORD_OFF = 0;
 const STREAMINGRECORD_PREFERBROWSER = 1;
 const STREAMINGRECORD_CLOUDONLY = 2;
 
+// The learner's chosen native language, as a locale code. Set from Poodll WordCards or Poodll MiniLesson.
+const NATIVELANG_PREF = 'poodll_nativelang';
+
 const TRANSCRIBER_NONE = 0;
 const TRANSCRIBER_OPEN = 1;
 

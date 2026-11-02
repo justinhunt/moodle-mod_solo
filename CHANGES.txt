@@ -1,3 +1,6 @@
+1.0.82 (Build 2026110200)
+- Fixed the student's chosen native language not overriding the AI feedback language, after WordCards and MiniLesson moved it to a shared preference
+
 1.0.81 (Build 2026102700)
 - Tested with Moodle 5.3
 - Replaced calls to print_error() and error(), which no longer exist in Moodle, so error pages show their message instead of a fatal error
