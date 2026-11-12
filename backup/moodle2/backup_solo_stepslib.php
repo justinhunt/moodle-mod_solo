@@ -64,10 +64,11 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
         // attempt
         $attempts = new backup_nested_element('attempts');
         $attempt = new backup_nested_element('attempt', array('id'),array(
-            constants::M_MODNAME, 'userid', 'type','visible','filename', 'transcript','jsontranscript','vtttranscript','rectime','grammarcorrection',
+            constants::M_MODNAME, 'userid', 'grade', 'manualgraded', 'feedback',
+            'type','visible','filename', 'transcript','jsontranscript','vtttranscript','rectime','grammarcorrection',
             'selftranscript','stembedding','topictargetwords','mywords','convlength',
             'customtext1', 'customtext1format','completedsteps',
-            'currentint1','currentint2','currentint3','currentint4',
+            'customint1', 'customint2', 'customint3', 'customint4',
             'allowsharing','aifeedback','aigrade','autogradelog', 'timemodified','createdby','modifiedby'));
 
         //attemptstats
@@ -76,7 +77,7 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
                 constants::M_MODNAME, 'userid', 'attemptid','turns','words','avturn', 'longestturn','targetwords','totaltargetwords',
                 'uniquewords','longwords', 'autospell','autogrammar','autospellscore','autospellerrors',
                 'autogrammarscore','autogrammarerrors','aiaccuracy','gcerrorcount','gcerrors','gcmatches' ,'timemodified',
-                'cefrlevel','ideacount','relevance','wpm','createdby','modifiedby'));
+                'cefrlevel','ideacount','relevance','wpm', 'speakingtime', 'createdby','modifiedby'));
 
         //airesults
         $airesults = new backup_nested_element('airesults');
@@ -150,6 +151,8 @@ class backup_solo_activity_structure_step extends backup_activity_structure_step
 
         // Define id annotations.
         $attempt->annotate_ids('user', 'userid');
+        $attempt->annotate_ids('user', 'createdby');
+        $attempt->annotate_ids('user', 'modifiedby');
         $attemptstat->annotate_ids('user', 'userid');
 
 

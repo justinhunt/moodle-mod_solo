@@ -185,10 +185,36 @@ class utils
     // check if curl return from transcript url is valid
     public static function is_valid_transcript($transcript)
     {
+        if ($transcript === false) {
+            return false;
+        }
         if (strpos($transcript, "<Error><Code>AccessDenied</Code>") > 0) {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Fetch a transcript file from S3.
+     *
+     * Moodle's curl returns its error message in place of the response when the request fails, and S3 answers
+     * with an error document for a missing file or a server fault. Without this check a message such as
+     * "Failed to connect to s3.amazonaws.com port 443" was stored and graded as the student's transcript.
+     *
+     * @param string $url
+     * @return string|false the file contents, or false if the file could not be fetched
+     */
+    public static function fetch_from_s3($url) {
+        global $CFG;
+
+        require_once($CFG->libdir . '/filelib.php');
+        $curl = new \curl();
+        $result = $curl->get($url);
+        $info = $curl->get_info();
+        if ($curl->get_errno() || empty($info['http_code']) || $info['http_code'] != 200) {
+            return false;
+        }
+        return $result;
     }
 
     public static function transcripts_are_ready_on_s3($attempt)
@@ -198,9 +224,8 @@ class utils
             return false;
         }
         $transcripturl = $attempt->filename . '.txt';
-        $postdata = [];
         // Fetch transcripts, and bail out of they are not ready or wrong.
-        $transcript = self::curl_fetch($transcripturl, $postdata);
+        $transcript = self::fetch_from_s3($transcripturl);
         return self::is_valid_transcript($transcript);
     }
 
@@ -216,14 +241,14 @@ class utils
         $jsontranscripturl = $attempt->filename . '.json';
         $vtttranscripturl = $attempt->filename . '.vtt';
         $transcripturl = $attempt->filename . '.txt';
-        $postdata = [];
         // fetch transcripts, and bail out of they are not ready or wrong
-        $jsontranscript = self::curl_fetch($jsontranscripturl, $postdata);
-        if (!self::is_valid_transcript($jsontranscript)) {
+        // A network failure or an S3 error leaves them unfetched, so the adhoc task tries again later.
+        $jsontranscript = self::fetch_from_s3($jsontranscripturl);
+        if (!self::is_valid_transcript($jsontranscript) || !is_array(json_decode($jsontranscript, true))) {
             return false;
         }
 
-        $transcript = self::curl_fetch($transcripturl, $postdata);
+        $transcript = self::fetch_from_s3($transcripturl);
         if (!self::is_valid_transcript($transcript)) {
             return false;
         }
@@ -231,7 +256,7 @@ class utils
         // The subtitles are optional. Nothing reads them, and the streaming recorder's uploader does not ask for
         // them (subtitle=0), so its backup transcription never makes a .vtt. Requiring one left those attempts
         // waiting for a file that would never come. Keep it when the cloud made one, as the iframe recorder asks it to.
-        $vtttranscript = self::curl_fetch($vtttranscripturl, $postdata);
+        $vtttranscript = self::fetch_from_s3($vtttranscripturl);
         if (!$vtttranscript || !self::is_valid_transcript($vtttranscript)) {
             $vtttranscript = '';
         }

@@ -1,3 +1,7 @@
+1.0.83 (Build 2026111200)
+- Fixed a server connection error (e.g. "Failed to connect to s3.amazonaws.com") being saved and graded as the student's transcript. A failed fetch is now retried later
+- Fixed backup and restore of student attempts: restored attempts now belong to the right users on the new site, and teacher grades, feedback and speaking time are included
+
 1.0.82 (Build 2026110200)
 - Fixed the student's chosen native language not overriding the AI feedback language, after WordCards and MiniLesson moved it to a shared preference
 

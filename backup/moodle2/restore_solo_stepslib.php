@@ -99,27 +99,22 @@ class restore_solo_activity_structure_step extends restore_activity_structure_st
         $data = (object)$data;
         $oldid = $data->id;
 
-        $data->timecreated = $this->apply_date_offset($data->timecreated);
-
-
         $data->{constants::M_MODNAME} = $this->get_new_parentid(constants::M_MODNAME);
+        $this->map_user_fields($data);
         $newid = $DB->insert_record(constants::M_ATTEMPTSTABLE, $data);
-        //store id so that attemptstats can use it
-        $this->set_mapping('attempts', $oldid, $newid, false);
+        // Store id so that attemptstats can use it, and so the attempt's files are restored.
+        $this->set_mapping('attempts', $oldid, $newid, true);
     }
 
     protected function process_attemptstats($data) {
         global $DB;
 
         $data = (object)$data;
-        $oldid = $data->id;
-
-        $data->timecreated = $this->apply_date_offset($data->timecreated);
-
 
         $data->{constants::M_MODNAME} = $this->get_new_parentid(constants::M_MODNAME);
         $data->attemptid = $this->get_new_parentid('attempts');
-        $newid = $DB->insert_record(constants::M_STATSTABLE, $data);
+        $this->map_user_fields($data);
+        $DB->insert_record(constants::M_STATSTABLE, $data);
     }
 
     protected function process_airesults($data) {
@@ -130,10 +125,26 @@ class restore_solo_activity_structure_step extends restore_activity_structure_st
 
         $data->timecreated = $this->apply_date_offset($data->timecreated);
 
-
+        $data->courseid = $this->get_courseid();
         $data->moduleid = $this->get_new_parentid(constants::M_MODNAME);
         $data->attemptid = $this->get_new_parentid('attempts');
         $newid = $DB->insert_record(constants::M_AITABLE, $data);
+    }
+
+    /**
+     * Point the user ids of a restored attempt or attempt stats record at the users on this site.
+     *
+     * A teacher in createdby or modifiedby may not be in the backup; then the student is used.
+     *
+     * @param stdClass $data the record being restored
+     */
+    protected function map_user_fields($data) {
+        $data->userid = $this->get_mappingid('user', $data->userid);
+        foreach (['createdby', 'modifiedby'] as $field) {
+            if (!empty($data->$field)) {
+                $data->$field = $this->get_mappingid('user', $data->$field, $data->userid);
+            }
+        }
     }
 
     protected function process_topics($data) {
@@ -142,7 +153,6 @@ class restore_solo_activity_structure_step extends restore_activity_structure_st
         $data = (object)$data;
         $oldid = $data->id;
         $data->courseid = $this->get_courseid();
-        $data->timecreated = $this->apply_date_offset($data->timecreated);
         $data->moduleid = $this->get_new_parentid(constants::M_MODNAME);
         $existingtopic =false;
         if($data->topiclevel==constants::M_TOPICLEVEL_COURSE) {
@@ -169,7 +179,6 @@ class restore_solo_activity_structure_step extends restore_activity_structure_st
 
         $data = (object)$data;
         $oldid = $data->id;
-        $data->timecreated = $this->apply_date_offset($data->timecreated);
         $data->moduleid = $this->get_new_parentid(constants::M_MODNAME);
 
         $topics = $DB->get_records(constants::M_TOPIC_TABLE,array('name'=>$data->name, 'courseid'=>$this->get_courseid()));
@@ -230,6 +239,7 @@ class restore_solo_activity_structure_step extends restore_activity_structure_st
         $this->add_related_files(constants::M_COMPONENT, constants::M_FILEAREA_MODELMEDIA, null);
         $this->add_related_files(constants::M_COMPONENT, constants::M_FILEAREA_TOPICMEDIA, null);
         $this->add_related_files(constants::M_COMPONENT, 'intro', null);
+        $this->add_related_files(constants::M_COMPONENT, constants::M_FILEAREA_SUBMISSIONS, 'attempts');
 
 		//question stuff
 		 $userinfo = $this->get_setting_value('userinfo'); // are we including userinfo?
