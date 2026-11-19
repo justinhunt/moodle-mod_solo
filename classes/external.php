@@ -51,7 +51,7 @@ class mod_solo_external extends external_api
 
         $siteconfig = get_config(constants::M_COMPONENT);
         $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-        $textanalyser = new textanalyser($token, $text, $mod->region, $mod->ttslanguage);
+        $textanalyser = new textanalyser($token, $text, $mod->region, $mod->ttslanguage, false, false, false, $context->id);
         $suggestions = $textanalyser->fetch_grammar_correction();
         if ($suggestions == $text || empty($suggestions)) {
             return "";
@@ -587,7 +587,8 @@ class mod_solo_external extends external_api
 
         $siteconfig = get_config(constants::M_COMPONENT);
         $token = utils::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-        if (empty($token)) {
+        // A Moodle AI provider needs no Cloud Poodll token.
+        if (empty($token) && !\mod_solo\aimanager::uses_moodle_ai()) {
             return ["correctedtext" => "An error occurred", "feedback" => ["Invalid API credentials"], "marks" => 0];
         }
         if (empty($targetlanguage)) {
@@ -617,7 +618,15 @@ class mod_solo_external extends external_api
             // At this point we do not have a module instance to help us establish if its text only, assume its speech
             $isspeech = true;
             //$isspeech = !utils::is_textonlysubmission($moduleinstance);
-            $llmresponse = utils::fetch_ai_grade($token, $region, $targetlanguage, $isspeech, $studentresponse, $instructions);
+            $llmresponse = utils::fetch_ai_grade(
+                $token,
+                $region,
+                $targetlanguage,
+                $isspeech,
+                $studentresponse,
+                $instructions,
+                $context->id
+            );
             //   error_log(print_r($llmresponse, true));
             if (!$llmresponse) {
                 $contentobject = ["correctedtext" => "An error occurred", "feedback" => ["Invalid response received from server. Could be a network issue, or possibly a Poodll auth issue."], "marks" => 0];

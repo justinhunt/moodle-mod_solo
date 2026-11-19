@@ -1,3 +1,6 @@
+1.0.84 (Build 2026111900)
+- Added an AI Manager setting: site admins can send the AI calls that evaluate student work (grading and feedback, punctuation, grammar correction, relevance, CEFR level, idea count) to a Moodle AI provider (Moodle 4.5 and later) instead of Cloud Poodll. Cloud Poodll stays the default. Relevance to a model answer still uses Cloud Poodll
+
 1.0.83 (Build 2026111200)
 - Fixed a server connection error (e.g. "Failed to connect to s3.amazonaws.com") being saved and graded as the student's transcript. A failed fetch is now retried later
 - Fixed backup and restore of student attempts: restored attempts now belong to the right users on the new site, and teacher grades, feedback and speaking time are included

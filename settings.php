@@ -261,4 +261,22 @@ if ($ADMIN->fulltree) {
         utils::fetch_regions_azure()
     ));
 
+    // AI Manager: which AI provider evaluates student work. Core AI exists from Moodle 4.5.
+    if (class_exists(\core_ai\manager::class)) {
+        $settings->add(new admin_setting_heading(
+            constants::M_COMPONENT . '/aimanager',
+            get_string('aimanager', constants::M_COMPONENT),
+            get_string('aimanager_desc', constants::M_COMPONENT)
+        ));
+        foreach (\mod_solo\aimanager::get_action_options() as $actiontype => $actiondetails) {
+            $settings->add(new admin_setting_configselect(
+                \mod_solo\aimanager::get_action_settingname($actiontype),
+                $actiondetails['name'],
+                $actiondetails['description'],
+                \mod_solo\aimanager::CLOUDPOODLL_OPTION,
+                \mod_solo\aimanager::get_provider_options(\mod_solo\aimanager::AIMANAGER_ACTIONS[$actiontype])
+            ));
+        }
+    }
+
 }

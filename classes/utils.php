@@ -585,7 +585,7 @@ class utils
         // Speech recognised in the browser comes back with no punctuation at all, so add it before the statistics,
         // the grammar check and the AI grade read the transcript.
         if ($hastranscripts) {
-            $attempt = self::punctuate_attempt_transcript($attempt, $moduleinstance);
+            $attempt = self::punctuate_attempt_transcript($attempt, $moduleinstance, $contextid);
         }
 
         if ($hastranscripts) {
@@ -626,7 +626,8 @@ class utils
             $moduleinstance->ttslanguage,
             $moduleinstance->modelttsembedding,
             $userlanguage,
-            $targettopic
+            $targettopic,
+            $contextid
         );
 
         // update statistics and grammar correction if we need to
@@ -689,15 +690,23 @@ class utils
             $instructions->questiontext = strip_tags($moduleinstance->speakingtopic);
             $instructions->modeltext = '';
             $isspeech = !self::is_textonlysubmission($moduleinstance);
-            $aigraderesults = self::fetch_ai_grade($token, $moduleinstance->region, $moduleinstance->ttslanguage, $isspeech, $studentresponse, $instructions);
+            $aigraderesults = self::fetch_ai_grade(
+                $token,
+                $moduleinstance->region,
+                $moduleinstance->ttslanguage,
+                $isspeech,
+                $studentresponse,
+                $instructions,
+                $contextid
+            );
             $attempt = self::store_ai_grade($attempt, $aigraderesults);
         }
 
         // Process grammar correction (it won't fetch again if it has it already)
         if ($aigraderesults && isset($aigraderesults->correctedtext)) {
-            self::process_grammar_correction($moduleinstance, $attempt, $aigraderesults->correctedtext);
+            self::process_grammar_correction($moduleinstance, $attempt, $aigraderesults->correctedtext, $contextid);
         } else {
-            self::process_grammar_correction($moduleinstance, $attempt);
+            self::process_grammar_correction($moduleinstance, $attempt, false, $contextid);
         }
 
         // if we have an ungraded activity, lets grade it
@@ -765,10 +774,14 @@ class utils
      * @param string $region
      * @param string $language The activity language, eg en-US.
      * @param string $text
+     * @param int|null $contextid The activity's context, for the Moodle AI action register.
      * @return string|false The punctuated text, or false if the service could not do it.
      */
-    public static function fetch_punctuated_text($token, $region, $language, $text)
+    public static function fetch_punctuated_text($token, $region, $language, $text, $contextid = null)
     {
+        if (aimanager::uses_moodle_ai()) {
+            return (new aimanager($contextid, $language))->punctuate($text);
+        }
         $params = [
             'wstoken' => $token,
             'wsfunction' => 'local_cpapi_call_ai',
@@ -801,22 +814,33 @@ class utils
      *
      * @param \stdClass $attempt
      * @param \stdClass $moduleinstance
+     * @param int|null $contextid The activity's context, for the Moodle AI action register.
      * @return \stdClass The attempt, punctuated if it could be.
      */
-    public static function punctuate_attempt_transcript($attempt, $moduleinstance)
+    public static function punctuate_attempt_transcript($attempt, $moduleinstance, $contextid = null)
     {
         global $DB;
 
         if (!self::needs_punctuation($attempt->transcript)) {
             return $attempt;
         }
-        $siteconfig = get_config(constants::M_COMPONENT);
-        $token = self::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-        if (empty($token)) {
-            return $attempt;
+        // A Moodle AI provider needs no Cloud Poodll token.
+        $token = '';
+        if (!aimanager::uses_moodle_ai()) {
+            $siteconfig = get_config(constants::M_COMPONENT);
+            $token = self::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
+            if (empty($token)) {
+                return $attempt;
+            }
         }
         $language = $moduleinstance->ttslanguage;
-        $punctuated = self::fetch_punctuated_text($token, $moduleinstance->region, $language, $attempt->transcript);
+        $punctuated = self::fetch_punctuated_text(
+            $token,
+            $moduleinstance->region,
+            $language,
+            $attempt->transcript,
+            $contextid
+        );
         if ($punctuated === false) {
             return $attempt;
         }
@@ -876,10 +900,16 @@ class utils
         return $attempt;
     }
 
-    /*
-     * Process grammar correction details as returned by text analyser
+    /**
+     * Fetch and store the grammar correction for an attempt, if it has none yet.
+     *
+     * @param \stdClass $moduleinstance
+     * @param \stdClass $attempt
+     * @param string|false $corrections A correction already made (by the AI grade), or false to ask for one.
+     * @param int|null $contextid The activity's context, for the Moodle AI action register.
+     * @return string|false|null The grammar correction.
      */
-    public static function process_grammar_correction($moduleinstance, $attempt, $corrections = false)
+    public static function process_grammar_correction($moduleinstance, $attempt, $corrections = false, $contextid = null)
     {
         global $DB;
 
@@ -894,7 +924,16 @@ class utils
                 $siteconfig = get_config(constants::M_COMPONENT);
                 $token = self::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
                 // get text analyser
-                $textanalyser = new textanalyser($token, $attempt->selftranscript, $moduleinstance->region, $moduleinstance->ttslanguage);
+                $textanalyser = new textanalyser(
+                    $token,
+                    $attempt->selftranscript,
+                    $moduleinstance->region,
+                    $moduleinstance->ttslanguage,
+                    false,
+                    false,
+                    false,
+                    $contextid
+                );
                 $gcdata = $textanalyser->process_grammar_correction($attempt->selftranscript, $corrections);
                 $grammarcorrection = $gcdata['gcorrections'];
                 $gcerrors = $gcdata['gcerrors'];
@@ -3292,7 +3331,22 @@ class utils
         }
         $siteconfig = get_config(constants::M_COMPONENT);
         $token = self::fetch_token($siteconfig->apiuser, $siteconfig->apisecret);
-        $textanalyser = new textanalyser($token, $moduleinstance->modelanswer, $moduleinstance->region, $moduleinstance->ttslanguage);
+        // The form data carries the course module, for the Moodle AI action register.
+        $contextid = null;
+        if (!empty($moduleinstance->coursemodule)) {
+            $context = \context_module::instance($moduleinstance->coursemodule, IGNORE_MISSING);
+            $contextid = $context ? $context->id : null;
+        }
+        $textanalyser = new textanalyser(
+            $token,
+            $moduleinstance->modelanswer,
+            $moduleinstance->region,
+            $moduleinstance->ttslanguage,
+            false,
+            false,
+            false,
+            $contextid
+        );
         $embedding = $textanalyser->fetch_embedding();
         $ideacount = $textanalyser->fetch_idea_count();
         if ($embedding) {
@@ -4025,10 +4079,34 @@ class utils
     }
 
 
-    // fetch the AI Grade
-    public static function fetch_ai_grade($token, $region, $ttslanguage, $isspeech, $studentresponse, $instructions)
-    {
+    /**
+     * Fetch the AI grade and feedback for a student's response.
+     *
+     * Goes to Cloud Poodll, or to the Moodle AI provider chosen in the plugin settings.
+     *
+     * @param string $token The Cloud Poodll token.
+     * @param string $region
+     * @param string $ttslanguage The activity language, eg en-US.
+     * @param bool $isspeech The response is a speech transcript.
+     * @param string $studentresponse
+     * @param \stdClass $instructions feedbackscheme, feedbacklanguage, markscheme, maxmarks, questiontext, modeltext
+     * @param int|null $contextid The activity's context, for the Moodle AI action register.
+     * @return \stdClass|false correctedtext, and marks and feedback where given, or false on failure.
+     */
+    public static function fetch_ai_grade(
+        $token,
+        $region,
+        $ttslanguage,
+        $isspeech,
+        $studentresponse,
+        $instructions,
+        $contextid = null
+    ) {
         global $USER;
+
+        if (aimanager::uses_moodle_ai()) {
+            return (new aimanager($contextid, $ttslanguage))->autograde($studentresponse, $instructions, $isspeech);
+        }
         $instructionsjson = json_encode($instructions);
         // The REST API we are calling
         $functionname = 'local_cpapi_call_ai';
