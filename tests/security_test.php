@@ -216,4 +216,87 @@ final class security_test extends \advanced_testcase {
         $this->assertFalse($helper->delete_attempt($attempt->id));
         $this->assertTrue($DB->record_exists(constants::M_ATTEMPTSTABLE, ['id' => $attempt->id]));
     }
+    /**
+     * A student cannot load the grade form fragments, which show another student's grade.
+     *
+     * @dataProvider grade_fragment_provider
+     * @param string $function the fragment callback
+     */
+    public function test_grade_fragments_need_grading_capability(string $function): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/solo/lib.php');
+        $this->setUser($this->student1);
+        $this->expectException(\required_capability_exception::class);
+        $function([
+            'context' => \context_module::instance($this->cm->id),
+            'cmid' => $this->cm->id,
+            'studentid' => $this->student2->id,
+        ]);
+    }
+
+    /**
+     * Data for test_grade_fragments_need_grading_capability.
+     *
+     * @return array
+     */
+    public static function grade_fragment_provider(): array {
+        return [
+            'rubric' => ['mod_solo_output_fragment_rubric_grade_form'],
+            'simple' => ['mod_solo_output_fragment_simple_grade_form'],
+        ];
+    }
+
+    /**
+     * A teacher cannot grade an activity in another course through their own course's context.
+     *
+     * @dataProvider grade_submit_provider
+     * @param string $function the grade submit web service
+     */
+    public function test_grade_submit_checks_the_graded_activity(string $function): void {
+        global $DB;
+        $gen = $this->getDataGenerator();
+        $teacher = $gen->create_and_enrol($this->course, 'editingteacher');
+        $othercourse = $gen->create_course();
+        $othersolo = $gen->create_module('solo', ['course' => $othercourse->id]);
+        $othercm = get_coursemodule_from_instance('solo', $othersolo->id, $othercourse->id, false, MUST_EXIST);
+        $otherstudent = $gen->create_and_enrol($othercourse, 'student');
+        $attemptid = $DB->insert_record(constants::M_ATTEMPTSTABLE, (object) [
+            'solo' => $othersolo->id,
+            'userid' => $otherstudent->id,
+            'completedsteps' => 99,
+            'grade' => 50,
+            'feedback' => 'original',
+            'timecreated' => time(),
+            'timemodified' => time(),
+        ]);
+
+        $this->setUser($teacher);
+        $contextid = \context_module::instance($this->cm->id)->id;
+        // A complete, valid submission, so that only the permission check can stop the write.
+        $formname = str_replace('submit_', '', $function);
+        $formdata = json_encode(http_build_query(
+            ['grade' => 99, 'feedback' => 'changed', 'sesskey' => sesskey(), '_qf__' . $formname => 1],
+            '',
+            '&'
+        ));
+        $_POST['sesskey'] = sesskey();
+        try {
+            mod_solo_external::$function($contextid, $formdata, $otherstudent->id, $othercm->id);
+            $this->fail('A grade was written to another course');
+        } catch (\moodle_exception $e) {
+            $this->assertEquals('original', $DB->get_field(constants::M_ATTEMPTSTABLE, 'feedback', ['id' => $attemptid]));
+        }
+    }
+
+    /**
+     * Data for test_grade_submit_checks_the_graded_activity.
+     *
+     * @return array
+     */
+    public static function grade_submit_provider(): array {
+        return [
+            'rubric' => ['submit_rubric_grade_form'],
+            'simple' => ['submit_simple_grade_form'],
+        ];
+    }
 }

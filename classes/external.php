@@ -201,6 +201,10 @@ class mod_solo_external extends external_api
         parse_str($serialiseddata, $data);
         $modulecontext = context_module::instance($cmid);
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
+        // The grade is written to this activity, so check the grading permission here.
+        $gradedcontext = context_module::instance($cm->id);
+        self::validate_context($gradedcontext);
+        require_capability('mod/solo:grades', $gradedcontext);
         $attempthelper = new \mod_solo\attempthelper($cm);
         $attempt = $attempthelper->fetch_latest_complete_attempt($studentid);
 
@@ -317,6 +321,10 @@ class mod_solo_external extends external_api
         parse_str($serialiseddata, $data);
 
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
+        // The grade is written to this activity, so check the grading permission here.
+        $gradedcontext = context_module::instance($cm->id);
+        self::validate_context($gradedcontext);
+        require_capability('mod/solo:grades', $gradedcontext);
         $attempthelper = new \mod_solo\attempthelper($cm);
         $attempt = $attempthelper->fetch_latest_complete_attempt($studentid);
 
