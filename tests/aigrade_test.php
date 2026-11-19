@@ -100,4 +100,31 @@ final class aigrade_test extends \advanced_testcase {
         utils::store_ai_grade($attempt, (object) ['marks' => 50, 'feedback' => '["Already json."]']);
         $this->assertSame(['Already json.'], json_decode($this->stored($attempt)->aifeedback, true));
     }
+
+    public function test_a_cloudpoodll_mark_of_zero_is_kept_and_stored(): void {
+        $this->resetAfterTest();
+        $grade = utils::decode_ai_grade('{"correctedtext": "I went home.", "marks": 0, "feedback": ["Answer the question."]}');
+        $this->assertSame(0, $grade->marks);
+
+        $attempt = $this->attempt();
+        utils::store_ai_grade($attempt, $grade);
+        $stored = $this->stored($attempt);
+        $this->assertNotNull($stored->aigrade);
+        $this->assertEquals(0, $stored->aigrade);
+    }
+
+    public function test_a_cloudpoodll_null_mark_stores_no_grade(): void {
+        $this->resetAfterTest();
+        $grade = utils::decode_ai_grade('{"correctedtext": "I went home.", "marks": null, "feedback": ["Good."]}');
+        $attempt = $this->attempt();
+        utils::store_ai_grade($attempt, $grade);
+        $stored = $this->stored($attempt);
+        $this->assertNull($stored->aigrade);
+        $this->assertSame(['Good.'], json_decode($stored->aifeedback, true));
+    }
+
+    public function test_a_cloudpoodll_reply_that_is_not_json_is_false(): void {
+        $this->assertFalse(utils::decode_ai_grade(''));
+        $this->assertFalse(utils::decode_ai_grade('Sorry, I cannot grade that.'));
+    }
 }

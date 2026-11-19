@@ -4063,23 +4063,29 @@ class utils
             return false;
             // if all good, then lets return
         } else if ($payloadobject->returnCode === 0) {
-            $autograderesponse = $payloadobject->returnMessage;
-            // clean up the correction a little
-            if (\core_text::strlen($autograderesponse) > 0 && self::is_json($autograderesponse)) {
-                $autogradeobj = json_decode($autograderesponse);
-                if (isset($autogradeobj->feedback) && $autogradeobj->feedback == null) {
-                    unset($autogradeobj->feedback);
-                }
-                if (isset($autogradeobj->marks) && $autogradeobj->marks == null) {
-                    unset($autogradeobj->marks);
-                }
-                return $autogradeobj;
-            } else {
-                return false;
-            }
+            return self::decode_ai_grade($payloadobject->returnMessage);
         } else {
             return false;
         }
+    }
+
+    /**
+     * Turn the AI grade Cloud Poodll sent back into an object.
+     *
+     * A mark of 0 is kept: it is a real grade. Callers treat a missing or null mark as "no AI grade".
+     *
+     * @param string $autograderesponse The JSON the AI returned.
+     * @return \stdClass|false correctedtext, marks and feedback, or false if it is not JSON.
+     */
+    public static function decode_ai_grade($autograderesponse) {
+        if (\core_text::strlen((string) $autograderesponse) === 0 || !self::is_json($autograderesponse)) {
+            return false;
+        }
+        $autogradeobj = json_decode($autograderesponse);
+        if (isset($autogradeobj->feedback) && $autogradeobj->feedback == null) {
+            unset($autogradeobj->feedback);
+        }
+        return $autogradeobj;
     }
 
     public static function is_complete($rule, $moduleinstance, $cm, $userid)
