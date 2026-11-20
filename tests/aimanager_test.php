@@ -59,12 +59,19 @@ final class aimanager_test extends \advanced_testcase {
     }
 
     /**
-     * Create an enabled provider instance and send student work to it.
+     * Turn on a core provider and send student work to it.
+     *
+     * Only providers that ship with this Moodle version are tested: a provider installed as an add-on
+     * (aiprovider_gemini before Moodle 5.2, for example) may be set up and reply differently.
      *
      * @param string $plugin openai, gemini or ollama
      * @return \core_ai\provider
      */
     private function use_provider(string $plugin): \core_ai\provider {
+        global $CFG;
+        if (!in_array($plugin, \core_plugin_manager::standard_plugins_list('aiprovider') ?: [])) {
+            $this->markTestSkipped("aiprovider_{$plugin} is not a core plugin in this Moodle version.");
+        }
         $settings = [
             'openai' => ['model' => 'gpt-4o', 'endpoint' => 'https://api.openai.com/v1/chat/completions'],
             'gemini' => ['model' => 'gemini-2.0-flash',
@@ -74,16 +81,59 @@ final class aimanager_test extends \advanced_testcase {
         $settings['systeminstruction'] = 'Admin system instruction';
         $config = $plugin === 'ollama' ? ['endpoint' => 'http://localhost:11434'] : ['apikey' => '123'];
 
-        $manager = \core\di::get(\core_ai\manager::class);
-        $provider = $manager->create_provider_instance(
-            classname: "\\aiprovider_{$plugin}\\provider",
-            name: $plugin,
-            enabled: true,
-            config: $config,
-            actionconfig: [generate_text::class => ['enabled' => true, 'settings' => $settings]],
+        if ($CFG->branch < 500) {
+            // Moodle 4.5 has one provider per plugin, set up in the plugin's own config.
+            $component = "aiprovider_{$plugin}";
+            foreach ($config as $name => $value) {
+                set_config($name, $value, $component);
+            }
+            foreach ($settings as $name => $value) {
+                set_config('action_generate_text_' . $name, $value, $component);
+            }
+            \core\plugininfo\aiprovider::enable_plugin($plugin, 1);
+            $classname = "\\{$component}\\provider";
+            $provider = new $classname();
+        } else {
+            $manager = \core\di::get(\core_ai\manager::class);
+            $provider = $manager->create_provider_instance(
+                classname: "\\aiprovider_{$plugin}\\provider",
+                name: $plugin,
+                enabled: true,
+                config: $config,
+                actionconfig: [generate_text::class => ['enabled' => true, 'settings' => $settings]],
+            );
+        }
+        set_config(
+            'aiaction_' . aimanager::OPTION_GRADE_STUDENT_SUBMISSION,
+            $this->setting_value($provider),
+            constants::M_COMPONENT
         );
-        set_config('aiaction_' . aimanager::OPTION_GRADE_STUDENT_SUBMISSION, $provider->id, constants::M_COMPONENT);
         return $provider;
+    }
+
+    /**
+     * The value that chooses a provider in Solo's settings: its name on Moodle 4.5, its id later.
+     *
+     * @param \core_ai\provider $provider
+     * @return string
+     */
+    private function setting_value(\core_ai\provider $provider): string {
+        global $CFG;
+        return $CFG->branch < 500 ? $provider->get_name() : (string) $provider->id;
+    }
+
+    /**
+     * Turn a provider off after it was chosen.
+     *
+     * @param \core_ai\provider $provider
+     */
+    private function disable_provider(\core_ai\provider $provider): void {
+        global $CFG;
+        if ($CFG->branch < 500) {
+            \core\plugininfo\aiprovider::enable_plugin(substr($provider->get_name(), strlen('aiprovider_')), 0);
+        } else {
+            \core\di::get(\core_ai\manager::class)->disable_provider_instance($provider);
+        }
     }
 
     /**
@@ -165,7 +215,7 @@ final class aimanager_test extends \advanced_testcase {
     public function test_provider_is_offered_in_settings(): void {
         $provider = $this->use_provider('openai');
         $options = aimanager::get_provider_options(generate_text::class);
-        $this->assertArrayHasKey($provider->id, $options);
+        $this->assertArrayHasKey($this->setting_value($provider), $options);
         $this->assertTrue(aimanager::uses_moodle_ai());
     }
 
@@ -302,10 +352,10 @@ final class aimanager_test extends \advanced_testcase {
     }
 
     public function test_prose_reply_is_retried_once(): void {
-        $this->use_provider('gemini');
+        $this->use_provider('openai');
         ['mock' => $mock] = $this->get_mocked_http_client();
-        $mock->append($this->reply('gemini', 'The student wrote quite well, I would give 80 out of 100.'));
-        $mock->append($this->reply('gemini', '{"correctedtext": "I went home.", "marks": 80, "feedback": null}'));
+        $mock->append($this->reply('openai', 'The student wrote quite well, I would give 80 out of 100.'));
+        $mock->append($this->reply('openai', '{"correctedtext": "I went home.", "marks": 80, "feedback": null}'));
 
         $grade = utils::fetch_ai_grade('', 'useast1', 'en-US', false, 'I go home yesterday.', $this->instructions());
         $this->assertDebuggingCalled();
@@ -326,7 +376,7 @@ final class aimanager_test extends \advanced_testcase {
 
     public function test_disabled_provider_fails_cleanly(): void {
         $provider = $this->use_provider('openai');
-        \core\di::get(\core_ai\manager::class)->disable_provider_instance($provider);
+        $this->disable_provider($provider);
 
         $aimanager = new aimanager(null, 'en-US');
         $this->assertFalse($aimanager->predict_cefr('Some text.'));
